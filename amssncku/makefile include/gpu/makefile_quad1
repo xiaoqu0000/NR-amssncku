@@ -1,0 +1,15 @@
+# $Id: makefile_quad1,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by quad1
+#used for memorry leak debuging
+#~/soft/bin/valgrind --tool=memcheck --leak-check=full /home/jpyu/local/mpich127_64/bin/mpirun -np 4 -machinefile ../machines ABE >& out.log
+filein  = -I/home/jpyu/local/mpich127_64/include
+
+LDLIBS  =  -L/home/jpyu/local/mpich127_64/lib -lmpich -L/opt/intel/fce/10.1.018/lib -lifcore
+
+CXXAPPFLAGS = -Dfortran3 -Dnewc -Wno-deprecated -DANSI_HEADERS -g -IPF-fp-strict
+f90appflags = -pc64 -g -IPF-fp-strict
+f90 = ifort -fpp
+f77 = ifort -fpp -fixed
+CXX = icpc
+CC  = icc -Wno-deprecated -DANSI_HEADERS -O2 -IPF-fp-strict
+CLINKER = icpc

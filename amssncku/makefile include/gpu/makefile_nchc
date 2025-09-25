@@ -1,0 +1,10 @@
+#$Id: makefile_nchc,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+LDLIBS = -lxlf90 -lC -lm
+#
+CXXAPPFLAGS = -q64 -O2 -qstrict -qarch=auto -qtune=auto -qcache=auto -qlanglvl=oldmath -lxlf90 -lm -lC -Dfortran1 -Dnewc
+f90appflags = -q64 -O3 -qstrict -qarch=auto -qtune=auto -qcache=auto -qsuffix=f=f90
+f90 = mpxlf90_r
+f77 = mpxlf77_r
+CXX = mpCC_r
+CC  = mpcc_r
+CLINKER = mpCC_r

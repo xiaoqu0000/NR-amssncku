@@ -1,0 +1,17 @@
+# $Id: makefile_alps,v 1.1 2012/11/08 11:54:00 zjcao Exp $
+#for ALPS PGI/openmpi
+
+filein  =
+LDLIBS  = -lpgf90 -lpgf902 -lpgf90rtl -lpgf90_rpm1 -lpgftnrtl -lpghpf -lpghpf2 -lpghpf_mpi
+# you can also replace the above long list with just "-lpgf90libs"
+
+
+CXXAPPFLAGS = -O2 -Dfortran3 -Dnewc
+f90appflags = -O2 -Mpreprocess
+
+f90 = mpif90
+f77 =
+CXX = mpicxx
+CC  = mpicc
+CLINKER = mpicxx
+

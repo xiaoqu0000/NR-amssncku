@@ -1,0 +1,14 @@
+#$Id: makefile_icm,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+filein  =  
+
+LDLIBS  = -L/opt/intel/Compiler/11.1/064/lib/intel64 -lifcore\
+	-L/opt/intel/Compiler/11.1/064/mkl/lib/em64t\
+	-L/opt/intel/Compiler/11.1/064/mkl/lib/em64t -lmkl -lguide -lpthread 
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc
+f90appflags = -O2 -fpp
+f90 = mpif90
+f77 = mpif77
+CXX = mpicxx
+CC  = mpicc
+CLINKER = mpicxx 

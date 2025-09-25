@@ -1,0 +1,31 @@
+# $Id: makefile_cao,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by mydesktop
+#modified by duzh, Feb.3,2013
+
+#filein define all the directories should be included for head files
+filein  = $(filein_old) $(filein_mpi) $(filein_cuda)
+filein_old = -I/usr/include  
+filein_mpi= -I/usr/local/mpi-gcc/include 
+filein_cuda= -I/usr/local/cuda/cuda-4.0/include
+filein_cuda_sdk= -I/usr/local/cuda/sdk-4.0/CUDALibraries/common/inc 
+
+
+#LDLIB defines all the libs should be included
+LDLIBS  = $(LDLIB_CUDA)  $(LDLAB_MPI) $(LDLIB_FORTRAN)
+LDLIB_CUDA= -L/usr/local/cuda/cuda-4.0/lib64 -lcudart 
+LDLIB_MPI=  -L/usr/local/mpi-gcc/lib -lmpich 
+LDLIB_FORTRAN= -L/vol-th/software/gcc-4.6.1/lib64 -lgfortran 
+
+#CXXAPPFLAGS defines all the flages for c plus compiler
+#CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc -fopenmp
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc 
+#f90appflags = -O2 -fopenmp
+f90appflags = -O2 -x f95-cpp-input 
+f90 = gfortran
+CXX = mpicxx
+CLINKER = mpicxx
+
+#CUDA compile configure
+Cu = nvcc
+CUDA_LIB_PATH = -L/usr/local/cuda/cuda-4.0/lib64 -I/usr/local/cuda/sdk-4.0/CUDALibraries/common/inc
+CUDA_APP_FLAGS = -O2 --ptxas-options=-v -arch compute_20 -code compute_20,sm_20

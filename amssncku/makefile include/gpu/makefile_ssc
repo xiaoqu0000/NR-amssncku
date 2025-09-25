@@ -1,0 +1,12 @@
+#$Id: makefile_ssc,v 1.2 2012/04/03 10:49:57 zjcao Exp $
+filein  = -I/usr/include -I/home/compiler/mpi/mvapich/1.0/gcc.gfortran/include
+
+LDLIBS  = -L/home/compiler/mpi/mvapich/1.0/gcc.gfortran/lib -lmpich -L/usr/lib64 -lgfortran
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc 
+f90appflags = -O2 
+f90 = gfortran
+f77 = gfortran
+CXX = g++
+CC  = gcc
+CLINKER = mpiCC 

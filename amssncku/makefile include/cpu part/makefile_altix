@@ -1,0 +1,13 @@
+# $Id: makefile_altix,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by altix.sccas.cn
+filein  = -I/usr/include
+
+LDLIBS  =  -L/usr/lib -L/opt/intel/fc/10.1.008/lib -lmpi -lifcore -limf -lintrins
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3
+f90appflags = -O2
+f90 = ifort
+f77 = ifort
+CXX = icpc
+CC  = icc
+CLINKER = icpc

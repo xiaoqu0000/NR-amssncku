@@ -1,0 +1,62 @@
+# $Id: makefile_makoto,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by makoto
+filein  = -I/opt/mpich127_gnu/include
+
+LDLIBS  =  -L/opt/mpich127_gnu/lib -lmpich -lgfortran 
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc
+f90appflags = -O2
+f90 = gfortran
+CXX = g++
+CLINKER = g++
+.SUFFIXES: .o .f90 .C
+
+.f90.o:
+	$(f90) $(f90appflags) -c $< -o $@
+
+.C.o: 
+	${CXX} ${CXXAPPFLAGS} -c $< ${filein} -o $@
+
+# Input files
+C++FILES = ABE.o cgh.o grid.o misc.o var.o var_list.o gsl.o operate_gsl.o\
+           bssn_class.o monitor.o surface_integral.o interpolation_cgh.o\
+	   moving_box.o
+
+F90FILES = initial_puncture.o prolongrestrict_cell.o polynomial_interpolation.o\
+	   fmisc.o bssn.o cell_diff4.o rungekutta4_bssn.o sommerfeld_bssn.o\
+           rungekutta4_lapse_shift.o sommerfeld_lapse_shift.o\
+           enforce_algebra.o alwind_4th_9.o gauge_condition_9.o\
+	   bssn_constraint.o fadmquantites_bssn.o getnp4.o kodiss.o
+
+bssn_class.o: bssn_class.h cgh.h grid.h misc.h var.h gsl.h initial_puncture.h\
+	  prolongrestrict.h bssn.h rungekutta4_bssn.h sommerfeld_bssn.h\
+          rungekutta4_lapse_shift.h sommerfeld_lapse_shift.h\
+          enforce_algebra.h alwind_9.h gauge_condition_9.h operate_gsl.h\
+	  monitor.h surface_integral.h getnp4.h moving_box.h kodiss.h
+
+cgh.o: cgh.h
+
+grid.o: grid.h
+
+misc.o: misc.h
+
+var.o: var.h
+
+var_list.o: var.h var_list.h
+
+gsl.o: gsl.h
+
+operate_gsl.o: operate_gsl.h gsl.h
+
+bssn_class.o: bssn_class.h
+
+surface_integral.o: fadmquantites_bssn.h derivatives.h interpolation_cgh.h
+
+ABE.o: bssn_class.h
+
+interpolation_cgh.o: interpolation_cgh.h
+
+moving_box.o: moving_box.h
+
+ABE: $(C++FILES) $(F90FILES)
+	$(CLINKER) $(CXXAPPFLAGS) -o $@ $(C++FILES) $(F90FILES) $(LDLIBS)

@@ -1,0 +1,13 @@
+# $Id: makefile_quad2,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by mydesktop
+filein  = -I/usr/include -I/home/zjcao/mpich-1.2.7p1/include
+
+LDLIBS  = -L/home/zjcao/mpich-1.2.7p1/lib -lmpich -L/usr/lib -lgfortran
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc 
+f90appflags = -O2 -x f95-cpp-input 
+f90 = gfortran
+f77 = gfortran
+CXX = g++
+CC  = gcc
+CLINKER = g++

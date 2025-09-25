@@ -1,0 +1,83 @@
+
+
+#if 0
+note here
+v:r; u: phi; w: theta
+tetradtype 0
+v^a = (x,y,z)
+orthonormal order: v,u,w
+m = (phi - i theta)/sqrt(2) following Frans, Eq.(8) of  PRD 75, 124018(2007)
+tetradtype 1
+orthonormal order: w,u,v
+m = (theta + i phi)/sqrt(2) following Sperhake, Eq.(3.2) of  PRD 85, 124062(2012)
+tetradtype 2
+v_a = (x,y,z)
+orthonormal order: v,u,w
+m = (phi - i theta)/sqrt(2) following Frans, Eq.(8) of  PRD 75, 124018(2007)
+#endif
+#define tetradtype 2
+
+#if 0
+note here
+Cell center or Vertex center
+#endif
+#define Cell
+
+#if 0
+note here
+2nd order: 2
+4th order: 3
+6th order: 4
+8th order: 5
+#endif
+#define ghost_width 3
+
+#if 0
+note here
+use shell or not
+#endif
+#define WithShell
+
+#if 0
+note here
+use constraint preserving boundary condition or not
+only affect Z4c
+#endif
+#define CPBC
+
+#if 0
+note here
+Gauge condition type
+0: B^i gauge
+1: David's puncture gauge
+2: MB B^i gauge
+3: RIT B^i gauge
+4: MB beta gauge (beta gauge not means Eq.(3) of PRD 84, 124006)
+5: RIT beta gauge (beta gauge not means Eq.(3) of PRD 84, 124006)
+6: MGB1 B^i gauge
+7: MGB2 B^i gauge
+#endif
+#define GAUGE 2
+
+#if 0
+buffer points for CPBC boundary
+#endif
+#define CPBC_ghost_width  (ghost_width)
+
+#if 0
+using BSSN variable for constraint violation and psi4 calculation: 0
+using ADM variable for constraint violation and psi4 calculation: 1
+#endif
+#define ABV 0
+
+#if 0
+Type of Potential and Scalar Distribution in F(R) Scalar-Tensor Theory
+1: Case C of 1112.3928, V=0
+2: shell with a2^2*phi0/(1+a2^2), f(R) = R+a2*R^2 induced V
+3: ground state of Schrodinger-Newton system, f(R) = R+a2*R^2 induced V
+4: a2 = oo and phi(r) = phi0 * 0.5 * ( tanh((r+r0)/sigma) - tanh((r-r0)/sigma) )
+5: shell with phi(r) = phi0*Exp(-(r-r0)**2/sigma), V = 0
+#endif
+#define EScalar_CC 2
+
+

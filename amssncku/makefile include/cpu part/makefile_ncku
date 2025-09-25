@@ -1,0 +1,15 @@
+# $Id: makefile_ncku,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+#used by NCKU's cluster sge 
+filein  = -I/ap/pgi/linux86-64/6.2/mpi/mpich/include
+
+LDLIBS  = -lblas -L/ap/pgi/linux86-64/6.2/mpi/mpich/lib -lmpich \
+          -L/ap/pgi/linux86-64/6.2/lib -lpgf90 -lpgf902 \
+          -lpgf90rtl -lpgf90_rpm1 -lpgftnrtl -lpghpf -lpghpf2 -lpghpf_mpi -lstdc++
+
+CXXAPPFLAGS = -O2 -Dfortran3 -Dnewc
+f90appflags = -O2 
+f90 = pgf90
+f77 = pgf77
+CXX = pgCC
+CC  = pgcc
+CLINKER = pgCC -Bstatic

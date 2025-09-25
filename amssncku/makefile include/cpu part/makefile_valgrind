@@ -1,0 +1,15 @@
+#$Id: makefile_valgrind,v 1.1 2012/04/03 10:49:57 zjcao Exp $
+filein  = -I/usr/include -I/home/zjcao/soft/mpich/include
+
+LDLIBS  = -L/opt/intel/Compiler/11.1/064/lib/intel64 -lifcore\
+	-L/opt/intel/Compiler/11.1/064/mkl/lib/em64t\
+	-L/opt/intel/Compiler/11.1/064/mkl/lib/em64t -lmkl -lguide -lpthread\
+        -L/home/zjcao/soft/mpich/lib -lmpich -lmpichcxx -lmpl
+
+CXXAPPFLAGS = -Dfortran3 -Dnewc -Wno-deprecated -DANSI_HEADERS -g -IPF-fp-strict
+f90appflags = -pc64 -g -IPF-fp-strict
+f90 = ifort -fpp
+f77 = ifort -fpp -fixed
+CXX = icpc
+CC  = icc -Wno-deprecated -DANSI_HEADERS -O2 -IPF-fp-strict
+CLINKER = icpc

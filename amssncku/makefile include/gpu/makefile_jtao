@@ -1,0 +1,10 @@
+filein  =
+
+CXXAPPFLAGS = -O2 -Wno-deprecated -Dfortran3 -Dnewc
+f90appflags = -O2 -cpp -ffree-line-length-256
+LDLIBS  =  -lgfortran
+f90 = mpif90
+f77 = mpif77
+CXX = mpicxx
+CC  = mpicc
+CLINKER = mpicxx

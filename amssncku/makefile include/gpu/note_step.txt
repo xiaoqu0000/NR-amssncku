@@ -1,0 +1,12 @@
+#if (PSTR == 0) 1604
+	#if 1		1605
+		step 1606
+	#else 		2358
+		step 2360
+	#endif		3035
+#elif (PSTR == 1)	3036
+	step{ 3037
+	{
+	}		3471
+	
+	void bssn_class::SHStep()

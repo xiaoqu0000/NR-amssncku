@@ -1,0 +1,15 @@
+#$Id: makefile_bnu,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+# bnu has two compiler systems
+# one is altix330
+# one is chess which is used here
+filein  = -I/usr/chess/mpich-gm-gcc34-1.2.6..14b/include 
+
+LDLIBS  = -L/opt/intel/fce/9.0/lib -lifcore -L/usr/chess/mpich-gm-gcc34-1.2.6..14b/lib64 -lmpich 
+
+CXXAPPFLAGS = -O2 -Dfortran3 -Dnewc -Wno-deprecated -DANSI_HEADERS -O2
+f90appflags = -O2
+f90 = ifort -fpp
+f77 = ifort -fpp -fixed
+CXX = g++
+CC  = gcc -Wno-deprecated -DANSI_HEADERS -O2
+CLINKER = g++

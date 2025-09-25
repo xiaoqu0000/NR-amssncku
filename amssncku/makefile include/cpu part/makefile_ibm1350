@@ -1,0 +1,12 @@
+#$Id: makefile_ibm1350,v 1.2 2012/04/03 10:49:56 zjcao Exp $
+filein = -I/opt/vltmpi/OPENIB/mpi.pgcc.rsh/include -I/opt/pgi/linux86-64/6.2/include
+
+LDLIBS = -L/opt/vltmpi/OPENIB/mpi.pgcc.rsh/lib -lmpich -L/usr/local/ofed/lib64 -libverbs -L/opt/pgi/linux86-64/6.2/lib -lpgf90 -lpgf902 -lpgf90rtl -lpgf90_rpm1 -lpgftnrtl -lpghpf -lpghpf2 -lpghpf_mpi -lstdc++
+
+CXXAPPFLAGS = -O2 -fast --no_warnings -DUNDERSCORE -DWant_c_files -DANSI_HEADERS -Dfortran3 -Dnewc
+f90appflags = -O3 -fast
+f90 = pgf90
+f77 = pgf77 -O3 -fast
+CXX = pgCC
+CC  = pgcc -O2 -fast --no_warnings -DUNDERSCORE -DWant_c_files -DANSI_HEADERS
+CLINKER = pgCC
