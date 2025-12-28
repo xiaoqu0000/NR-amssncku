@@ -96,7 +96,7 @@ AMSS - NCKU is a numerical relativity program developed in China, which is used 
 0.  修改编译相关的设置  
 
     修改 AMSS_NCKU_source 目录下的 makefile.inc 文件，根据所用计算机来进行设置  
-    
+
     Ununtu22.04系统已经设置完成，不用修改
 
 1.  进入AMSS-NCKU代码文件夹，修改输入 
@@ -105,7 +105,7 @@ AMSS - NCKU is a numerical relativity program developed in China, which is used 
 
 2.  启动AMSS-NCKU  
 
-    控制台运行 python AMSS_NCKU_Program.py 或 python3 AMSS_NCKU_Program.py）
+    控制台运行 python AMSS_NCKU_Program.py 或 python3 AMSS_NCKU_Program.py
 
 #### 更新记录
 
