@@ -18,28 +18,31 @@ import AMSS_NCKU_Input as input_data
 
 # plt.rcParams['text.usetex'] = True  ## 在绘图中允许使用 latex 字体
 
+
+
 ####################################################################################
 
 ## 该函数根据二进制数据画出所有二维图
 
-def generate_binary_data_plot(binary_outdir, figure_outdir):
+def generate_binary_data_plot( binary_outdir, figure_outdir ):
 
     # 生成若干文件夹存放图片
 
-    surface_plot_outdir = os.path.join(figure_outdir, "surface plot")
-    os.mkdir(surface_plot_outdir)
+    surface_plot_outdir = os.path.join( figure_outdir, "surface plot" )
+    os.mkdir( surface_plot_outdir )
 
-    density_plot_outdir = os.path.join(figure_outdir, "density plot")
-    os.mkdir(density_plot_outdir)
+    density_plot_outdir = os.path.join( figure_outdir, "density plot" )
+    os.mkdir( density_plot_outdir )
 
-    contour_plot_outdir = os.path.join(figure_outdir, "contour plot")
-    os.mkdir(contour_plot_outdir)
+    contour_plot_outdir = os.path.join( figure_outdir, "contour plot" )
+    os.mkdir( contour_plot_outdir )
 
-    print(                                   )
+    print(                                  )
     print( " 读取 AMSS-NCKU 程序的二进制数据 " )
-    print(                                   )
+    print( " Reading AMSS-NCKU Binary Data From Output " )
+    print(                                               )
 
-    print(" 二进制数据列表 ")
+    print( " 二进制数据列表 " )
     
     ## 设置对什么文件画图（这里设置对所有二进制文件画图）
     globby = glob.glob( os.path.join(binary_outdir, '*.bin') ) 
@@ -55,7 +58,8 @@ def generate_binary_data_plot(binary_outdir, figure_outdir):
 
     print(                        )
     print( " 二进制数据画图已完成 " )
-    print(                        )
+    print( " Binary Data Plot Has been Finished " )
+    print(                                        )
 
     return
 
@@ -67,7 +71,7 @@ def generate_binary_data_plot(binary_outdir, figure_outdir):
 
 ## 该函数对黑洞轨迹画图
 
-def generate_puncture_orbit_plot(outdir, figure_outdir):
+def generate_puncture_orbit_plot( outdir, figure_outdir ):
 
     print(                                                    )
     print( " 正在对黑洞轨迹进行画图 "                            )
@@ -335,7 +339,7 @@ def generate_puncture_orbit_plot(outdir, figure_outdir):
     print(                      )
     print( " 对黑洞轨迹画图完成 " )
     print( " Black holes' trajectory plot has been finished (2D plot)" )
-    print(                      )
+    print(                                                             )
 
     return
 
@@ -347,7 +351,7 @@ def generate_puncture_orbit_plot(outdir, figure_outdir):
 
 ## 该函数对黑洞的相对距离画图
 
-def generate_puncture_distence_plot(outdir, figure_outdir):
+def generate_puncture_distence_plot( outdir, figure_outdir ):
 
     print(                                                )
     print( " 正在对黑洞间距进行画图 "                        )
@@ -451,7 +455,7 @@ def generate_puncture_distence_plot(outdir, figure_outdir):
     print(                           )
     print( " 正在对黑洞间距画图完成 "   )
     print( " black hole relative distance plot has been finished " )
-    print(                           )
+    print(                                                         )
     
     # --------------------------
  
@@ -465,7 +469,7 @@ def generate_puncture_distence_plot(outdir, figure_outdir):
 
 ## 该函数对黑洞轨迹画 3 维图
 
-def generate_puncture_orbit_plot3D(outdir, figure_outdir):
+def generate_puncture_orbit_plot3D( outdir, figure_outdir ):
 
     print(                               )
     print( " 正在对黑洞轨迹进行画 3 维图 " )
@@ -549,30 +553,6 @@ def generate_puncture_orbit_plot3D(outdir, figure_outdir):
  
     return
 
-# 利用 Python 画 3 维图
-# import matplotlib.pyplot as plt
-# from mpl_toolkits.mplot3d import Axes3D
- 
-# 创建一个新的图
-# fig = plt.figure()
- 
-# 创建一个3D坐标轴
-# ax = fig.add_subplot(111, projection='3d')
-
-# 在3D空间中绘制散点图
-# ax.scatter(x, y, z)
-
-# 绘制三维曲线
-# ax.plot(x, y, z, label='3D curve')
- 
-# 设置坐标轴标签
-# ax.set_xlabel('X Axis')
-# ax.set_ylabel('Y Axis')
-# ax.set_zlabel('Z Axis')
-
-# 添加标题
-# ax.set_title('3D Curve Plot with Title')
-
 
 ####################################################################################
 
@@ -582,13 +562,13 @@ def generate_puncture_orbit_plot3D(outdir, figure_outdir):
 
 ## 该函数对引力波波形 Psi4 画图
 
-def generate_gravitational_waveform_plot(outdir, figure_outdir, detector_number_i):
+def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_number_i ):
 
-    print(                                                        )
+    print(                                                       )
     print( " 对引力波波形 Psi4 进行画图 "                           )
     print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
     print( " Begin the Gravitational Psi4 plot for detector number = ", detector_number_i )
-    print(                                                        )
+    print(                                                                                )
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_psi4.dat")
@@ -670,11 +650,11 @@ def generate_gravitational_waveform_plot(outdir, figure_outdir, detector_number_
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Psi4_Detector_" + str(detector_number_i) + ".pdf") )
     
-    print(                                                       )
+    print(                                                     )
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
     print( " 对引力波波形 Psi4 的画图完成 "                        )
     print( " Gravitational Wave Psi4 plot has been finished ", " detector number ", detector_number_i )
-    print(                                                       )
+    print(                                                                                            )
 
     return
 
@@ -686,13 +666,13 @@ def generate_gravitational_waveform_plot(outdir, figure_outdir, detector_number_
 
 ## 该函数对时空 ADM 质量画图
 
-def generate_ADMmass_plot(outdir, figure_outdir, detector_number_i):
+def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
 
-    print(                                                         )
+    print(                                                       )
     print( " 对时空 ADM 质量和角动量进行画图 "                       )
     print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
     print( " Begin the ADM momentum plot for detector number =  ", detector_number_i )
-    print(                                                         )
+    print(                                                                           )
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_ADMQs.dat")
@@ -783,11 +763,11 @@ def generate_ADMmass_plot(outdir, figure_outdir, detector_number_i):
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "ADM_Angular_Momentum_Dector_" + str(detector_number_i) + ".pdf") )
     
-    print(                                                       )
+    print(                                                     )
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " 对时空 ADM 质量和角动量的画图完成 "                   )
+    print( " 对时空 ADM 质量和角动量的画图完成 "                    )
     print( " ADM momentum plot has been finished, detector number =  ", detector_number_i )
-    print(                                                       )
+    print(                                                                                )
 
     return
     
@@ -799,13 +779,13 @@ def generate_ADMmass_plot(outdir, figure_outdir, detector_number_i):
 
 ## 该函数对哈密顿约束违反性况画图
 
-def generate_constraint_check_plot(outdir, figure_outdir, input_level_number):
+def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
 
-    print(                                                     )
+    print(                                                   )
     print( " 对哈密顿约束违反性况进行画图 "                      )
     print( " 对第 ", input_level_number, " 层网格数据进行画图 " )
     print( " Begin the constraint violation plot for grid level number =  ", input_level_number )
-    print(                                                     )
+    print(                                                                                      )
     
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_constraint.dat")
@@ -875,11 +855,11 @@ def generate_constraint_check_plot(outdir, figure_outdir, input_level_number):
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "ADM_Constraint_Grid_Level_" + str(input_level_number) + ".pdf") )
     
-    print(                                                  )
+    print(                                                 )
     print( " 第 ", input_level_number, " 层网格数据画图完成 " )
-    print( " 对哈密顿约束违反性况的画图完成 "                 )
+    print( " 对哈密顿约束违反性况的画图完成 "                  )
     print( " Constraint violation plot has been finished, grid level number = ", input_level_number )
-    print(                                                  )
+    print(                                                                                          )
 
     return
 

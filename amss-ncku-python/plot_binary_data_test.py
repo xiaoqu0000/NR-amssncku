@@ -228,3 +228,4 @@ if not os.path.exists(contour_plot_directionary):
 filename = os.path.join(binary_results_directionary, 'Lev05-00_phi0_00154.bin')
 
 plot_binary_data( filename, binary_results_directionary, figure_directionary )
+

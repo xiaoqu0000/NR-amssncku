@@ -161,6 +161,8 @@ public:
 
        void testRestrict();
        void testOutBd();
+       
+       bool check_Stdin_Abort(); 
 
        virtual void Setup_Initial_Data_Cao();
        virtual void Setup_Initial_Data_Lousto();

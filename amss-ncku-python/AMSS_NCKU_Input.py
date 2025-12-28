@@ -3,7 +3,7 @@
 ##
 ## 这个文件包含了数值相对论所需要的输入
 ## 小曲
-## 2024/03/19 --- 2025/09/14
+## 2024/03/19 --- 2025/12/11
 ##
 #################################################
 
@@ -13,13 +13,13 @@ import numpy   ## 导入 numpy 包
 
 ## 设置程序运行目录和计算资源
 
-File_directionary   = "GW150914_xiaoqu_test3body"   ## 程序运行目录
-Output_directionary = "output_file"                 ## 存放二进制数据的子目录
-MPI_processes       = 8                             ## 想要调用的进程数目
+File_directionary   = "GW150914"                    ## 程序运行目录              output file dictionary
+Output_directionary = "output_file"                 ## 存放二进制数据的子目录     binary data dictionary
+MPI_processes       = 8                             ## 想要调用的进程数目         number of mpi processes used in the simulation
 
-GPU_Calculation     = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
-CPU_Part            = 0.8
-GPU_Part            = 0.2
+GPU_Calculation     = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no   Use GPU or not (prefer "no" in the current version, because the GPU part is not full integrated in Python interface)
+CPU_Part            = 1.0
+GPU_Part            = 0.0
 
 #################################################
 
@@ -28,7 +28,8 @@ GPU_Part            = 0.2
 
 ## 设置程序计算方法
 
-Symmetry                 = "equatorial-symmetry"   ## 系统对称性，可选 equatorial-symmetry、no-symmetry
+Symmetry                 = "equatorial-symmetry"   ## 系统对称性，可选 equatorial-symmetry、no-symmetry、octant-symmetry
+                                                   ## 注意：如果选择 octant-symmetry 最好使用固定网格计算，octant-symmetry 对移动网格有些 bug 
 Equation_Class           = "BSSN"                  ## 设置方程形式，可选 BSSN、Z4C、BSSN-EScalar、BSSN-EM
                                                    ##       BSSN 和 Z4C   适合于 GR 旋转黑洞的真空计算
                                                    ##       BSSN-EM      涉及 GR 带电黑洞的真空计算
@@ -49,16 +50,15 @@ Finite_Diffenence_Method = "6th-order"             ## 有限差分方法，可�
 
 ## 设置时间演化信息
 
-Start_Evolution_Time     = 0.0                    ## 起始演化时间
-# Final_Evolution_Time     = 1600.0               ## 最终演化时间
-Final_Evolution_Time     = 10.0                   ## 最终演化时间（先用较小时间来测试是否能够运行）
+Start_Evolution_Time     = 0.0                    ## 起始演化时间   start evolutionary time t0
+Final_Evolution_Time     = 200.0                  ## 最终演化时间   final evolutionary time t1
 Check_Time               = 100.0
-Dump_Time                = 50.0                   ## 每隔一定时间间隔储存数据
-D2_Dump_Time             = 300.0
+Dump_Time                = 100.0                  ## 每隔一定时间间隔储存数据   time inteval for dump binary data
+D2_Dump_Time             = 100.0
 Analysis_Time            = 0.1
-Evolution_Step_Number    = 10000000               ## 时间迭代次数
-Courant_Factor           = 0.5                    ## Courant 因子（决定每一步时间演化的时间间隔）
-Dissipation              = 0.2                    ## 耗散因子
+Evolution_Step_Number    = 10000000               ## 最大迭代次数
+Courant_Factor           = 0.5                    ## Courant 因子（决定每一步时间演化的时间间隔）    Courant Factor
+Dissipation              = 0.15                   ## 耗散因子                                      Dissipation Factor
 
 #################################################
 
@@ -70,14 +70,14 @@ Dissipation              = 0.2                    ## 耗散因子
 basic_grid_set    = "Patch"                          ## 设定网格类型，可选 Patch 和 Shell-Patch
 grid_center_set   = "Cell"                           ## 网格中心设置，可选 Cell 和 Vertex
 
-grid_level        = 10                               ## 设置格点的总层数
-static_grid_level = 6                                ## 设置静态格点的层数
+grid_level        = 9                                ## 设置格点的总层数
+static_grid_level = 5                                ## 设置静态格点的层数
 moving_grid_level = grid_level - static_grid_level   ## 可移动格点的层数
 
 analysis_level    = 0
 refinement_level  = 4                                ## 从该层开始进行时间细化
 
-largest_box_xyz_max = [500.0, 500.0, 500.0]          ## 设置最外层格点的坐标最大值
+largest_box_xyz_max = [320.0, 320.0, 320.0]          ## 设置最外层格点的坐标最大值
 largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
 
 static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
@@ -89,7 +89,7 @@ devide_factor      = 2.0                             ## 设置相邻两层网格
 static_grid_type   = 'Linear'                        ## 设置固定格点的类型，可选 'Linear'
 moving_grid_type   = 'Linear'                        ## 设置固定格点的类型，可选 'Linear'
 
-quarter_sphere_number = 64                           ## 1/4 球面积分的格点数目
+quarter_sphere_number = 96                           ## 1/4 球面积分的格点数目
 
 #################################################
 
@@ -121,15 +121,15 @@ e0       = 0.0
 
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## 质量  无量纲电荷  无量纲自旋
-parameter_BH[0] = [ 36.0/(36.0+29.0),  0.0,  0.31 ]   
-parameter_BH[1] = [ 29.0/(36.0+29.0),  0.0, -0.46 ]  
-## parameter_BH[2] = [ 0.3,  0.0,  0.0 ]  # 多黑洞手动补加 
+parameter_BH[0] = [ 36.0/(36.0+29.0),  0.0,  +0.31 ]   
+parameter_BH[1] = [ 29.0/(36.0+29.0),  0.0,  -0.46 ]  
+## parameter_BH[2] = [ 1.0,  0.0,  0.0 ]  # 多黑洞手动补加 
 ## 注意，如果求解数值相对论初值的方法选为 Ansorg-TwoPuncture ，第一个黑洞必须为质量较大的那个，且黑洞总质量会自动 rescale 为 M=1 （其它情况下必须手动 rescale）
 
 ## 设置每个黑洞的无量纲自旋
 ## 无对称性时 ，需要手动给 3 个方向的自旋角动量
-dimensionless_spin_BH[0] = [ 0.0,  0.0,  0.0 ]   
-dimensionless_spin_BH[1] = [ 0.0,  0.0,  0.0 ]  
+dimensionless_spin_BH[0] = [ 0.0,  0.0,  +0.31 ]   
+dimensionless_spin_BH[1] = [ 0.0,  0.0,  -0.46 ]  
 ## dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]   # 多黑洞手动补加
 
 ## 注意，如果设置双星初始轨道坐标的方式选为 Automatically-BBH，则程序自动调整将较大质量黑洞放在 y 轴正向，将较小质量黑洞放在 y 轴负向
@@ -143,14 +143,14 @@ dimensionless_spin_BH[1] = [ 0.0,  0.0,  0.0 ]
 ## 如果设置 puncture 初始轨道坐标的方式选为 Manually，还需要手动给定所有黑洞参数
 
 ## 设置每个黑洞的初始位置
-position_BH[0]  = [  0.0,  +4.4615385,  0.0 ]  
-position_BH[1]  = [  0.0,  -5.5384615,  0.0 ] 
-## position_BH[2]  = [  0.0,   0.0,   0.0 ]  # 多黑洞手动补加  
+position_BH[0]  = [  0.0,  10.0*29.0/(36.0+29.0), 0.0 ]  
+position_BH[1]  = [  0.0, -10.0*36.0/(36.0+29.0),  0.0 ] 
+## position_BH[2]  = [    0.0,  0.0,  0.0 ]  # 多黑洞手动补加  
 
 ## 设置每个黑洞的动量信息  
-momentum_BH[0]  = [ -0.0953015, -0.00084515,   0.0 ]
-momentum_BH[1]  = [ +0.0953015, +0.00084515,   0.0 ]
-## momentum_BH[2]  = [  0.0,    0.0,     0.0 ]  # 多黑洞手动补加 
+momentum_BH[0]  = [ -0.09530152296974252,  -0.00084541526517121,   0.0 ]
+momentum_BH[1]  = [ +0.09530152296974252,  +0.00084541526517121,   0.0 ]
+## momentum_BH[2]  = [  0.0,         0.0,         0.0 ]  # 多黑洞手动补加 
 
 
 #################################################
@@ -160,11 +160,11 @@ momentum_BH[1]  = [ +0.0953015, +0.00084515,   0.0 ]
 
 ## 设置引力波和探测器的相关信息
 
-GW_L_max        = 4                      ## 引力波最大的 L
-GW_M_max        = 4                      ## 引力波最大的 M
-Detector_Number = 11                     ## 探测器的数目
-Detector_Rmin   = 50.0                   ## 最近探测器的距离
-Detector_Rmax   = 150.0                  ## 最远探测器的距离
+GW_L_max        = 4                      ## 引力波最大的 L     maximal L number in gravitational wave
+GW_M_max        = 4                      ## 引力波最大的 M     maximal M number in gravitational wave
+Detector_Number = 12                     ## 探测器的数目       number of dector
+Detector_Rmin   = 50.0                   ## 最近探测器的距离   nearest dector distance
+Detector_Rmax   = 160.0                  ## 最远探测器的距离   farest dector distance
 
 #################################################
 

@@ -4,7 +4,7 @@
 ## AMSS-NCKU 数值相对论启动程序
 ## 小曲
 ## 2024/03/19
-## 2025/09/09 修改
+## 2025/12/09 修改
 ##
 ##################################################################
 
@@ -22,14 +22,15 @@ print_information.print_program_introduction()
 ## 程序开始运行前的提示
 
 print(                                                                                )
-print( " 计算即将开始，请确认在 AMSS_NCKU_Input.py 中设置了正确的参数，按回车继续！！！  " )
-print( " 如果输入参数没有设置好，Ctrl+C 退出，调整 AMSS_NCKU_Input.py 中的输入参数！！！ " )
+print( " 计算即将开始，请确认在 AMSS_NCKU_Input.py 中设置了正确的参数，按回车继续！！！  "     )
+print( " 如果输入参数没有设置好，Ctrl+C 退出，调整 AMSS_NCKU_Input.py 中的输入参数！！！ "    )
 print(                                                                                )
-print( " Simulation will be started, please confirm you have set the correct parameters in the AMSS_NCKU_Input.py script. " )
-print( " If parameters have been set correctly, press Enter to continue !!!  "                                              )
-print( " If you have not set parameters，press Ctrl+C to abort the simulation and adjust the parameters in script file "    )
-print( " AMSS_NCKU_Input.py !!! "                                                                                           )
-
+print( " Simulation will be started, please confirm you have set the correct parameters in the script file " )
+print( " AMSS_NCKU_Input.py "                                                                                )
+print( " If parameters have been set correctly, press Enter to continue !!!  "                               )
+print( " If you have not set parameters，press Ctrl+C to abort the simulation and adjust the parameters "    )
+print( " in script file AMSS_NCKU_Input.py !!! "                                                             )
+     
 ## 设定一个输入（回车），以便程序下一步运行
 inputvalue = input()           
 print()
@@ -44,15 +45,58 @@ import AMSS_NCKU_Input as input_data
 
 ##################################################################
 
-## 生成文件目录，用来程序运行的数据
+## 生成文件目录，用来储存程序运行的数据
 
 import os
 import shutil
+import sys
 
-# 根据输入文件来设置文件目录
+## 根据输入文件来设置文件目录
 File_directionary = os.path.join(input_data.File_directionary)   
 
-# 如果文件目录已经存在，则去除它
+## 如果设定的输出目录存在，则根据用户的选择看是否继续计算
+if os.path.exists(File_directionary):
+    print(                                                                                           )
+    print( " 设定的输出目录存在，是否同意覆盖当前目录？ "                                                  )
+    print( " 如果同意覆当前目录，请输入'continue'继续计算 "                                               )
+    print( " 如果不同意覆当前目录，请输入'stop'退出计算，并在输入文件 AMSS_NCKU_Input.py 中重新设置输出目录 "  )
+    print( " Output dictionary has been existed !!!  "                                                              )
+    print( " If you want to overwrite the existing file directory, please input 'continue' in the terminal !! "     ) 
+    print( " If you want to retain the existing file directory, please input 'stop' in the terminal to stop the "   ) 
+    print( " simulation. Then you can reset the output dictionary in the input script file AMSS_NCKU_Input.py !!! " )
+    print(                                                                                                          )
+    ## 设定输入，是否覆盖原有文件夹
+    while True:
+        try:
+            inputvalue = input()
+            ## 如果同意覆盖当前目录文件目录，则退出计算，同时去除当前文件目录
+            if ( inputvalue == "continue" ):
+                print(                                  )
+                print( " 继续计算 "                      )
+                print( " Continue the calculation !!! " )
+                print(                                  )
+                break  # 输入合法，跳出循环
+            ## 如果不同意覆盖当前目录文件目录，则退出计算，同时保留当前文件目录 
+            elif ( inputvalue == "stop" ):
+                print(                                 )
+                print( " 退出计算 "                     )
+                print( " Stop the calculation !!! "    )
+                print(                                 )
+                ## 退出整个程序
+                sys.exit() 
+            ## 如果用户没有按照要求输入，则要求用户重新输入 
+            else:
+                print(                                                    )
+                print( " 请输入你的选择: 'continue' 或 'stop' !! "           )
+                print( " Please input your choice !!! "                   )
+                print( " Input 'continue' or 'stop' in the terminal !!! " )
+        except ValueError:
+            print(                                   )
+            print( " 请输入你的选择: 'continue' 或 'stop' !! "           )
+            print( " Please input your choice !!! "                   )
+            print( " Input 'continue' or 'stop' in the terminal !!! " )
+        
+## 如果文件目录已经存在，则去除它
 shutil.rmtree(File_directionary, ignore_errors=True)
 
 ## 创建文件夹
@@ -417,6 +461,7 @@ print(                                                                          
 
 
 import plot_xiaoqu
+import plot_GW_strain_amplitude_xiaoqu
 
 ## 画出黑洞轨迹图
 plot_xiaoqu.generate_puncture_orbit_plot(   binary_results_directionary, figure_directionary )
@@ -427,7 +472,8 @@ plot_xiaoqu.generate_puncture_distence_plot( binary_results_directionary, figure
 
 ## 画出引力波波形图
 for i in range(input_data.Detector_Number):
-    plot_xiaoqu.generate_gravitational_waveform_plot( binary_results_directionary, figure_directionary, i )
+    plot_xiaoqu.generate_gravitational_wave_psi4_plot( binary_results_directionary, figure_directionary, i )
+    plot_GW_strain_amplitude_xiaoqu.generate_gravitational_wave_amplitude_plot( binary_results_directionary, figure_directionary, i )
 
 ## 画出时空 ADM 质量的变化图
 for i in range(input_data.Detector_Number):

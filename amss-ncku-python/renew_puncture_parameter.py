@@ -54,6 +54,9 @@ def read_TwoPuncture_Output(Output_File_directionary):
                 angular_momentum_BH[i] = (dimensionless_mass_BH[i]**2) * input_data.dimensionless_spin_BH[i]
     
     return bare_mass_BH, dimensionless_mass_BH, position_BH, momentum_BH, angular_momentum_BH
+    
+##################################################################
+
 
 ##################################################################
 

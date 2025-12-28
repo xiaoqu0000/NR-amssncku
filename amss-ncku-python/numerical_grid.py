@@ -125,6 +125,15 @@ if ( (static_grid_number_y % 4) != 0) :
     static_grid_number_y = static_grid_number_y + 2
 if ( (static_grid_number_z % 4) != 0) :
     static_grid_number_z = static_grid_number_z + 2
+'''
+# 为了防止移动网格移动时边界无法与固定网格对其，我们进一步要求每个方向的网格数目自动调整为 8 的倍数
+if ( (static_grid_number_x % 8) != 0) :
+    static_grid_number_x = static_grid_number_x + 4
+if ( (static_grid_number_y % 8) != 0) :
+    static_grid_number_y = static_grid_number_y + 4
+if ( (static_grid_number_z % 8) != 0) :
+    static_grid_number_z = static_grid_number_z + 4
+'''
 
 ##  定义实数数组，维度 grid_number * static_grid_level，分别作为每一层固定网格的 X Y Z 坐标
 Static_Grid_X = numpy.zeros( (input_data.static_grid_level, static_grid_number_x+1) )   
@@ -179,6 +188,17 @@ Grid_Z_Max[0] = largest_box_Z_Max
 ## 重新调整 yx 的最大坐标，确保 xyz 三个方向的分辨率一致
 Grid_Y_Max[0] = Grid_Y_Min[0] + Grid_Resolution[0] * static_grid_number_y
 Grid_Z_Max[0] = Grid_Z_Min[0] + Grid_Resolution[0] * static_grid_number_z
+## 如果系统存在对称性，还要进行进一步的调整
+if ( input_data.Symmetry == "equatorial-symmetry" ):
+    Grid_Z_Min[0] = - Grid_Resolution[0] * static_grid_number_z / 2
+    Grid_Z_Max[0] = + Grid_Resolution[0] * static_grid_number_z / 2
+elif ( input_data.Symmetry == "octant-symmetry" ):
+    Grid_X_Min[0] = - Grid_Resolution[0] * static_grid_number_x / 2
+    Grid_X_Max[0] = + Grid_Resolution[0] * static_grid_number_x / 2
+    Grid_Y_Min[0] = - Grid_Resolution[0] * static_grid_number_y / 2
+    Grid_Y_Max[0] = + Grid_Resolution[0] * static_grid_number_y / 2
+    Grid_Z_Min[0] = - Grid_Resolution[0] * static_grid_number_z / 2
+    Grid_Z_Max[0] = + Grid_Resolution[0] * static_grid_number_z / 2
 
 ## print( " Grid_Y_Max[0] = ", Grid_Y_Max[0] )
 
@@ -231,22 +251,23 @@ adjust_factor = input_data.moving_grid_number / input_data.static_grid_number
 
 ## 设置第一层可移动网格的坐标最大值与最小值
 i = input_data.static_grid_level 
-Grid_X_Min[i] = ( Grid_X_Min[i-1] / input_data.devide_factor ) * adjust_factor
-Grid_X_Max[i] = - Grid_X_Min[i]
-# Grid_X_Max[i] = ( Grid_X_Max[i-1] / input_data.devide_factor ) * adjust_factor   
-## 原来的设定
-# Grid_Y_Min[i] = ( Grid_Y_Min[i-1] / input_data.devide_factor ) * adjust_factor
-# Grid_Y_Max[i] = ( Grid_Y_Max[i-1] / input_data.devide_factor ) * adjust_factor
-# Grid_Z_Min[i] = ( Grid_Z_Min[i-1] / input_data.devide_factor ) * adjust_factor
-# Grid_Z_Max[i] = ( Grid_Z_Max[i-1] / input_data.devide_factor ) * adjust_factor
-## 现在的设定，总是保证移动网格为立方网格
-Grid_Y_Min[i] = Grid_X_Min[i]
-Grid_Y_Max[i] = Grid_X_Max[i]
-Grid_Z_Min[i] = Grid_X_Min[i]
-Grid_Z_Max[i] = Grid_X_Max[i]
+if (i < input_data.grid_level):
+    Grid_X_Min[i] = ( Grid_X_Min[i-1] / input_data.devide_factor ) * adjust_factor
+    Grid_X_Max[i] = - Grid_X_Min[i]
+    # Grid_X_Max[i] = ( Grid_X_Max[i-1] / input_data.devide_factor ) * adjust_factor   
+    ## 原来的设定
+    # Grid_Y_Min[i] = ( Grid_Y_Min[i-1] / input_data.devide_factor ) * adjust_factor
+    # Grid_Y_Max[i] = ( Grid_Y_Max[i-1] / input_data.devide_factor ) * adjust_factor
+    # Grid_Z_Min[i] = ( Grid_Z_Min[i-1] / input_data.devide_factor ) * adjust_factor
+    # Grid_Z_Max[i] = ( Grid_Z_Max[i-1] / input_data.devide_factor ) * adjust_factor
+    ## 现在的设定，总是保证移动网格为立方网格
+    Grid_Y_Min[i] = Grid_X_Min[i]
+    Grid_Y_Max[i] = Grid_X_Max[i]
+    Grid_Z_Min[i] = Grid_X_Min[i]
+    Grid_Z_Max[i] = Grid_X_Max[i]
 
-# print( " Grid_X_Max[i] = ", Grid_X_Max[i] )
-# print( " Grid_Y_Max[i] = ", Grid_Y_Max[i] )
+    # print( " Grid_X_Max[i] = ", Grid_X_Max[i] )
+    # print( " Grid_Y_Max[i] = ", Grid_Y_Max[i] )
 
 ## 设置其它层可移动网格的坐标最大值与最小值
 for j in range(input_data.moving_grid_level-1) :
@@ -598,16 +619,19 @@ def append_AMSSNCKU_cgh_input():
 
         ## 对 Puncture 数目进行循环
         for k in range(input_data.puncture_number):
-        
-            print( f"cgh::shape[{j}][{k}][0] = { moving_grid_number } ",         file=file1 )
-            print( f"cgh::shape[{j}][{k}][1] = { moving_grid_number } ",         file=file1 )
 
             if ( input_data.Symmetry == "octant-symmetry" ): 
+                print( f"cgh::shape[{j}][{k}][0] = { moving_grid_number//2 } ",  file=file1 )
+                print( f"cgh::shape[{j}][{k}][1] = { moving_grid_number//2 } ",  file=file1 )
                 print( f"cgh::shape[{j}][{k}][2] = { moving_grid_number//2 } ",  file=file1 )
             elif ( input_data.Symmetry == "equatorial-symmetry" ): 
+                print( f"cgh::shape[{j}][{k}][0] = { moving_grid_number } ",     file=file1 )
+                print( f"cgh::shape[{j}][{k}][1] = { moving_grid_number } ",     file=file1 )
                 print( f"cgh::shape[{j}][{k}][2] = { moving_grid_number//2 } ",  file=file1 )
             elif ( input_data.Symmetry == "no-symmetry" ):
-                print( f"cgh::shape[{j}][{k}][2] = { moving_grid_number } ",     file=file1 )
+                print( f"cgh::shape[{j}][{k}][0] = { moving_grid_number } ",     file=file1 )
+                print( f"cgh::shape[{j}][{k}][1] = { moving_grid_number } ",     file=file1 )
+                print( f"cgh::shape[{j}][{k}][2] = { moving_grid_number } ",     file=file1 )   
             else:
                 print( " Symmetry Setting Error" )
 
@@ -615,10 +639,16 @@ def append_AMSSNCKU_cgh_input():
             print( f"cgh::bbox[{j}][{k}][1]  = { Moving_Grid_Y_Min[i,k] } ",     file=file1 )
 
             if ( input_data.Symmetry == "octant-symmetry" ):
-                print( f"cgh::bbox[{j}][{k}][2]  = 0.0",                         file=file1 )
+                print( f"cgh::bbox[{j}][{k}][0]  = { max(0.0, Moving_Grid_X_Min[i,k]) } ", file=file1 )
+                print( f"cgh::bbox[{j}][{k}][1]  = { max(0.0, Moving_Grid_Y_Min[i,k]) } ", file=file1 )
+                print( f"cgh::bbox[{j}][{k}][2]  = { max(0.0, Moving_Grid_Z_Min[i,k]) } ", file=file1 )
             elif ( input_data.Symmetry == "equatorial-symmetry" ):
-                print( f"cgh::bbox[{j}][{k}][2]  = 0.0",                         file=file1 )
+                print( f"cgh::bbox[{j}][{k}][0]  = { Moving_Grid_X_Min[i,k] } ",           file=file1 )
+                print( f"cgh::bbox[{j}][{k}][1]  = { Moving_Grid_Y_Min[i,k] } ",           file=file1 )
+                print( f"cgh::bbox[{j}][{k}][2]  = { max(0.0, Moving_Grid_Z_Min[i,k]) } ", file=file1 )
             elif ( input_data.Symmetry == "no-symmetry" ):
+                print( f"cgh::bbox[{j}][{k}][0]  = { Moving_Grid_X_Min[i,k] } ", file=file1 )
+                print( f"cgh::bbox[{j}][{k}][1]  = { Moving_Grid_Y_Min[i,k] } ", file=file1 )
                 print( f"cgh::bbox[{j}][{k}][2]  = { Moving_Grid_Z_Min[i,k] } ", file=file1 )
             else:
                 print( " Symmetry Setting Error" )
@@ -644,6 +674,5 @@ def append_AMSSNCKU_cgh_input():
     
 #################################################
 
-## -------------------------------------------------------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------------------------------------------------------
+
     

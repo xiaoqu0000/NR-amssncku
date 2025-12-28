@@ -28,6 +28,12 @@ using namespace std;
 #include "Parallel.h"
 #include "parameters.h"
 
+//================================================================================================
+
+// 定义 cgh class
+
+//================================================================================================
+
 cgh::cgh(int ingfsi, int fngfsi, int Symmetry, char *filename, int checkrun,
          monitor *ErrorMonitor) : ingfs(ingfsi), fngfs(fngfsi), trfls(0)
 {
@@ -45,6 +51,17 @@ cgh::cgh(int ingfsi, int fngfsi, int Symmetry, char *filename, int checkrun,
       PatL[lev] = construct_patchlist(lev, Symmetry);
   }
 }
+
+//================================================================================================
+
+
+
+//================================================================================================
+
+// 该成员函数为析构函数，用于删除变量
+
+//================================================================================================
+
 cgh::~cgh()
 {
   for (int lev = 0; lev < levels; lev++)
@@ -97,6 +114,16 @@ cgh::~cgh()
   }
   delete[] Porgls;
 }
+
+//================================================================================================
+
+
+//================================================================================================
+
+// 该成员函数用于构建网格
+
+//================================================================================================
+
 #if (PSTR == 0)
 void cgh::compose_cgh(int nprocs)
 {
@@ -119,6 +146,17 @@ void cgh::compose_cgh(int nprocs)
 #endif
   }
 }
+
+//================================================================================================
+
+
+//================================================================================================
+
+// 该成员函数用于构建网格
+// 针对 PSTR == 1 和 PSTR == 2 的情形
+
+//================================================================================================
+
 #elif (PSTR == 1 || PSTR == 2)
 void cgh::compose_cgh(int nprocs)
 {
@@ -144,6 +182,9 @@ void cgh::compose_cgh(int nprocs)
     }
   */
 }
+
+//================================================================================================
+
 #if (PSTR == 1)
 void cgh::construct_mylev(int nprocs)
 {
@@ -215,6 +256,7 @@ void cgh::construct_mylev(int nprocs)
   }
 }
 #endif
+
 #elif (PSTR == 3)
 void cgh::construct_mylev(int nprocs)
 {
@@ -249,7 +291,11 @@ void cgh::construct_mylev(int nprocs)
   else
     mylev = 1; // for finest level
 }
+
+
 //-----------------------------------------------------------------------
+
+
 void cgh::compose_cgh(int nprocs)
 {
   Commlev = new MPI_Comm[levels];
@@ -271,6 +317,8 @@ void cgh::compose_cgh(int nprocs)
   }
 }
 #endif
+
+
 void cgh::sethandle(monitor *ErrorMonitor)
 {
   int BH_num;
@@ -468,6 +516,14 @@ void cgh::checkPatchList(MyList<Patch> *PatL, bool buflog)
     PatL = PatL->next;
   }
 }
+
+
+//================================================================================================
+
+// 该成员函数用于将网格移动
+
+//================================================================================================
+
 void cgh::Regrid(int Symmetry, int BH_num, double **Porgbr, double **Porg0,
                  MyList<var> *OldList, MyList<var> *StateList,
                  MyList<var> *FutureList, MyList<var> *tmList, bool BB,
@@ -631,6 +687,9 @@ void cgh::Regrid(int Symmetry, int BH_num, double **Porgbr, double **Porg0,
     delete[] tmpPorg;
   }
 }
+
+//================================================================================================
+
 #if (PSTR == 1 || PSTR == 2 || PSTR == 3)
 #warning "Regrid is not implimented yet"
 void cgh::Regrid_fake(int Symmetry, int BH_num, double **Porgbr, double **Porg0,
@@ -798,6 +857,13 @@ void cgh::Regrid_fake(int Symmetry, int BH_num, double **Porgbr, double **Porg0,
 }
 #endif
 
+
+//================================================================================================
+
+// 该成员函数用于重构网格
+
+//================================================================================================
+
 #if (PSTR == 0)
 void cgh::recompose_cgh(int nprocs, bool *lev_flag,
                         MyList<var> *OldList, MyList<var> *StateList,
@@ -852,6 +918,9 @@ void cgh::recompose_cgh(int nprocs, bool *lev_flag,
 #endif
     }
 }
+
+//================================================================================================
+
 void cgh::recompose_cgh_fake(int nprocs, bool *lev_flag,
                              MyList<var> *OldList, MyList<var> *StateList,
                              MyList<var> *FutureList, MyList<var> *tmList,
@@ -871,6 +940,13 @@ void cgh::recompose_cgh_fake(int nprocs, bool *lev_flag,
     }
 }
 #endif
+
+//================================================================================================
+
+// 该成员函数从输入文件中读取网格信息
+
+//================================================================================================
+
 void cgh::read_bbox(int Symmetry, char *filename)
 {
   int myrank;
@@ -1083,6 +1159,16 @@ void cgh::read_bbox(int Symmetry, char *filename)
     }
   }
 }
+
+//================================================================================================
+
+
+//================================================================================================
+
+// 该成员函数用于生成所需要的网格信息
+
+//================================================================================================
+
 MyList<Patch> *cgh::construct_patchlist(int lev, int Symmetry)
 {
   // Construct Patches
@@ -1130,10 +1216,18 @@ MyList<Patch> *cgh::construct_patchlist(int lev, int Symmetry)
   }
 
   // 当网格盒子相交时，对网格盒子进行重新切割
-  Parallel::cut_gsl(boxes);
+  // Parallel::cut_gsl(boxes);
+  if (grids[lev] < 3)
+  {
+    Parallel::cut_gsl(boxes);
+  }
 
   // 切割后增加新的ghost部分？
-  Parallel::add_ghost_touch(boxes);
+  // Parallel::add_ghost_touch(boxes);
+  if (grids[lev] < 3)
+  {
+    Parallel::add_ghost_touch(boxes);
+  }
 
   MyList<Patch> *gp;
   gs = boxes;
@@ -1178,6 +1272,10 @@ MyList<Patch> *cgh::construct_patchlist(int lev, int Symmetry)
 
   return tmPat;
 }
+
+//================================================================================================
+
+
 bool cgh::Interp_One_Point(MyList<var> *VarList,
                            double *XX, /*input global Cartesian coordinate*/
                            double *Shellf, int Symmetry)
@@ -1201,6 +1299,8 @@ bool cgh::Interp_One_Point(MyList<var> *VarList,
   }
   return false;
 }
+
+
 void cgh::Regrid_Onelevel(int lev, int Symmetry, int BH_num, double **Porgbr, double **Porg0,
                           MyList<var> *OldList, MyList<var> *StateList,
                           MyList<var> *FutureList, MyList<var> *tmList, bool BB,
@@ -1401,6 +1501,8 @@ void cgh::Regrid_Onelevel(int lev, int Symmetry, int BH_num, double **Porgbr, do
     delete[] tmpPorg[bhi];
   delete[] tmpPorg;
 }
+
+
 #if (PSTR == 0)
 void cgh::recompose_cgh_Onelevel(int nprocs, int lev,
                                  MyList<var> *OldList, MyList<var> *StateList,
@@ -1442,6 +1544,8 @@ void cgh::recompose_cgh_Onelevel(int nprocs, int lev,
   PatL[lev]->destroyList();
   PatL[lev] = tmPat;
 }
+
+
 // the input lev is lower level for regrid
 void cgh::Regrid_Onelevel_aux(int lev, int Symmetry, int BH_num, double **Porgbr, double **Porg0,
                               MyList<var> *OldList, MyList<var> *StateList,
@@ -1595,6 +1699,8 @@ void cgh::Regrid_Onelevel_aux(int lev, int Symmetry, int BH_num, double **Porgbr
   delete[] tmpPorg;
 }
 #endif
+
+
 void cgh::settrfls(const int lev)
 {
   trfls = lev;
