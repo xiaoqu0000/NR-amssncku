@@ -61,7 +61,7 @@ shellpatch_resolution_phi      = 0.5 * math.pi / shell_grid_number[0]
 
 ## 这个函数用来输出整个程序的基本输入
 
-def print_input_data( File_directionary ):
+def print_input_data( File_directory ):
     
     ## 屏幕输出
     
@@ -207,7 +207,7 @@ def print_input_data( File_directionary ):
     
     ## 文件输出
     
-    filepath = os.path.join( File_directionary, "AMSS_NCKU_resolution" )
+    filepath = os.path.join( File_directory, "AMSS_NCKU_resolution" )
     file0    = open(filepath, 'w')
     
     print(                                                              file=file0 )
@@ -387,7 +387,7 @@ def print_puncture_information():
 
 def generate_AMSSNCKU_input(): 
 
-    file1 = open( os.path.join(input_data.File_directionary, "AMSS-NCKU.input"), "w" ) 
+    file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU.input"), "w" ) 
     ## file1 = open( "AMSS-NCKU.input", "w" )  
 
     ## 输出 ABE 的相关设定
@@ -424,7 +424,7 @@ def generate_AMSSNCKU_input():
            file=file1 )
     print( "ABE::cpu part   = ", input_data.CPU_Part,                      file=file1 ) 
     print( "ABE::gpu part   = ", input_data.GPU_Part,                      file=file1 )     
-    print( "ABE::output dir = ", input_data.Output_directionary,           file=file1 ) 
+    print( "ABE::output dir = ", input_data.Output_directory,              file=file1 ) 
     
     if ( input_data.Initial_Data_Method == "Cao-Analytical" ):
         print( "ABE::ID Type    = -3",  file=file1 )

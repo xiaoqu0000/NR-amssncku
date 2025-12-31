@@ -157,7 +157,7 @@ elif (input_data.puncture_data_set == "Manually" ):
     
 def generate_AMSSNCKU_TwoPuncture_input(): 
 
-    file1 = open( os.path.join(input_data.File_directionary, "AMSS-NCKU-TwoPuncture.input"), "w") 
+    file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU-TwoPuncture.input"), "w") 
 
     print( "#  -----0-----> y",                           file=file1 )
     print( "#   -      +      use Brugmann's convention", file=file1 )

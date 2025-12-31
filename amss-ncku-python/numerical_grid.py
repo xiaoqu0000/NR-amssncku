@@ -545,8 +545,8 @@ def plot_initial_grid():
     
     plt.grid(True)
     ## plt.show()
-    plt.savefig( os.path.join(input_data.File_directionary, "Initial_Grid.jpeg") )
-    plt.savefig( os.path.join(input_data.File_directionary, "Initial_Grid.pdf")  )
+    plt.savefig( os.path.join(input_data.File_directory, "Initial_Grid.jpeg") )
+    plt.savefig( os.path.join(input_data.File_directory, "Initial_Grid.pdf")  )
 
 #################################################
 
@@ -557,7 +557,7 @@ def plot_initial_grid():
     
 def append_AMSSNCKU_cgh_input(): 
 
-    file1 = open( os.path.join(input_data.File_directionary, "AMSS-NCKU.input"), "a")  
+    file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU.input"), "a")  
     # "a" 表示追加输出
 
     ## 输出 cgh 的相关设定

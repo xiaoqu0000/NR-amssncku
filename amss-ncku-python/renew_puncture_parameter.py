@@ -17,7 +17,7 @@ import os
 
 ##################################################################
 
-def read_TwoPuncture_Output(Output_File_directionary):
+def read_TwoPuncture_Output(Output_File_directory):
 
     dimensionless_mass_BH = numpy.zeros( input_data.puncture_number )
     bare_mass_BH          = numpy.zeros( input_data.puncture_number )        ## 初始化每个黑洞的质量
@@ -26,7 +26,7 @@ def read_TwoPuncture_Output(Output_File_directionary):
     angular_momentum_BH   = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量
     
     # 读取文件内容
-    data = numpy.loadtxt( os.path.join(Output_File_directionary, "puncture_parameters_new.txt") )
+    data = numpy.loadtxt( os.path.join(Output_File_directory, "puncture_parameters_new.txt") )
     # 确保数据被解析为一维数组
     data = data.reshape(-1)
     ## print(" 读取到的 TwoPuncture 数据为 ")
@@ -62,13 +62,13 @@ def read_TwoPuncture_Output(Output_File_directionary):
 
 ## 将以上格点信息追加写入到 AMSS-NCKU-TwoPuncture 程序的输入文件
 
-def append_AMSSNCKU_BSSN_input(File_directionary, TwoPuncture_File_directionary): 
+def append_AMSSNCKU_BSSN_input(File_directory, TwoPuncture_File_directory): 
 
     charge_Q_BH = numpy.zeros( input_data.puncture_number )   ## 初始化每个黑洞的电荷
 
     ##  如果用 Ansorg-TwoPuncture 求解数值相对论初值，则从 TwoPuncture 的计算结果中读取裸质量、位置、角动量等参数
     if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
-        bare_mass_BH, dimensionless_mass_BH, position_BH, momentum_BH, angular_momentum_BH = read_TwoPuncture_Output(TwoPuncture_File_directionary)
+        bare_mass_BH, dimensionless_mass_BH, position_BH, momentum_BH, angular_momentum_BH = read_TwoPuncture_Output(TwoPuncture_File_directory)
         # 设置每个黑洞电荷
         for i in range(input_data.puncture_number):
             charge_Q_BH[i] = dimensionless_mass_BH[i] * input_data.parameter_BH[i,1]
@@ -98,7 +98,7 @@ def append_AMSSNCKU_BSSN_input(File_directionary, TwoPuncture_File_directionary)
                 angular_momentum_BH[i] = (mass_BH[i]**2) * input_data.dimensionless_spin_BH[i]
                 charge_Q_BH[i]         = mass_BH[i]      * input_data.parameter_BH[i,1]
 
-    file1 = open( os.path.join(input_data.File_directionary, "AMSS-NCKU.input"), "a")   ## "a" 表示追加输出
+    file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU.input"), "a")   ## "a" 表示追加输出
 
     ## 输出 BSSN 的相关设定
     

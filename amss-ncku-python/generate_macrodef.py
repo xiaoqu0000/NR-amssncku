@@ -18,7 +18,7 @@ import AMSS_NCKU_Input as input_data          ## 导入程序输入文件
     
 def generate_macrodef_h(): 
 
-    file1 = open( os.path.join(input_data.File_directionary, "macrodef.h"), "w") 
+    file1 = open( os.path.join(input_data.File_directory, "macrodef.h"), "w") 
 
     print(                              file=file1 )
     print( "#ifndef MICRODEF_H",        file=file1 )
@@ -318,7 +318,7 @@ def generate_macrodef_h():
     
 def generate_macrodef_fh(): 
 
-    file1 = open( os.path.join(input_data.File_directionary, "macrodef.fh"), "w") 
+    file1 = open( os.path.join(input_data.File_directory, "macrodef.fh"), "w") 
 
     print( file=file1 )    
     

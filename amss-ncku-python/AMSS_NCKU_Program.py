@@ -50,12 +50,13 @@ import AMSS_NCKU_Input as input_data
 import os
 import shutil
 import sys
+import time
 
 ## 根据输入文件来设置文件目录
-File_directionary = os.path.join(input_data.File_directionary)   
+File_directory = os.path.join(input_data.File_directory)   
 
 ## 如果设定的输出目录存在，则根据用户的选择看是否继续计算
-if os.path.exists(File_directionary):
+if os.path.exists(File_directory):
     print(                                                                                           )
     print( " 设定的输出目录存在，是否同意覆盖当前目录？ "                                                  )
     print( " 如果同意覆当前目录，请输入'continue'继续计算 "                                               )
@@ -97,29 +98,29 @@ if os.path.exists(File_directionary):
             print( " Input 'continue' or 'stop' in the terminal !!! " )
         
 ## 如果文件目录已经存在，则去除它
-shutil.rmtree(File_directionary, ignore_errors=True)
+shutil.rmtree(File_directory, ignore_errors=True)
 
 ## 创建文件夹
-os.mkdir(File_directionary)
+os.mkdir(File_directory)
 
 ## 复制 python 输入文件到程序运行目录
-shutil.copy("AMSS_NCKU_Input.py", File_directionary)
+shutil.copy("AMSS_NCKU_Input.py", File_directory)
 
 # 生成文件目录，用来存放各类输出文件
 
-output_directionary = os.path.join(File_directionary, "AMSS_NCKU_output")
-os.mkdir(output_directionary)
+output_directory = os.path.join(File_directory, "AMSS_NCKU_output")
+os.mkdir(output_directory)
 
-binary_results_directionary = os.path.join(output_directionary, input_data.Output_directionary)
-os.mkdir(binary_results_directionary)
+binary_results_directory = os.path.join(output_directory, input_data.Output_directory)
+os.mkdir(binary_results_directory)
 
-figure_directionary = os.path.join(File_directionary, "figure")
-os.mkdir(figure_directionary)
+figure_directory = os.path.join(File_directory, "figure")
+os.mkdir(figure_directory)
 
-print(                                          )
-print( " 生成文件目录完成 "                       )
-print( " Output dictionary has been generated " )
-print(                                          )
+print(                                            )
+print( " 生成文件目录完成 "                        )
+print( " Output directionary has been generated " )
+print(                                            )
 
 
 ##################################################################
@@ -130,7 +131,7 @@ import setup
 
 ## 输出相关的参数信息
 
-setup.print_input_data( File_directionary )
+setup.print_input_data( File_directory )
 setup.generate_AMSSNCKU_input()
 
 print(                                                                                           )
@@ -144,6 +145,8 @@ print( " the simulation. Change the grid level structure and grid points !!! "  
 print( " If the grid boxes and their resolution is appropriate, press Enter to continue !!!  "   )
 inputvalue = input()  ## 设定一个输入（回车），以便程序下一步运行
 print()
+
+start_time = time.time()  # 记录开始时间
 
 setup.print_puncture_information()
 
@@ -216,7 +219,7 @@ print(                                                         )
 #print()
 
 AMSS_NCKU_source_path = "AMSS_NCKU_source"
-AMSS_NCKU_source_copy = os.path.join(File_directionary, "AMSS_NCKU_source_copy")
+AMSS_NCKU_source_copy = os.path.join(File_directory, "AMSS_NCKU_source_copy")
 
 ###############################
 
@@ -243,8 +246,8 @@ shutil.copytree(AMSS_NCKU_source_path, AMSS_NCKU_source_copy)
 
 # 将生成的宏文件拷贝进 AMSS-NCKU 的代码文件夹
 
-macrodef_h_path  = os.path.join(File_directionary, "macrodef.h") 
-macrodef_fh_path = os.path.join(File_directionary, "macrodef.fh") 
+macrodef_h_path  = os.path.join(File_directory, "macrodef.h") 
+macrodef_fh_path = os.path.join(File_directory, "macrodef.fh") 
 
 shutil.copy2(macrodef_h_path,  AMSS_NCKU_source_copy)
 shutil.copy2(macrodef_fh_path, AMSS_NCKU_source_copy)
@@ -296,7 +299,7 @@ if not os.path.exists( ABE_file ):
     inputvalue = input() 
 
 ## 复制可执行文件 ABE 到程序运行目录
-shutil.copy2(ABE_file, output_directionary)
+shutil.copy2(ABE_file, output_directory)
 
 ###########################
 
@@ -314,7 +317,7 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
         inputvalue = input() 
 
     ## 复制可执行文件 TwoPunctureABE 到程序运行目录
-    shutil.copy2(TwoPuncture_file, output_directionary)
+    shutil.copy2(TwoPuncture_file, output_directory)
 
 ###########################
 
@@ -346,10 +349,10 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
     
     ## 生成的 AMSS-NCKU 输入文件名
     AMSS_NCKU_TwoPuncture_inputfile      = 'AMSS-NCKU-TwoPuncture.input'
-    AMSS_NCKU_TwoPuncture_inputfile_path = os.path.join(File_directionary, AMSS_NCKU_TwoPuncture_inputfile)
+    AMSS_NCKU_TwoPuncture_inputfile_path = os.path.join( File_directory, AMSS_NCKU_TwoPuncture_inputfile )
  
     ## 复制并重命名文件
-    shutil.copy2( AMSS_NCKU_TwoPuncture_inputfile_path, os.path.join(output_directionary, 'TwoPunctureinput.par') )
+    shutil.copy2( AMSS_NCKU_TwoPuncture_inputfile_path, os.path.join(output_directory, 'TwoPunctureinput.par') )
     
     ###########################
 
@@ -361,7 +364,7 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
     print()
     
     ## 先切换到目标文件夹
-    os.chdir(output_directionary)
+    os.chdir(output_directory)
 
     ## 运行 TwoPuncture 程序
     
@@ -379,15 +382,15 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
 import renew_puncture_parameter
     
-renew_puncture_parameter.append_AMSSNCKU_BSSN_input(File_directionary, output_directionary)
+renew_puncture_parameter.append_AMSSNCKU_BSSN_input(File_directory, output_directory)
 
 
 ## 生成的 AMSS-NCKU 输入文件名
 AMSS_NCKU_inputfile      = 'AMSS-NCKU.input'
-AMSS_NCKU_inputfile_path = os.path.join(File_directionary, AMSS_NCKU_inputfile)
+AMSS_NCKU_inputfile_path = os.path.join(File_directory, AMSS_NCKU_inputfile)
  
 ## 复制并重命名文件
-shutil.copy2( AMSS_NCKU_inputfile_path, os.path.join(output_directionary, 'input.par') )
+shutil.copy2( AMSS_NCKU_inputfile_path, os.path.join(output_directory, 'input.par') )
 
 
 print(                                                                          )
@@ -406,7 +409,7 @@ print()
 print()
 
 ## 先切换到目标文件夹
-os.chdir(output_directionary)
+os.chdir( output_directory )
 
 makefile_and_run.run_ABE()
 
@@ -420,35 +423,35 @@ os.chdir('..')
 ## 将一些基本输入拷贝出来，方便进行 debug
 
 ## 用于输出计算所用参数的文件地址
-AMSS_NCKU_error_file_path = os.path.join(binary_results_directionary, "setting.par")
+AMSS_NCKU_error_file_path = os.path.join(binary_results_directory, "setting.par")
 ## 复制并重命名文件
-shutil.copy( AMSS_NCKU_error_file_path, os.path.join(output_directionary, "AMSSNCKU_setting_parameter") )
+shutil.copy( AMSS_NCKU_error_file_path, os.path.join(output_directory, "AMSSNCKU_setting_parameter") )
 
 ## 用于报错的文件地址
-AMSS_NCKU_error_file_path = os.path.join(binary_results_directionary, "Error.log")
+AMSS_NCKU_error_file_path = os.path.join(binary_results_directory, "Error.log")
 ## 复制并重命名文件
-shutil.copy( AMSS_NCKU_error_file_path, os.path.join(output_directionary, "Error.log") )
+shutil.copy( AMSS_NCKU_error_file_path, os.path.join(output_directory, "Error.log") )
 
 ## 程序基本输出
-AMSS_NCKU_BH_data         = os.path.join(binary_results_directionary, "bssn_BH.dat"        )
-AMSS_NCKU_ADM_data        = os.path.join(binary_results_directionary, "bssn_ADMQs.dat"     )
-AMSS_NCKU_psi4_data       = os.path.join(binary_results_directionary, "bssn_psi4.dat"      )
-AMSS_NCKU_constraint_data = os.path.join(binary_results_directionary, "bssn_constraint.dat")
+AMSS_NCKU_BH_data         = os.path.join(binary_results_directory, "bssn_BH.dat"        )
+AMSS_NCKU_ADM_data        = os.path.join(binary_results_directory, "bssn_ADMQs.dat"     )
+AMSS_NCKU_psi4_data       = os.path.join(binary_results_directory, "bssn_psi4.dat"      )
+AMSS_NCKU_constraint_data = os.path.join(binary_results_directory, "bssn_constraint.dat")
 ## 复制并重命名文件
-shutil.copy( AMSS_NCKU_BH_data,         os.path.join(output_directionary, "bssn_BH.dat"        ) )
-shutil.copy( AMSS_NCKU_ADM_data,        os.path.join(output_directionary, "bssn_ADMQs.dat"     ) )
-shutil.copy( AMSS_NCKU_psi4_data,       os.path.join(output_directionary, "bssn_psi4.dat"      ) )
-shutil.copy( AMSS_NCKU_constraint_data, os.path.join(output_directionary, "bssn_constraint.dat") )
+shutil.copy( AMSS_NCKU_BH_data,         os.path.join(output_directory, "bssn_BH.dat"        ) )
+shutil.copy( AMSS_NCKU_ADM_data,        os.path.join(output_directory, "bssn_ADMQs.dat"     ) )
+shutil.copy( AMSS_NCKU_psi4_data,       os.path.join(output_directory, "bssn_psi4.dat"      ) )
+shutil.copy( AMSS_NCKU_constraint_data, os.path.join(output_directory, "bssn_constraint.dat") )
 
 ## 程序其它输出
 if (input_data.Equation_Class == "BSSN-EM"):
-    AMSS_NCKU_phi1_data = os.path.join(binary_results_directionary, "bssn_phi1.dat" )
-    AMSS_NCKU_phi2_data = os.path.join(binary_results_directionary, "bssn_phi2.dat" )
-    shutil.copy( AMSS_NCKU_phi1_data, os.path.join(output_directionary, "bssn_phi1.dat" ) )
-    shutil.copy( AMSS_NCKU_phi2_data, os.path.join(output_directionary, "bssn_phi2.dat" ) )
+    AMSS_NCKU_phi1_data = os.path.join(binary_results_directory, "bssn_phi1.dat" )
+    AMSS_NCKU_phi2_data = os.path.join(binary_results_directory, "bssn_phi2.dat" )
+    shutil.copy( AMSS_NCKU_phi1_data, os.path.join(output_directory, "bssn_phi1.dat" ) )
+    shutil.copy( AMSS_NCKU_phi2_data, os.path.join(output_directory, "bssn_phi2.dat" ) )
 elif (input_data.Equation_Class == "BSSN-EScalar"):
-    AMSS_NCKU_maxs_data = os.path.join(binary_results_directionary, "bssn_maxs.dat" )
-    shutil.copy( AMSS_NCKU_maxs_data, os.path.join(output_directionary, "bssn_maxs.dat" ) )
+    AMSS_NCKU_maxs_data = os.path.join(binary_results_directory, "bssn_maxs.dat" )
+    shutil.copy( AMSS_NCKU_maxs_data, os.path.join(output_directory, "bssn_maxs.dat" ) )
 
 ##################################################################
 
@@ -464,27 +467,35 @@ import plot_xiaoqu
 import plot_GW_strain_amplitude_xiaoqu
 
 ## 画出黑洞轨迹图
-plot_xiaoqu.generate_puncture_orbit_plot(   binary_results_directionary, figure_directionary )
-plot_xiaoqu.generate_puncture_orbit_plot3D( binary_results_directionary, figure_directionary )
+plot_xiaoqu.generate_puncture_orbit_plot(   binary_results_directory, figure_directory )
+plot_xiaoqu.generate_puncture_orbit_plot3D( binary_results_directory, figure_directory )
 
 ## 画出黑洞间距随时间的变化图
-plot_xiaoqu.generate_puncture_distence_plot( binary_results_directionary, figure_directionary )
+plot_xiaoqu.generate_puncture_distence_plot( binary_results_directory, figure_directory )
 
 ## 画出引力波波形图
 for i in range(input_data.Detector_Number):
-    plot_xiaoqu.generate_gravitational_wave_psi4_plot( binary_results_directionary, figure_directionary, i )
-    plot_GW_strain_amplitude_xiaoqu.generate_gravitational_wave_amplitude_plot( binary_results_directionary, figure_directionary, i )
+    plot_xiaoqu.generate_gravitational_wave_psi4_plot( binary_results_directory, figure_directory, i )
+    plot_GW_strain_amplitude_xiaoqu.generate_gravitational_wave_amplitude_plot( binary_results_directory, figure_directory, i )
 
 ## 画出时空 ADM 质量的变化图
 for i in range(input_data.Detector_Number):
-    plot_xiaoqu.generate_ADMmass_plot( binary_results_directionary, figure_directionary, i )
+    plot_xiaoqu.generate_ADMmass_plot( binary_results_directory, figure_directory, i )
 
 ## 画出哈密顿约束违反性况的变化图
 for i in range(input_data.grid_level):
-    plot_xiaoqu.generate_constraint_check_plot( binary_results_directionary, figure_directionary, i )
+    plot_xiaoqu.generate_constraint_check_plot( binary_results_directory, figure_directory, i )
 
 ## 对储存的二进制数据画出图像
-plot_xiaoqu.generate_binary_data_plot( binary_results_directionary, figure_directionary )
+plot_xiaoqu.generate_binary_data_plot( binary_results_directory, figure_directory )
+
+end_time = time.time()                # 记录结束时间
+elapsed_time = end_time - start_time  # 计算运行时间
+
+print(                                                 )
+print( f" 程序运行时间 = {elapsed_time} 秒 "             )
+print( f" This Program Cost = {elapsed_time} Seconds " )
+print(                                                 )
 
 
 ##################################################################

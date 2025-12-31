@@ -111,10 +111,10 @@ def run_ABE():
     ## 定义要运行的命令，要使用 str 将其它转换为字符串
     
     if (input_data.GPU_Calculation == "no"):
-        mpi_command         = "mpirun -np " + str(input_data.MPI_processes) + " ABE"
+        mpi_command         = "mpirun -np " + str(input_data.MPI_processes) + " ./ABE"
         mpi_command_outfile = "ABE_out.log"
     elif (input_data.GPU_Calculation == "yes"):
-        mpi_command         = "mpirun -np " + str(input_data.MPI_processes) + " ABEGPU"
+        mpi_command         = "mpirun -np " + str(input_data.MPI_processes) + " ./ABEGPU"
         mpi_command_outfile = "ABEGPU_out.log"
  
     ## 使用subprocess.Popen来执行命令，并实时打印输出
