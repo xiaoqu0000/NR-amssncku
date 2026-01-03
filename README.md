@@ -22,15 +22,15 @@ Currently, AMSS - NCKU can successfully handle binary black hole systems and mul
 
 2013年，AMSS-NCKU实现了Z4C方程的数值求解，提高了计算的精确度。
 
-2015年，针对BSSN方程的求解，AMSS-NCKU实现了CPU和GPU混合计算。
+2015年，针对BSSN方程的求解，AMSS-NCKU实现了CPU和GPU混合计算，提升了计算效率。
 
 2024年，我们为AMSS-NCKU开发了Python操作接口，方便用户使用和程序后续开发
 
 #### The Development of AMSS-NCKU
 
-In 2008, the AMSS-NCKU code was successfully developed, enabling the numerical simulation for binary black hole and multiple black hole systems via the BSSN equations .
+In 2008, the AMSS-NCKU code was successfully developed, enabling the numerical simulation for binary black hole and multiple black hole systems via the BSSN equations.
 
-In 2013, AMSS-NCKU achieved the numerical simulation for black hole systems via the Z4C equations, greatly improving the accuracy of calculation.
+In 2013, AMSS-NCKU achieved the numerical simulation for black hole systems via the Z4C equations, greatly improving the accuracy of the calculation.
 
 In 2015, AMSS-NCKU implemented hybrid CPU and GPU computing for the BSSN equations, improving the computational efficiency.
 
@@ -111,8 +111,6 @@ Zuo, Yi (Student)
 
 4.  安装所需要的 Python 库
 
-    Inatall the required Python packages
-
     $ pip install numpy
 
     $ pip install scipy
@@ -161,7 +159,7 @@ Here, we take the Ubuntu 22.04 system as an example
 
     $ sudo apt-get install python3-pip
 
-4.  Inatall the required Python packages
+4.  Install the required Python packages
 
     $ pip install numpy
 
@@ -177,7 +175,7 @@ Here, we take the Ubuntu 22.04 system as an example
 
     $ pip install torch
 
-5.  Inatall the OpenCV tool
+5.  Install the OpenCV tool
 
     $ sudo apt-get install libopencv-dev
 
@@ -203,7 +201,7 @@ Here, we take the Ubuntu 22.04 system as an example
 
 0.  Setting the parameters for compilation
 
-    Modify the makefile.inc file in the AMSS_NCKU_source directory and change the settings according to the your computer.
+    Modify the makefile.inc file in the AMSS_NCKU_source directory and change the settings according to your computer.
 
     The settings for the Ubuntu 22.04 system do not need to be modified.
 
@@ -256,9 +254,9 @@ January 2026     Update: Fixed some bugs.
 
 Due to limited testing, it's inevitable that there will be some unknown bugs in the code.
 
-The computing time required for an actual evolutionary of binary black hole system is relatively long. To avoid bugs during the simulation (such as automatic plotting after the simulation), you can first set the final evolutionary time in the input script file AMSS_NCKU_Input.py to 5M for testing.
+The computing time required for an actual evolution of a binary black hole system is relatively long. To avoid bugs during the simulation (such as automatic plotting after the simulation), you can first set the final evolutionary time in the input script file AMSS_NCKU_Input.py to 5M for testing.
 
-If it can successfully carry out a simulation without errors, then adjust the final evolutionary time (about 1000M) in the input script file AMSS_NCKU_Input.py to start a actual simulation. This can reduce unnecessary waste of computing resources.
+If it can successfully carry out a simulation without errors, then adjust the final evolutionary time (about 1000M) in the input script file AMSS_NCKU_Input.py to start an actual simulation. This can reduce unnecessary waste of computing resources.
 
 Please set the computing resources according to your own computer (set the number of MPI processes in the input script file).
 
@@ -270,6 +268,6 @@ Please set the computing resources according to your own computer (set the numbe
 
 #### Declaration
 
-This code includes the C++ / Fortran codes from the original AMSS-NCKU code. A small number of functions draw are referenced from BAM.
+This code includes the C++ / Fortran codes from the original AMSS-NCKU code. A small number of functions are referenced from BAM.
 
 Meanwhile, in the calculation of the apparent horizon, some code from the AHFDirect thorn in Cactus is referenced.
