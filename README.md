@@ -47,29 +47,37 @@ AMSS - NCKU is a numerical relativity program developed in China, which is used 
 
 这里以 Ubuntu22.04 系统为例进行介绍
 
+Here, we take the Ubuntu 22.04 system as an example
+
 1.  安装需要的 C++/Fortran/Cuda 编译器
 
-    sudo apt-get install gcc
+    Install the C++, Fortran, and Cuda compilers.
 
-    sudo apt-get install gfortran
+    $ sudo apt-get install gcc
 
-    sudo apt-get install make
+    $ sudo apt-get install gfortran
 
-    sudo apt-get install build-essential
+    $ sudo apt-get install make
 
-    sudo apt-get install nvidia-cuda-toolkit
+    $ sudo apt-get install build-essential
+
+    $ sudo apt-get install nvidia-cuda-toolkit
 
 2.  安装 MPI 工具
 
-    sudo apt install openmpi-bin
+    Install the MPI tool
 
-    sudo apt install libopenmpi-dev
+    $ sudo apt install openmpi-bin
 
-3.  安装 Python
+    $ sudo apt install libopenmpi-dev
 
-    sudo apt-get install python3
+3.  安装 Python3
 
-    sudo apt-get install python3-pip
+    Install the Python3
+
+    $ sudo apt-get install python3
+
+    $ sudo apt-get install python3-pip
 
 4.  安装所需要的 Python 库
 
@@ -103,11 +111,34 @@ AMSS - NCKU is a numerical relativity program developed in China, which is used 
 
 1.  进入AMSS-NCKU代码文件夹，修改输入 
 
-    输入设置在AMSS_NCKU_Input.py文件中，修改该文件并保存
+    输入设置在AMSS_NCKU_Input.py文件中，修改该文件中的参数，并保存
 
 2.  启动AMSS-NCKU  
 
     控制台运行 python AMSS_NCKU_Program.py 或 python3 AMSS_NCKU_Program.py
+
+#### How to use AMSS-NCKU
+
+0.  Setting the parameters for compilation
+
+    Modify the makefile.inc file in the AMSS_NCKU_source directory and change the settings according to the your computer.
+
+    The settings for the Ubuntu 22.04 system do not need to be modified.
+
+1.  Enter the AMSS-NCKU Python code folder and modify the input.
+
+    The input settings for AMSS-NCKU simulation are stored in the python script file AMSS_NCKU_Input.py. Modify the parameters in this script file and save it.
+
+2.  Initialize and start the AMSS-NCKU simulation
+
+    Run the following command in the bash terminal. 
+    
+    $ python AMSS_NCKU_Program.py 
+    
+    or 
+    
+    $ python3 AMSS_NCKU_Program.py 
+
 
 #### 更新记录
 
