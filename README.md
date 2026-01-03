@@ -62,7 +62,7 @@ In 2024, we developed a Python operation interface for AMSS-NCKU to facilitate t
 
 Cao, Zhoujian (Beijing Normal University; Academy of Mathematics and Systems Science, Chinese Academy of Sciences; Hangzhou Institute for Advanced Study, University of Chinese Academy of Sciences)
 
-You, Huizhang (National Cheng Kung University)
+Yo, Hwei-Jang (National Cheng Kung University)
 
 Liu, Runqiu (Academy of Mathematics and Systems Science, Chinese Academy of Sciences)
 
@@ -74,9 +74,9 @@ Zhao, Zhichao (China Agricultural University)
 
 Qiao, Chenkai (Chongqing University of Technology)
 
-Yu, Ruibin (Former student)
+Yu, Jui-Ping (Former student)
 
-Lin, Junyu (Former student)
+Lin, Chun-Yu (Former student)
 
 Zuo, Yi (Student)
 
