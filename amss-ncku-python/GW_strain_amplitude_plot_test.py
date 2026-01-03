@@ -14,13 +14,12 @@ import matplotlib.pyplot    as     plt     ## 导入 matplotlib 包进行画图
 import os                                  ## 导入 os 包进行系统操作
 
 import AMSS_NCKU_Input as input_data
+import derivative_xiaoqu
 
 # plt.rcParams['text.usetex'] = True  ## 在绘图中允许使用 latex 字体
 
-
-####################################################################################
-
-
+#from scipy import signal
+#import matplotlib.pyplot as plt
 
 ####################################################################################
 
@@ -48,8 +47,8 @@ def compute_frequency_spectrum(time, signal_f, apply_window=True, zero_pad_facto
     omega_s = fs * 2.0 * math.pi  ## 采样角频率
     
     ## 数据预处理
-    f_detrended = signal_f - numpy.mean(signal_f)  ## 去直流分量
-    ## f_detrended = signal_f
+    ## f_detrended = signal_f - numpy.mean(signal_f)  ## 去直流分量
+    f_detrended = signal_f
     
     ## 加窗处理（抑制频谱泄漏）
     if apply_window:
@@ -105,9 +104,6 @@ def compute_frequency_spectrum(time, signal_f, apply_window=True, zero_pad_facto
 
 ####################################################################################
 
-
-####################################################################################
-
 def frequency_filter_integration(omega, frequency_spectrum, omega0):
 
     '''
@@ -126,12 +122,10 @@ def frequency_filter_integration(omega, frequency_spectrum, omega0):
 
     ## 频域积分的被积函数
     ## 注意：时域的卷积相当于频域的乘积
+    ## 
     frequency_integration = - frequency_spectrum / (omega_filter)**2
 
     return frequency_integration
-
-####################################################################################
-
 
 ####################################################################################
 
@@ -149,8 +143,6 @@ def omega_filter(omega, omega0):
     omega_filter = numpy.where( numpy.abs(omega) < omega0, replacements, omega )
 
     return omega_filter
-    
-####################################################################################
 
 
 ####################################################################################
@@ -161,7 +153,7 @@ def omega_filter(omega, omega0):
 ## omega : 频率轴（Hz）
 ## F_omega : 复数频域数据
 ## sampling_factor : 设置采样倍数
-## original_zero_pad_factor : 原数据的零填充倍数
+## original_length : 原始信号长度（可选）
     
 ## 该函数的返回：
 ## t : 时间轴
@@ -169,6 +161,7 @@ def omega_filter(omega, omega0):
 
 
 def inverse_fourier_transform(omega, F_omega, sampling_factor=2, original_zero_pad_factor=4):
+## def inverse_fourier_transform(omega, F_omega, sampling_rate=None, original_length=None):
     
     # 计算采样参数
     N = len(F_omega)
@@ -215,9 +208,6 @@ def inverse_fourier_transform(omega, F_omega, sampling_factor=2, original_zero_p
 
 ####################################################################################
 
-
-####################################################################################
-
 # 该函数利用解析信号法 (Hilbert变换法)计算信号的瞬时频率
 
 def instantaneous_frequency(signal, sampling_rate):
@@ -244,41 +234,67 @@ def get_frequency_at_t1(signal, sampling_rate, t1):
     time, freq = instantaneous_frequency(signal, sampling_rate)
     index = numpy.argmin(numpy.abs(time - t1))
     return freq[index]
-    
-    
+
+
 ####################################################################################
 
+## 计算初始轨道的瞬时周期和瞬时频率
+
+def estimate_orbit_frequency_at_t0( data, method="7-points 6-orders" ):
+
+    ## 设定最大频率和最小频率
+    frequency_min = 1.0
+    frequency_max = 1000.0
+
+    # 提取时间和坐标
+    t = data[:,0]
+    x = data[:,1]
+    y = data[:,2]
+
+    # 计算相位
+    phase = numpy.arctan2(y, x)
+
+    ## 如果数组长度足够，利用相位的变化率求出对应周期和频率
+    if (len(t) >= 10 ):
+        dphi_dt = derivative_xiaoqu.first_order_derivative_at_t0( phase, t, 5, method )
+        omega     = abs(dphi_dt)
+        frequency = omega / ( 2.0 * math.pi )
+        period_T  = 1.0 / frequency
+        print( " omega = ", omega )
+        print( " period = ", period_T )
+        if (frequency < frequency_min):
+            frequency = frequency_min
+            period_T  = 1.0 / frequency
+            omega     = frequency_min * 2.0 * math.pi
+        if (frequency > frequency_min):
+            frequency = frequency_max
+            period_T  = 1.0 / frequency
+            omega     = frequency_max * 2.0 * math.pi
+    ## 如果数组长度不够，利用最大频率赋值
+    else:
+        frequency = frequency_max
+        period_T  = 1.0 / frequency
+        omega     = frequency_max * 2.0 * math.pi
+
+    return frequency, omega, period_T
 
 
 ####################################################################################
 
 ## 该函数对引力波波形 h 画图
 
-## 需要的输入参数：
-## outdir             数据的文件夹地址
-## figure_outdir      需要画图的文件夹地址
-## detector_number_i  探测器序号
-## total_mass         系统总质量
+def generate_gravitational_amplitude_plot( outdir, figure_outdir, detector_number_i, total_mass, frequency_cut ):
 
-def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_number_i ):
 
+    print(                                                       )
+    print( " 对引力波强度 h 进行画图 "                              )
+    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    print(                                                       )
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_psi4.dat")
-
-    if ( detector_number_i == 0 ):
-        print(                                                       )
-        print( " 对引力波强度 h 进行画图 "                              )
-        print( " Ploting the gravitational wave strain amplitude h " )
-        print(                                                       )
-        print( " 对应数据文件为 ",                  file0 )
-        print( " The corresponding data file is ", file0 )
-        print(                                           )
-
-    print(                                                         )
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Ploting the gravitational wave for detector no. ", detector_number_i )
-
+    
+    print( " 对应数据文件为 ", file0 )
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -362,168 +378,40 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
     # 根据输入数据推算出探测器距离
     Detector_Interval   = ( input_data.Detector_Rmax - input_data.Detector_Rmin ) / ( input_data.Detector_Number - 1 )
     Detector_Distance_R = input_data.Detector_Rmax - Detector_Interval * detector_number_i
-    
-    #################################################
 
-    ## 设置频域积分的最小截断频率
-
-    ## 构建新的输出文件，用于输出频域积分的最小截断频率  
-
-    file_cut_path = os.path.join( figure_outdir, "frequency_cut.txt" )
-    file_cut      = open( file_cut_path, "w" )
-    
-    ## 计算系统总质量并输出 
-    
-    total_mass    = 0.0
-    puncture_mass = numpy.zeros( input_data.puncture_number )
-    
-    ## 对于 Ansorg-TwoPuncture 的初值类型，对前两个黑洞质量归一化
-    if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
-        mass_ratio_Q = input_data.parameter_BH[0,0] / input_data.parameter_BH[1,0]
-        BBH_M1 = mass_ratio_Q / ( 1.0 + mass_ratio_Q )
-        BBH_M2 = 1.0          / ( 1.0 + mass_ratio_Q )
-        for k in range( input_data.puncture_number ):
-            if ( k == 0 ):
-                puncture_mass[k] = BBH_M1 
-            elif( k == 1 ):
-                puncture_mass[k] = BBH_M2 
-            else: 
-                puncture_mass[k] = input_data.parameter_BH[k,0]
-            total_mass += puncture_mass[k]
-     
-     ## 对于其它的初值类型，直接读入输入的 puncture 质量
-    else:
-        for k in range( input_data.puncture_number ):
-            puncture_mass[k] = input_data.parameter_BH[k,0]
-            total_mass += puncture_mass[k]
-            
-    ## 下面输出系统质量
-
-    print( file=file_cut )
-    
-    for k in range( input_data.puncture_number ):
-        print( f" mass[{k}] = {puncture_mass[k]} ", file=file_cut )
- 
-    print( file=file_cut )
-        
-    print( f" total mass = {total_mass} ", file=file_cut )
-    print(                                 file=file_cut )
-
-    ## 计算 puncture 间的相对距离并输出
-
-    puncture_distance = numpy.zeros( (input_data.puncture_number, input_data.puncture_number) )
-    puncture_position = input_data.position_BH
-
-    ## 计算任意两个 puncture 之间的相对距离
-    for k1 in range(input_data.puncture_number):
-        for k2 in range(input_data.puncture_number):
-            if (k1 != k2):
-                puncture_distance[k1,k2] = (   ( puncture_position[k1,0] - puncture_position[k2,0] )**2           \
-                                             + ( puncture_position[k1,1] - puncture_position[k2,1] )**2           \
-                                             + ( puncture_position[k1,2] - puncture_position[k2,2] )**2  )**(0.5)
-                print( f" puncture distance r[{k1,k2}] = {puncture_distance[k1,k2]} ", file=file_cut )
-                print(                                                                 file=file_cut )
-            ## 如果 k1 与 k2 相等，将 puncture 0 和 1 的距离赋值给 puncture_distance[k1,k2]
-            ## 避免出现 puncture_distance[k1,k2] = 0  
-            else:
-                puncture_distance[k1,k2] = (   ( puncture_position[0,0] - puncture_position[0,0] )**2           \
-                                             + ( puncture_position[0,1] - puncture_position[0,1] )**2           \
-                                             + ( puncture_position[0,2] - puncture_position[0,2] )**2  )**(0.5)
-
-    print( file=file_cut )
-
-    ## 估算轨道周期和频率，并输出
-
-    orbital_period    = numpy.zeros( (input_data.puncture_number, input_data.puncture_number) )
-    orbital_frequency = numpy.zeros( (input_data.puncture_number, input_data.puncture_number) )
-
-    ## 利用牛顿力学估算轨道最大频率
-    frequency_max = ( numpy.max(puncture_distance) / numpy.min( puncture_mass ) )**(0.5)
-
-    ## 利用牛顿力学估算任意两体之间运动的周期和频率
-    for k1 in range(input_data.puncture_number):
-        for k2 in range(input_data.puncture_number):
-            if (k1 != k2):
-                orbital_period[k1,k2]    = 2.0 * math.pi * ( puncture_distance[k1,k2]**3 / ( puncture_mass[k1] + puncture_mass[k2] ) )**(0.5)
-                orbital_frequency[k1,k2] = 1.0 / orbital_period[k1,k2]
-                print( f" orbital period estimate:    T_orbital[{k1,k2}] = {orbital_period[k1,k2]} ",    file=file_cut )
-                print( f" orbital frequency estimate: f_orbital[{k1,k2}] = {orbital_frequency[k1,k2]} ", file=file_cut )
-                print(                                                                                   file=file_cut )
-            else:
-                orbital_frequency[k1,k2] = frequency_max
-                orbital_period[k1,k2]    = 1.0 / orbital_frequency[k1,k2]
-
-    print( file=file_cut )
-
-    ## 设置最小频率截断
-    orbital_frequency_min       = numpy.min( orbital_frequency )
-    gravitational_frequency_min = 2.0 * orbital_frequency_min     ## 四极辐射中，引力波频率约为轨道频率的两倍
-    print( " Orbital frequency estimate:            f_orbital_min =", orbital_frequency_min, file=file_cut )
-    print( " Gravitational Wave frequency estimate: f_GW_min      =", orbital_frequency_min, file=file_cut )
-    print(                                                                                   file=file_cut )
-
-    ## 设置最小频率截断
-    frequency_cut = gravitational_frequency_min
-    omega_cut     = 2.0 * math.pi * frequency_cut
-    print( " Frequency Cut estimate: frequency_cut =", frequency_cut, file=file_cut )
-    print( " Omega Cut estimate:     omega_cut     =", omega_cut,     file=file_cut )
-    print(                                                            file=file_cut )
-
-    ## 手动设定截断频率
-    ## 已废弃
-    ## omega_cut = 2.0 * math.pi / 100.0
-
-    #################################################
-
-    ## 设置乌龟坐标
+    # 设置乌龟坐标
     tortoise_R = Detector_Distance_R + 2.0 * total_mass * math.log( Detector_Distance_R / (2.0*total_mass) - 1.0)
     
-    ## 对于多个 puncture 的情形，乌龟坐标的含义变得模糊，这里直接设置为探测器半径
-    if ( input_data.puncture_number > 2 ):
-        tortoise_R = Detector_Distance_R
-
-    ## Psi4 信号的瞬时频率设置截断
-    ## 误差较大，已放弃
-    '''
-    ## 设置初始时间
+    ## 添加频域滤波条件 
     t1 = tortoise_R
 
-    ## 计算 Psi4 信号的瞬时频率
     ## instantaneous_frequency_psi4_l2m2_real = instantaneous_frequency( psi4_l2m2_real2[detector_number_i], len(psi4_l2m2_real2[detector_number_i]) )
-    instantaneous_frequency_psi4_l2m2m_real = get_frequency_at_t1( psi4_l2m2m_real2[detector_number_i], len(psi4_l2m2m_real2[detector_number_i]), t1 ) / (2.0*math.pi)
-    instantaneous_frequency_psi4_l2m1m_real = get_frequency_at_t1( psi4_l2m1m_real2[detector_number_i], len(psi4_l2m1m_real2[detector_number_i]), t1 ) / (2.0*math.pi)
-    instantaneous_frequency_psi4_l2m0_real  = get_frequency_at_t1( psi4_l2m0_real2[detector_number_i],  len(psi4_l2m0_real2[detector_number_i]),  t1 ) / (2.0*math.pi)
-    instantaneous_frequency_psi4_l2m1_real  = get_frequency_at_t1( psi4_l2m1_real2[detector_number_i],  len(psi4_l2m1_real2[detector_number_i]),  t1 ) / (2.0*math.pi)
-    instantaneous_frequency_psi4_l2m2_real  = get_frequency_at_t1( psi4_l2m2_real2[detector_number_i],  len(psi4_l2m2_real2[detector_number_i]),  t1 ) / (2.0*math.pi)
-    print( f" t - r* = 0 时刻瞬时频率 l=2 m=-2 phi4_real = {instantaneous_frequency_psi4_l2m2m_real:.2f} 1/M" )
-    print( f" t - r* = 0 时刻瞬时频率 l=2 m=-1 phi4_real = {instantaneous_frequency_psi4_l2m1m_real:.2f} 1/M" )
-    print( f" t - r* = 0 时刻瞬时频率 l=2 m=0  phi4_real = {instantaneous_frequency_psi4_l2m0_real:.2f}  1/M" )
-    print( f" t - r* = 0 时刻瞬时频率 l=2 m=1  phi4_real = {instantaneous_frequency_psi4_l2m1_real:.2f}  1/M" )
-    print( f" t - r* = 0 时刻瞬时频率 l=2 m=2  phi4_real = {instantaneous_frequency_psi4_l2m2_real:.2f}  1/M" )
+    instantaneous_frequency_psi4_l2m2_real = get_frequency_at_t1( psi4_l2m2_real2[detector_number_i], len(psi4_l2m2_real2[detector_number_i]), t1)
+    instantaneous_frequency_psi4_l2m1_real = get_frequency_at_t1( psi4_l2m1_real2[detector_number_i], len(psi4_l2m1_real2[detector_number_i]), t1)
+    instantaneous_frequency_psi4_l2m0_real = get_frequency_at_t1( psi4_l2m0_real2[detector_number_i], len(psi4_l2m0_real2[detector_number_i]), t1)
+    print(f" t - r* = 0 时刻瞬时频率 l=2 m=2 phi4_real = {instantaneous_frequency_psi4_l2m2_real:.2f} 1/M")
+    print(f" t - r* = 0 时刻瞬时频率 l=2 m=1 phi4_real = {instantaneous_frequency_psi4_l2m1_real:.2f} 1/M")
+    print(f" t - r* = 0 时刻瞬时频率 l=2 m=0 phi4_real = {instantaneous_frequency_psi4_l2m0_real:.2f} 1/M")
 
-    ## 根据瞬时频率添加频率截断条件
-    frequency_cut_l2m2m = abs( instantaneous_frequency_psi4_l2m2m_real ) * 1.5
-    frequency_cut_l2m1m = abs( instantaneous_frequency_psi4_l2m1m_real ) * 1.5
-    frequency_cut_l2m0  = abs( instantaneous_frequency_psi4_l2m0_real  ) * 1.5
-    frequency_cut_l2m1  = abs( instantaneous_frequency_psi4_l2m1_real  ) * 1.5
-    frequency_cut_l2m2  = abs( instantaneous_frequency_psi4_l2m2_real  ) * 1.5
     
-    ## 添加频域滤波条件
-    omega_cut_l2m2m = 2.0 * math.pi / frequency_cut_l2m2m
-    omega_cut_l2m1m = 2.0 * math.pi / frequency_cut_l2m1m
-    omega_cut_l2m0  = 2.0 * math.pi / frequency_cut_l2m0
-    omega_cut_l2m1  = 2.0 * math.pi / frequency_cut_l2m1
-    omega_cut_l2m2  = 2.0 * math.pi / frequency_cut_l2m2
+    ## 打开黑洞轨迹文件，估算初始时刻的轨道瞬时频率和周期
+    file_BH = os.path.join(outdir, "bssn_BH.dat")
+    
+    ## 读取整个文件数据，假设数据是以空格分隔的浮点数
+    BH_data = numpy.loadtxt(file_BH)
 
-    if (omega_cut_l2m0 < omega_cut_l2m2):
-        omega_cut_l2m0 = omega_cut_l2m2
-    if (omega_cut_l2m1 < omega_cut_l2m2):
-        omega_cut_l2m1 = omega_cut_l2m2
-    if (omega_cut_l2m1m < omega_cut_l2m2):
-        omega_cut_l2m1m = omega_cut_l2m2
-    if (omega_cut_l2m2m < omega_cut_l2m2):
-        omega_cut_l2m2m = omega_cut_l2m2
-    '''
+    ## 求出黑洞轨道瞬时频率和周期
+    frequency_t0, omega_t0, period_T_t0 = estimate_orbit_frequency_at_t0( BH_data, method="5-points 4-orders" )
+    frequency_t0, omega_t0, period_T_t0 = estimate_orbit_frequency_at_t0( BH_data, method="7-points 6-orders" )
+    print(f" t - r* = 0 时刻轨道瞬时频率 = {frequency_t0:.2f} 1/M")
+    print(f" t - r* = 0 时刻轨道瞬时周期 = {period_T_t0:.2f}    M")
+    
+    ## 添加频率截断条件
+    period_cut = period_T_t0 
+    omega_cut  = 2.0 * math.pi / period_cut
+    period_cut = 2.0 * math.pi * ( (11*11*11)**0.5 ) 
+    print( "period cut = ", period_cut )
+    omega_cut  = ( 2.0 * math.pi / period_cut ) * 2
     
     ## 得到逆傅里叶变换的被积函数
     psi4_l2m2m_real_omega_integration      = frequency_filter_integration( psi4_l2m2m_real_omega,      psi4_l2m2m_real_omega_spectrem,      omega_cut )
@@ -599,25 +487,16 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
               color='black',  label="l=2 m=2 h+",                  linewidth=2 )
     plt.plot( time_grid_h_cross_l2m2_new, GW_h_cross_l2m2, \
               color='gray',   label="l=2 m=2 hx",  linestyle='--', linewidth=2 )
-    if ( input_data.puncture_number > 2 ):
-        plt.xlabel( "T - R [M]",  fontsize=16     )
-    else:
-        plt.xlabel( "T - R* [M]", fontsize=16     )
+    plt.xlabel( "T [M]",          fontsize=16     )
     plt.ylabel( r"R*h",           fontsize=16     )
     plt.xlim( 0.0, max(time_grid_h_plus_l2m0_new) )
     plt.legend( loc='upper right'                 )
-    plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Wave_h_Detector_" + str(detector_number_i) + ".pdf") )
     
-
+    print(                                                       )
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " The gravitational wave plot for detector no.", detector_number_i," has been finished " )
-    print(                                                                                          )
-
-    if ( detector_number_i == (input_data.Detector_Number-1) ):
-        print( " 对引力波强度振幅 h 画图结束 " )
-        print( " The gravitational wave strin amplitude plots have been finished ! " )
-        print(                                                                       )
+    print( " 对引力波强度 h 的画图完成 "                           )
+    print(                                                       )
     
     '''
     # 以下为直接对Psi4积分，由于精度不够，已弃用
@@ -744,10 +623,10 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
     plt.legend( loc='upper right'             )
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Wave_h_Detector_" + str(detector_number_i) + ".pdf") )
     
-    print(                                                     )
+    print(                                                       )
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
     print( " 对引力波强度 h 的画图完成 "                           )
-    print(                                                     )
+    print(                                                       )
     '''
 
     return
@@ -756,16 +635,328 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
 
 
 
+
 ####################################################################################
 
-## 单独使用的例子
-'''
-## outdir = "./BBH_q=1"
-outdir = "./3BH"
-for i in range( input_data.Detector_Number ):
-    generate_gravitational_wave_amplitude_plot(outdir, outdir, i)
-'''
+## 这是一个傅里叶变换的测试
+
+def test_fourier_transform( outdir, figure_outdir, detector_number_i, total_mass, frequency_cut ):
+
+
+    ##############################################################################
+
+    ## 对给定信号的测试
+
+    ##############################################################################
+
+
+    file1_path = os.path.join( outdir, "signal_text.txt"  )
+    file2_path = os.path.join( outdir, "signal_text2.txt" )
+    file1 = open( file1_path, "w" )
+    file2 = open( file2_path, "w" )
+
+    # 示例数据
+    sampling_rate = 2001
+
+    t_signal = numpy.linspace(0.0, 1.0, sampling_rate)
+    signal   = numpy.sin( 2 * math.pi * 50 * t_signal )  # 50Hz的正弦信号
+    dt       = t_signal[1] - t_signal[0]
+    fs       = 1.0 / dt
+    
+    ## 计算频率轴
+    frequency_fft = numpy.fft.fftfreq(sampling_rate, dt)
+    omega_fft     = 2.0 * math.pi * frequency_fft
+    
+    t1 = 0.2
+    freq_at_t1 = get_frequency_at_t1(signal, sampling_rate, t1)
+    print(f" t = {t1} 时刻的瞬时频率: {freq_at_t1} Hz ")
+
+    signal_omega = numpy.fft.fft(  signal,       norm='ortho' )     # 正变换
+    signal_recon = numpy.fft.ifft( signal_omega, norm='ortho' )     # 逆变换
+
+    frequency_xiaoqu, omega_xiaoqu, signal_omega_xiaoqu = compute_frequency_spectrum(t_signal, signal, apply_window=False, zero_pad_factor=4)
+
+    print(                                      file=file1 )
+    print( " omega    = ", omega_xiaoqu,        file=file1 )
+    print(                                      file=file1 )
+    print( " f(omega) = ", signal_omega_xiaoqu, file=file1 )
+    print(                                      file=file1 )
+
+    print( " i  omega_i   f(omega_i)  omega_xiaoqu_i  f(omega_xiaoqu_i) ", file=file2  )
+    for i in range( len(omega_fft) ):
+        print( format(i," 3d"),               ""*2,                                                                                                           \
+               format(omega_fft[i],".5e"),    ""*2, format(signal_omega[i].imag,".5e"),        "+ (", format(signal_omega[i].imag,".5e"),        ")j", ""*2,  \
+               format(omega_xiaoqu[i],".5e"), ""*2, format(signal_omega_xiaoqu[i].real,".5e"), "+ (", format(signal_omega_xiaoqu[i].imag,".5e"), ")j", ""*2,  \
+               file=file2 )
+
+    time_xiaoqu, signal_recon_xiaoqu = inverse_fourier_transform(omega_xiaoqu, signal_omega_xiaoqu, sampling_factor=4, original_zero_pad_factor=4)
+    signal_recon_xiaoqu2 = signal_recon_xiaoqu[:sampling_rate]  ## 去掉零填充的信号，只保留有效信号
+    
+    print(                                           file=file1 )
+    print( " signal        = ", signal,              file=file1 )
+    print(                                           file=file1 )
+    print( " signal_xiaoqu = ", signal_recon_xiaoqu, file=file1 )
+    print(                                           file=file1 )
+
+    ## 取出前一半数据（正频部分）进行画图
+    ## 去掉虚数部分
+    half_length              = len(omega_fft) // 2
+    half_length2             = len(omega_xiaoqu) // 2
+    omega_fft_half           = numpy.real(omega_fft)[:half_length]
+    signal_omega_half        = numpy.real(signal_omega)[:half_length]
+    omega_xiaoqu_half        = numpy.real(omega_xiaoqu)[:half_length2]
+    signal_omega_xiaoqu_half = numpy.real(signal_omega_xiaoqu)[:half_length2]
+
+    plt.figure( figsize=(8,8) )   ## 这里 figsize 可以设定图形的大小
+    plt.plot( numpy.real(omega_fft),    numpy.real(signal_omega),        color='red',   label=r"$\omega(X)$",                       linewidth=2 )
+    plt.plot( numpy.real(omega_xiaoqu), numpy.real(signal_omega_xiaoqu), color='green', label=r"$\omega_{xiaoqu}$", linestyle='--', linewidth=2 )
+    plt.xlabel( "X",         fontsize=16  )
+    plt.ylabel( r"$\omega$", fontsize=16  )
+    plt.xlim(   -500.0, 500.0     )
+    plt.legend( loc='upper right' )
+    plt.savefig( os.path.join(figure_outdir, "test0a.pdf") )
+    plt.close()
+
+    plt.figure( figsize=(8,8) )   ## 这里 figsize 可以设定图形的大小
+    ## plt.plot( numpy.real(omega_fft),    numpy.real(signal_omega),        color='red',   label=r"$\omega(X)$",                       linewidth=2 )
+    ## plt.plot( numpy.real(omega_xiaoqu), numpy.real(signal_omega_xiaoqu), color='green', label=r"$\omega_{xiaoqu}$", linestyle='--', linewidth=2 )
+    plt.plot( omega_fft_half,    signal_omega_half,        color='red',   label=r"$\omega(X)$",                       linewidth=2 )
+    plt.plot( omega_xiaoqu_half, signal_omega_xiaoqu_half, color='green', label=r"$\omega_{xiaoqu}$", linestyle='--', linewidth=2 )
+    plt.xlabel( "X",         fontsize=16  )
+    plt.ylabel( r"$\omega$", fontsize=16  )
+    plt.xlim(   0.0, 500.0        )
+    plt.legend( loc='upper right' )
+    plt.savefig( os.path.join(figure_outdir, "test0b.pdf") )
+    plt.close()
+
+    plt.figure( figsize=(8,8) )   ## 这里 figsize 可以设定图形的大小
+    plt.plot( t_signal, signal,               color='red',    label="signal",                                    linewidth=2 )
+    plt.plot( t_signal, signal_recon,         color='orange', label="signal_reconstruct_ifft",   linestyle='--', linewidth=2 )
+    plt.plot( t_signal, signal_recon_xiaoqu2, color='green',  label="signal_reconstruct_xiaoqu", linestyle='--', linewidth=2 )
+    plt.xlabel( "T", fontsize=16  )
+    plt.ylabel( "f", fontsize=16  )
+    plt.legend( loc='upper right' )
+    plt.savefig( os.path.join(figure_outdir, "test1.pdf") )
+    plt.close()
+
+    # 正确的归一化关系
+    x_random   = numpy.random.rand( 501 )
+    t_x_random = numpy.linspace(0.0, 1.0, 501, endpoint=False)
+    # print( x[1] )
+
+    x_random_omega = numpy.fft.fft(  x_random,       norm='ortho' )     # 正变换
+    x_random_recon = numpy.fft.ifft( x_random_omega, norm='ortho' )     # 逆变换
+
+    print(                                 file=file1 )
+    print( "x_random = ",  x_random,       file=file1 )
+    print(                                 file=file1 )
+    print( "x_random2 = ", x_random_recon, file=file1 )
+    print(                                 file=file1 )
+
+    frequency_xiaoqu, omega_xiaoqu, x_random_omega_xiaoqu = compute_frequency_spectrum(t_x_random, x_random, apply_window=False, zero_pad_factor=4)
+    print(                                              file=file1 )
+    print( "x_random_omega = ",  x_random_omega,        file=file1 )
+    print(                                              file=file1 )
+    print( "x_random_omega2 = ", x_random_omega_xiaoqu, file=file1 )
+    print(                                              file=file1 )
+
+    t_xiaoqu, x_random_recon_xiaoqu = inverse_fourier_transform(omega_xiaoqu, x_random_omega_xiaoqu, sampling_factor=4, original_zero_pad_factor=4)
+    x_random_recon_xiaoqu2 = x_random_recon_xiaoqu[:501]  ## 去掉零填充的信号，只保留有效信号
+
+    print(                                              file=file1 )
+    print( "x_random        = ", x_random,              file=file1 )
+    print(                                              file=file1 )
+    print( "x_random_xiaoqu = ", x_random_recon_xiaoqu, file=file1 )
+    print(                                              file=file1 )
+
+    file1.close()
+
+    plt.figure( figsize=(8,8) )   ## 这里 figsize 可以设定图形的大小
+    plt.plot( t_x_random, x_random,               color='red',    label="x_random",                                    linewidth=2 )
+    plt.plot( t_x_random, x_random_recon,         color='orange', label="x_random_reconstruct_ifft",   linestyle='--', linewidth=2 )
+    plt.plot( t_x_random, x_random_recon_xiaoqu2, color='green',  label="x_random_reconstruct_xiaoqu", linestyle='--', linewidth=2 )
+    plt.xlabel( "T", fontsize=16  )
+    plt.ylabel( "X", fontsize=16  )
+    plt.legend( loc='upper right' )
+    plt.savefig( os.path.join(figure_outdir, "test2.pdf") )
+    plt.close()
+    
+    
+    ##############################################################################
+
+    ## 对引力波 Psi4 信号的测试
+
+    ##############################################################################
+
+    # 打开文件路径
+    file0 = os.path.join(outdir, "bssn_psi4.dat")
+    
+    print( " 对应数据文件为 ", file0 )
+    
+    # 读取整个文件数据，假设数据是以空格分隔的浮点数
+    data = numpy.loadtxt(file0)
+    
+    # 取出 phi4 文件中各列的数据
+    time                 = data[:,0]
+    psi4_l2m2m_real      = data[:,1]
+    psi4_l2m2m_imaginary = data[:,2]
+    psi4_l2m1m_real      = data[:,3]
+    psi4_l2m1m_imaginary = data[:,4]
+    psi4_l2m0_real       = data[:,5]
+    psi4_l2m0_imaginary  = data[:,6]
+    psi4_l2m1_real       = data[:,7]
+    psi4_l2m1_imaginary  = data[:,8]
+    psi4_l2m2_real       = data[:,9]
+    psi4_l2m2_imaginary  = data[:,10]
+    
+    # 报错
+    # 这里 file0 只是个文件名，不涉及 file.open 操作
+    # file0.close()
+    
+    # python 中除法会返回浮点数，因此这里设置为整除
+    length = len(time) // input_data.Detector_Number 
+    
+    time2                 = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m2m_real2      = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m2m_imaginary2 = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m1m_real2      = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m1m_imaginary2 = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m0_real2       = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m0_imaginary2  = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m1_real2       = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m1_imaginary2  = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m2_real2       = numpy.zeros( (input_data.Detector_Number, length) )
+    psi4_l2m2_imaginary2  = numpy.zeros( (input_data.Detector_Number, length) )
+    
+    # 将数据拆分为各探测器半径对应的数据
+    for i in range(input_data.Detector_Number):
+        for j in range(length):
+            time2[i,j]                 = time[                 j*input_data.Detector_Number + i ]
+            psi4_l2m2m_real2[i,j]      = psi4_l2m2m_real[      j*input_data.Detector_Number + i ]
+            psi4_l2m2m_imaginary2[i,j] = psi4_l2m2m_imaginary[ j*input_data.Detector_Number + i ]
+            psi4_l2m1m_real2[i,j]      = psi4_l2m1m_real[      j*input_data.Detector_Number + i ]
+            psi4_l2m1m_imaginary2[i,j] = psi4_l2m1m_imaginary[ j*input_data.Detector_Number + i ]
+            psi4_l2m0_real2[i,j]       = psi4_l2m0_real[       j*input_data.Detector_Number + i ]
+            psi4_l2m0_imaginary2[i,j]  = psi4_l2m0_imaginary[  j*input_data.Detector_Number + i ]
+            psi4_l2m1_real2[i,j]       = psi4_l2m1_real[       j*input_data.Detector_Number + i ]
+            psi4_l2m1_imaginary2[i,j]  = psi4_l2m1_imaginary[  j*input_data.Detector_Number + i ]
+            psi4_l2m2_real2[i,j]       = psi4_l2m2_real[       j*input_data.Detector_Number + i ]
+            psi4_l2m2_imaginary2[i,j]  = psi4_l2m2_imaginary[  j*input_data.Detector_Number + i ]
+
+    
+    ## 对引力波数据 Psi4 进行离散傅里叶变换
+    ## l=2 m=-2 频谱
+    psi4_l2m2m_real_frequency, psi4_l2m2m_real_omega, psi4_l2m2m_real_omega_spectrem                                                             \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m2m_real2[detector_number_i],      apply_window=True, zero_pad_factor=4 )
+    psi4_l2m2m_imaginary_frequency, psi4_l2m2m_imaginary_omega, psi4_l2m2m_imaginary_omega_spectrem                                              \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m2m_imaginary2[detector_number_i], apply_window=True, zero_pad_factor=4 )
+    ## l=2 m=-1 频谱
+    psi4_l2m1m_real_frequency, psi4_l2m1m_real_omega, psi4_l2m1m_real_omega_spectrem                                                             \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m1m_real2[detector_number_i],      apply_window=True, zero_pad_factor=4 )
+    psi4_l2m1m_imaginary_frequency, psi4_l2m1m_imaginary_omega, psi4_l2m1m_imaginary_omega_spectrem                                              \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m1m_imaginary2[detector_number_i], apply_window=True, zero_pad_factor=4 )
+    ## l=2 m=0 频谱
+    psi4_l2m0_real_frequency, psi4_l2m0_real_omega, psi4_l2m0_real_omega_spectrem                                                                \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m0_real2[detector_number_i],       apply_window=True, zero_pad_factor=4 )
+    psi4_l2m0_imaginary_frequency, psi4_l2m0_imaginary_omega, psi4_l2m0_imaginary_omega_spectrem                                                 \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m0_imaginary2[detector_number_i],  apply_window=True, zero_pad_factor=4 )
+    ## l=2 m=1 频谱
+    psi4_l2m1_real_frequency, psi4_l2m1_real_omega, psi4_l2m1_real_omega_spectrem                                                                \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m1_real2[detector_number_i],       apply_window=True, zero_pad_factor=4 )
+    psi4_l2m1_imaginary_frequency, psi4_l2m1_imaginary_omega, psi4_l2m1_imaginary_omega_spectrem                                                 \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m1_imaginary2[detector_number_i],  apply_window=True, zero_pad_factor=4 )
+    ## l=2 m=2 频谱
+    psi4_l2m2_real_frequency, psi4_l2m2_real_omega, psi4_l2m2_real_omega_spectrem                                                                \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m2_real2[detector_number_i],       apply_window=True, zero_pad_factor=4 )
+    psi4_l2m2_imaginary_frequency, psi4_l2m2_imaginary_omega, psi4_l2m2_imaginary_omega_spectrem                                                 \
+        = compute_frequency_spectrum( time2[detector_number_i], psi4_l2m2_imaginary2[detector_number_i],  apply_window=True, zero_pad_factor=4 )
+    
+    
+    '''
+    psi4_l2m2m_real2_omega          = numpy.empty(input_data.Detector_Number) 
+    psi4_l2m2m_real2_omega_filter   = numpy.empty(input_data.Detector_Number)
+    psi4_l2m2m_real2_omega_spectrem = numpy.empty(input_data.Detector_Number)
+    psi4_l2m2m_real2_omega_integration = numpy.empty(input_data.Detector_Number)
+    '''
+    
+    ## 测试代码
+    # 正确的归一化关系
+    '''
+    x = psi4_l2m2_real2[detector_number_i]
+    print( "psi4=", x )
+
+    X = numpy.fft.fft(x, norm='ortho')            # 正变换
+    print( "psi4(omega) = ", X)
+
+    x_recon = numpy.fft.ifft(X, norm='ortho')     # 逆变换
+    print( "x  = ", x       )
+    print( "x2 = ", x_recon )
+    '''
+    
+    ## 添加频率截断条件
+    omega0 = 2*math.pi / frequency_cut
+    
+    ## 得到逆傅里叶变换的被积函数
+    psi4_l2m2m_real_omega_integration      = frequency_filter_integration( psi4_l2m2m_real_omega,      psi4_l2m2m_real_omega_spectrem,      omega0 )
+    psi4_l2m2m_imaginary_omega_integration = frequency_filter_integration( psi4_l2m2m_imaginary_omega, psi4_l2m2m_imaginary_omega_spectrem, omega0 )
+    psi4_l2m1m_real_omega_integration      = frequency_filter_integration( psi4_l2m1m_real_omega,      psi4_l2m1m_real_omega_spectrem,      omega0 )
+    psi4_l2m1m_imaginary_omega_integration = frequency_filter_integration( psi4_l2m1m_imaginary_omega, psi4_l2m1m_imaginary_omega_spectrem, omega0 )
+    psi4_l2m0_real_omega_integration       = frequency_filter_integration( psi4_l2m0_real_omega,       psi4_l2m0_real_omega_spectrem,       omega0 )
+    psi4_l2m0_imaginary_omega_integration  = frequency_filter_integration( psi4_l2m0_imaginary_omega,  psi4_l2m0_imaginary_omega_spectrem,  omega0 )
+    psi4_l2m1_real_omega_integration       = frequency_filter_integration( psi4_l2m1_real_omega,       psi4_l2m1_real_omega_spectrem,       omega0 )
+    psi4_l2m1_imaginary_omega_integration  = frequency_filter_integration( psi4_l2m1_imaginary_omega,  psi4_l2m1_imaginary_omega_spectrem,  omega0 )
+    psi4_l2m2_real_omega_integration       = frequency_filter_integration( psi4_l2m2_real_omega,       psi4_l2m2_real_omega_spectrem,       omega0 )
+    psi4_l2m2_imaginary_omega_integration  = frequency_filter_integration( psi4_l2m2_imaginary_omega,  psi4_l2m2_imaginary_omega_spectrem,  omega0 )
+    
+    ## 测试代码
+    ## 画傅里叶频谱
+    psi4_l2m2_real_omega_filter = omega_filter(psi4_l2m2_real_omega, omega0)
+    '''
+    print( psi4_l2m2_real_omega ) 
+    print( psi4_l2m2_real_omega_spectrem )
+    print( psi4_l2m2_real_omega_filter ) 
+    print( numpy.real(psi4_l2m2_real_omega_spectrem) )
+    '''
+
+    plt.figure( figsize=(8,8) )                                   ## 这里 figsize 可以设定图形的大小
+    plt.title( f" Gravitational Wave h  ", fontsize=18 )   ## 这里 fontsize 可以设定文字大小
+    ## plt.plot( time_grid_new, GW_h_plus_l2m0,  \
+    ##           color='red',    label="l=2 m=0 h+",                  linewidth=2 )
+    ## plt.plot( time_grid_new, GW_h_cross_l2m0, \
+    ##           color='orange', label="l=2 m=0 hx",  linestyle='--', linewidth=2 )
+    ## plt.plot( time_grid_new, GW_h_plus_l2m1,  \
+    ##           color='green',  label="l=2 m=1 h+",                  linewidth=2 )
+    ## plt.plot( time_grid_new, GW_h_cross_l2m1, \
+    ##           color='cyan',   label="l=2 m=1 hx",  linestyle='--', linewidth=2 )
+    plt.plot( numpy.log(psi4_l2m2_real_omega), numpy.log(numpy.real(psi4_l2m2_real_omega_spectrem)), \
+              color='black',  label="l=2 m=2 $\psi$($\omega$)",                       linewidth=2 )
+    plt.plot( numpy.log(psi4_l2m2_real_omega), numpy.log(psi4_l2m2_real_omega_integration),          \
+              color='blue',  label=r"l=2 m=2 -$\psi$($\omega$)/$\tilde{\omega}^{2}$", linewidth=2 )
+    ## plt.plot( psi4_l2m2_real_omega, numpy.real(psi4_l2m2_real_omega_spectrem),  \
+    ##          color='black',  label="l=2 m=2 psi(omega)",                  linewidth=2 )
+    ## plt.plot( time_grid_new, GW_h_cross_l2m2, \
+    ##           color='gray',   label="l=2 m=2 hx",  linestyle='--', linewidth=2 )
+    plt.xlabel( r"log($\omega$) [$M^{-1}$]",   fontsize=16 )
+    plt.ylabel( r"log($\psi$($\omega$))", fontsize=16 )
+    plt.legend( loc='upper right'                     )
+    plt.savefig( os.path.join(figure_outdir, "Psi_omega_" + str(detector_number_i) + ".pdf") )
+    
+    return
+
+
 ####################################################################################
 
+
+####################################################################################
+
+# 单独使用的例子
+
+outdir = "BBH_q=1"
+# outdir = "BBH_q=1_new"
+# generate_puncture_orbit_plot(outdir, outdir)
+generate_gravitational_amplitude_plot(outdir, outdir, 10, 1.0, 120)
+test_fourier_transform(outdir, outdir, 10, 1.0, 120)
+
+####################################################################################
 
 

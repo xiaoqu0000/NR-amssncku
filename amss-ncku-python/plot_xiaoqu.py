@@ -563,18 +563,22 @@ def generate_puncture_orbit_plot3D( outdir, figure_outdir ):
 ## 该函数对引力波波形 Psi4 画图
 
 def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_number_i ):
-
-    print(                                                       )
-    print( " 对引力波波形 Psi4 进行画图 "                           )
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Begin the Gravitational Psi4 plot for detector number = ", detector_number_i )
-    print(                                                                                )
+    
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_psi4.dat")
-    
-    print( " 对应数据文件为 ", file0 )
-    print( " corresponding data file = ", file0 )
+
+    if ( detector_number_i == 0 ):
+        print(                                                )
+        print( " 对 Weyl 共形变量 Psi4 进行画图 "               )
+        print( " Plotting the Weyl conformal component Psi4 " )
+        print(                                                )
+        print( " 对应数据文件为 ",             file0 )
+        print( " corresponding data file = ", file0 )
+        print(                                      )
+
+    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    print( " Begin the Weyl conformal Psi4 plot for detector number = ", detector_number_i )
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -650,11 +654,17 @@ def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_numbe
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Psi4_Detector_" + str(detector_number_i) + ".pdf") )
     
-    print(                                                     )
+    
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " 对引力波波形 Psi4 的画图完成 "                        )
-    print( " Gravitational Wave Psi4 plot has been finished ", " detector number ", detector_number_i )
+    print( " The Weyl Conformal component Psi4 plot has been finished ", " detector number ", detector_number_i )
     print(                                                                                            )
+
+    if ( detector_number_i == (input_data.Detector_Number-1) ):
+        print(                                    )
+        print( " 对 Weyl 共形变量 Psi4 的画图完成 " )
+        print( " The Weyl conformal component Psi4 plots have been finished " )
+        print(                                                                 )
+
 
     return
 
@@ -668,18 +678,23 @@ def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_numbe
 
 def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
 
-    print(                                                       )
-    print( " 对时空 ADM 质量和角动量进行画图 "                       )
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Begin the ADM momentum plot for detector number =  ", detector_number_i )
-    print(                                                                           )
-
+    
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_ADMQs.dat")
+
+    if ( detector_number_i == 0 ):
+        print(                                                )
+        print( " 对时空 ADM 质量和角动量进行画图 "              )
+        print( " Plotting the ADM mass and angular momentum " )
+        print(                                                )
+        print( " 对应数据文件为 ",             file0 )
+        print( " corresponding data file = ", file0 )
+        print(                                      )
     
-    print( " 对应数据文件为 ", file0 )
-    print( " corresponding data file = ", file0 )
-    
+    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    print( " Begin the ADM momentum plot for detector number =  ", detector_number_i )
+
+
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
     
@@ -763,11 +778,15 @@ def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "ADM_Angular_Momentum_Dector_" + str(detector_number_i) + ".pdf") )
     
-    print(                                                     )
+
     print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " 对时空 ADM 质量和角动量的画图完成 "                    )
     print( " ADM momentum plot has been finished, detector number =  ", detector_number_i )
     print(                                                                                )
+
+    if ( detector_number_i == (input_data.Detector_Number-1) ):
+        print( " 对时空 ADM 质量和角动量的画图完成 " )
+        print( " The ADM mass and augular momentum plots have been finished " )
+        print(                                                                )
 
     return
     
@@ -781,17 +800,20 @@ def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
 
 def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
 
-    print(                                                   )
-    print( " 对哈密顿约束违反性况进行画图 "                      )
-    print( " 对第 ", input_level_number, " 层网格数据进行画图 " )
-    print( " Begin the constraint violation plot for grid level number =  ", input_level_number )
-    print(                                                                                      )
-    
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_constraint.dat")
-    
-    print( " 对应数据文件为 ", file0 )
-    print( " corresponding data file = ", file0 )
+
+    if ( input_level_number == 0 ):
+        print(                                                   )
+        print( " 对哈密顿约束违反性况进行画图 "                     )
+        print( " Plotting the constraint violation for each grid level" )
+        print(                                                          )
+        print( " 对应数据文件为 ",             file0 )
+        print( " corresponding data file = ", file0 )
+        print(                                      )
+
+    print( " 对第 ", input_level_number, " 层网格数据进行画图 " )
+    print( " Begin the constraint violation plot for grid level number =  ", input_level_number )
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -855,11 +877,15 @@ def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
     plt.grid(   color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
     plt.savefig( os.path.join(figure_outdir, "ADM_Constraint_Grid_Level_" + str(input_level_number) + ".pdf") )
     
-    print(                                                 )
-    print( " 第 ", input_level_number, " 层网格数据画图完成 " )
-    print( " 对哈密顿约束违反性况的画图完成 "                  )
+
+    print( " 第 ", input_level_number, " 层网格数据的约束违反情况的画图完成 " )
     print( " Constraint violation plot has been finished, grid level number = ", input_level_number )
     print(                                                                                          )
+    
+    if ( input_level_number == (input_data.grid_level-1) ):
+        print( " 对约束违反情况的画图完成 " )
+        print( " Constraint violation plot has been finished " )
+        print(                                                 )
 
     return
 
@@ -870,10 +896,22 @@ def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
 ####################################################################################
 
 # 单独使用的例子
+'''
+outdir = "./BBH_q=1"
 
-# outdir = "D:\AMSS-NCKU\AMSS-NCKU-Data\AMSSNCKU-xiaoqu-test5"
-# generate_puncture_orbit_plot(outdir, outdir)
+generate_puncture_orbit_plot(    outdir, outdir )
+generate_puncture_orbit_plot3D(  outdir, outdir )
+generate_puncture_distence_plot( outdir, outdir )
 
+for i in range(input_data.grid_level):
+    generate_constraint_check_plot( outdir, outdir, i )
+
+for i in range(input_data.Detector_Number):
+    generate_ADMmass_plot( outdir, outdir, i )
+
+for i in range(input_data.Detector_Number):
+    generate_gravitational_wave_psi4_plot( outdir, outdir, i )
+'''
 ####################################################################################
 
 
