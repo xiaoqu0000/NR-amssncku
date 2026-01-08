@@ -14,7 +14,7 @@ import numpy
 ## 设置程序运行目录和计算资源
 ## Setting MPI processes and the output file directory
 
-File_directory   = "GW150914_test"               ## 程序运行目录                          output file directory
+File_directory   = "GW150914"                    ## 程序运行目录                          output file directory
 Output_directory = "binary_output"               ## 存放二进制数据的子目录     binary data file directory
                                                  ## The file directory name should not be too long
 MPI_processes    = 8                             ## 想要调用的进程数目            number of mpi processes used in the simulation
@@ -42,7 +42,7 @@ Equation_Class           = "BSSN"                  ## Evolution Equation: choose
                                                    ## 这里选择 BSSN-EScalar，需要在后面设定 F(R) 理论的参数
                                                    ## If "BSSN-EScalar" is chosen, it is necessary to set other parameters below
 Initial_Data_Method      = "Ansorg-TwoPuncture"    ## 设置求解数值相对论初值的方法
-                                                   # initial data method: choose "Ansorg-TwoPuncture", "Lousto-Analytical", "Cao-Analytical", "KerrSchild-Analytical"
+                                                   ## initial data method: choose "Ansorg-TwoPuncture", "Lousto-Analytical", "Cao-Analytical", "KerrSchild-Analytical"
                                                    ## 注意：当前 BSSN-EM 的计算不支持用解析公式 Lousto-Analytical、Cao-Analytical、KerrSchild-Analytical
                                                    ##       当前 BSSN-EScalar 的计算不支持用解析公式 Lousto-Analytical、Cao-Analytical、KerrSchild-Analytical
 Time_Evolution_Method    = "runge-kutta-45"        ## 时间演化方法     time evolution method: choose "runge-kutta-45"
@@ -57,13 +57,13 @@ Finite_Diffenence_Method = "4th-order"             ## 有限差分方法     fin
 ## Setting the time evolutionary information
 
 Start_Evolution_Time     = 0.0                    ## 起始演化时间   start evolution time t0
-Final_Evolution_Time     = 10.0                 ## 最终演化时间   final evolution time t1
+Final_Evolution_Time     = 200.0                  ## 最终演化时间   final evolution time t1
 Check_Time               = 100.0
 Dump_Time                = 100.0                  ## 每隔一定时间间隔储存数据   time inteval dT for dumping binary data
 D2_Dump_Time             = 100.0                  ## dump the ascii data for 2d surface after dT'
 Analysis_Time            = 0.1                    ## dump the puncture position and GW psi4 after dT"
 Evolution_Step_Number    = 10000000               ## 最大迭代次数       stop the calculation after the maximal step number
-Courant_Factor           = 0.5                   ## Courant 因子（决定每一步时间演化的时间间隔）    Courant Factor
+Courant_Factor           = 0.4                    ## Courant 因子（决定每一步时间演化的时间间隔）    Courant Factor
 Dissipation              = 0.15                   ## 耗散因子                                                                                    Kreiss-Oliger Dissipation Strength
 
 #################################################
@@ -84,15 +84,15 @@ moving_grid_level = grid_level - static_grid_level   ## 可移动格点的层数
 analysis_level    = 0
 refinement_level  = 3                                ## 从该层开始进行时间细化        time refinement start from this grid level
 
-largest_box_xyz_max = [360.0, 360.0, 360.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
+largest_box_xyz_max = [320.0, 320.0, 320.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
                                                      ## not ne cess ary to be cubic for "Patch" grid s tructure
                                                      ## need to be a cubic box for "Shell-Patch" grid structure
 largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
 
-static_grid_number = 80                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
+static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
                                                      ## grid points of each static AMR grid (in x direction)
                                                      ## (grid points in y and z directions are automatically adjusted)
-moving_grid_number = 40                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
+moving_grid_number = 48                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
 shell_grid_number  = [32, 32, 100]                   ## 设置最外层球状网格（shell patch）的格点数目     grid points of Shell-Patch grid
                                                      ## 以 phi、theta、r 的顺序给定                                        in (phi, theta, r) direction
 devide_factor      = 2.0                             ## 设置相邻两层网格分辨率的比例（不要轻易改变）
@@ -101,7 +101,7 @@ devide_factor      = 2.0                             ## 设置相邻两层网格
 static_grid_type   = 'Linear'                        ## 设置固定格点的类型，可选 'Linear'      AMR static grid structure , only supports "Linear"
 moving_grid_type   = 'Linear'                        ## 设置可移动格点的类型，可选 'Linear'    AMR moving grid structure , only supports "Linear"
 
-quarter_sphere_number = 80                          ## 1/4 球面积分的格点数目
+quarter_sphere_number = 80                           ## 1/4 球面积分的格点数目
                                                      ## grid number of 1/4 s pher ical surface
                                                      ## (which is needed for evaluating the spherical surface integral)
 

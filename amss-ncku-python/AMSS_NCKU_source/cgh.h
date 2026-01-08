@@ -38,7 +38,7 @@ public:
 
 protected:
    int ingfs, fngfs;
-   static constexpr double ratio = 0.8;
+   static constexpr double ratio = 0.75;
    int trfls;
 
 public:

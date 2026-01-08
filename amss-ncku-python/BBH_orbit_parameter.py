@@ -914,7 +914,7 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     ## 将结果写入文件，供 Einstein Toolkit 和 AMSS-NCKU 程序使用
 
     # file1 = open( "BBH_parameter.output", "w" )
-    file1 = open( os.path.join(input_data.File_directionary, "BBH_parameter.output"), "w")
+    file1 = open( os.path.join(input_data.File_directory, "BBH_parameter.output"), "w")
 
     print(                                           file=file1 )
     print( " 双星系统轨道参数 ",                      file=file1 )
