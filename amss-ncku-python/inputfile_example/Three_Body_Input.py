@@ -13,13 +13,13 @@ import numpy   ## 导入 numpy 包
 
 ## 设置程序运行目录和计算资源
 
-File_directionary   = "xiaoqu_Results_test3body"    ## 程序运行目录
-Output_directionary = "output_file"                 ## 存放二进制数据的子目录
-MPI_processes       = 16                            ## 想要调用的进程数目
+File_directory   = "xiaoqu_test3body"            ## 程序运行目录
+Output_directory = "binary_output"               ## 存放二进制数据的子目录
+MPI_processes    = 16                            ## 想要调用的进程数目
 
-GPU_Calculation     = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
-CPU_Part            = 0.5
-GPU_Part            = 0.5
+GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
+CPU_Part         = 0.5
+GPU_Part         = 0.5
 
 #################################################
 
@@ -56,8 +56,8 @@ Dump_Time                = 50.0                   ## 每隔一定时间间隔储
 D2_Dump_Time             = 300.0
 Analysis_Time            = 0.1
 Evolution_Step_Number    = 10000000               ## 时间迭代次数
-Courant_Factor           = 0.5                    ## Courant 因子（决定每一步时间演化的时间间隔）
-Dissipation              = 0.2                    ## 耗散因子
+Courant_Factor           = 0.4                    ## Courant 因子（决定每一步时间演化的时间间隔）
+Dissipation              = 0.15                   ## 耗散因子
 
 #################################################
 

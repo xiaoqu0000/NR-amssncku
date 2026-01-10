@@ -13,13 +13,13 @@ import numpy   ## 导入 numpy 包
 
 ## 设置程序运行目录和计算资源
 
-File_directionary   = "xiaoqu_Results_GW150914_testZ4C"  ## 程序运行目录
-Output_directionary = "output_file"                 ## 存放二进制数据的子目录
-MPI_processes       = 16                            ## 想要调用的进程数目
+File_directory   = "GW150914_Z4C"                ## 程序运行目录
+Output_directory = "binary_output"               ## 存放二进制数据的子目录
+MPI_processes    = 16                            ## 想要调用的进程数目
 
-GPU_Calculation     = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
-CPU_Part            = 0.5
-GPU_Part            = 0.5
+GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
+CPU_Part         = 0.5
+GPU_Part         = 0.5
 
 #################################################
 
@@ -56,7 +56,7 @@ Dump_Time                = 50.0                   ## 每隔一定时间间隔储
 D2_Dump_Time             = 300.0
 Analysis_Time            = 0.1
 Evolution_Step_Number    = 10000000               ## 时间迭代次数
-Courant_Factor           = 0.5                    ## Courant 因子（决定每一步时间演化的时间间隔）
+Courant_Factor           = 0.4                    ## Courant 因子（决定每一步时间演化的时间间隔）
 Dissipation              = 0.1                    ## 耗散因子
 
 #################################################
@@ -76,7 +76,7 @@ moving_grid_level = grid_level - static_grid_level   ## 可移动格点的层数
 analysis_level    = 0
 refinement_level  = 4                                ## 从该层开始进行时间细化
 
-largest_box_xyz_max = [500.0, 500.0, 500.0]          ## 设置最外层格点的坐标最大值
+largest_box_xyz_max = [600.0, 600.0, 600.0]          ## 设置最外层格点的坐标最大值
 largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
 
 static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
