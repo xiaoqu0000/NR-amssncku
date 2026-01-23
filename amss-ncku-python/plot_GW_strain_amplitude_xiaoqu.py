@@ -458,9 +458,9 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
     ## 设置最小频率截断
     orbital_frequency_min       = numpy.min( orbital_frequency )
     gravitational_frequency_min = 2.0 * orbital_frequency_min     ## 四极辐射中，引力波频率约为轨道频率的两倍
-    print( " Orbital frequency estimate:            f_orbital_min =", orbital_frequency_min, file=file_cut )
-    print( " Gravitational Wave frequency estimate: f_GW_min      =", orbital_frequency_min, file=file_cut )
-    print(                                                                                   file=file_cut )
+    print( " Orbital frequency estimate:            f_orbital_min =", orbital_frequency_min,       file=file_cut )
+    print( " Gravitational Wave frequency estimate: f_GW_min      =", gravitational_frequency_min, file=file_cut )
+    print(                                                                                         file=file_cut )
 
     ## 设置最小频率截断
     frequency_cut = gravitational_frequency_min

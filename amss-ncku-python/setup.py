@@ -28,7 +28,7 @@ if ( input_data.Symmetry=="octant-symmetry" ):
     maximal_domain_size_static_x = numpy.array( [ 0.0, input_data.largest_box_xyz_max[0] ] )
     maximal_domain_size_static_y = numpy.array( [ 0.0, input_data.largest_box_xyz_max[1] ] )
     maximal_domain_size_static_z = numpy.array( [ 0.0, input_data.largest_box_xyz_max[2] ] )
-elif( input_data.Symmetry=="octant-symmetry" ):
+elif( input_data.Symmetry=="equatorial-symmetry" ):
     maximal_domain_size_static_x = numpy.array( [ input_data.largest_box_xyz_min[0], input_data.largest_box_xyz_max[0] ] )
     maximal_domain_size_static_y = numpy.array( [ input_data.largest_box_xyz_min[1], input_data.largest_box_xyz_max[1] ] )
     maximal_domain_size_static_z = numpy.array( [ 0.0, input_data.largest_box_xyz_max[2] ] )
