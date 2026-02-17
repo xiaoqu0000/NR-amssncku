@@ -4,10 +4,23 @@
 ## AMSS-NCKU 数值相对论启动程序
 ## 小曲
 ## 2024/03/19
-## 2025/12/09 修改
+## 2026/02/09 修改
 ##
 ##################################################################
 
+
+##################################################################
+
+## 程序即将开始，选择屏幕终端的输出语言
+
+import logo
+import main_program_function
+
+## 输出本程序的 logo
+logo.print_logo()
+
+## 让用户选择一语言    
+input_language = main_program_function.setting_language() 
 
 ##################################################################
 
@@ -15,24 +28,16 @@
 
 import print_information
 
-print_information.print_program_introduction()
+if ( input_language == "Chinese" ):
+    print_information.print_program_introduction_Chinese()
+elif ( input_language == "English" ):
+    print_information.print_program_introduction_English()
 
-##################################################################
 
-## 程序开始运行前的提示
-
-print(                                                                                )
-print( " 计算即将开始，请确认在 AMSS_NCKU_Input.py 中设置了正确的参数，按回车继续！！！  "     )
-print( " 如果输入参数没有设置好，Ctrl+C 退出，调整 AMSS_NCKU_Input.py 中的输入参数！！！ "    )
-print(                                                                                )
-print( " Simulation will be started, please confirm you have set the correct parameters in the script file " )
-print( " AMSS_NCKU_Input.py "                                                                                )
-print( " If parameters have been set correctly, press Enter to continue !!!  "                               )
-print( " If you have not set parameters，press Ctrl+C to abort the simulation and adjust the parameters "    )
-print( " in script file AMSS_NCKU_Input.py !!! "                                                             )
-     
-## 设定一个输入（回车），以便程序下一步运行
-inputvalue = input()           
+## 屏幕输出程序开始运行前的提示
+print_information.print_begin_program( input_language )
+## 如果同意继续运算，则输入回车
+inputvalue = input()   ## 设定一个输入（回车），以便程序下一步运行         
 print()
 
 
@@ -49,53 +54,13 @@ import AMSS_NCKU_Input as input_data
 
 import os
 import shutil
-import sys
-import time
+
 
 ## 根据输入文件来设置文件目录
 File_directory = os.path.join(input_data.File_directory)   
 
-## 如果设定的输出目录存在，则根据用户的选择看是否继续计算
-if os.path.exists(File_directory):
-    print(                                                                                           )
-    print( " 设定的输出目录存在，是否同意覆盖当前目录？ "                                                  )
-    print( " 如果同意覆当前目录，请输入'continue'继续计算 "                                               )
-    print( " 如果不同意覆当前目录，请输入'stop'退出计算，并在输入文件 AMSS_NCKU_Input.py 中重新设置输出目录 "  )
-    print( " Output dictionary has been existed !!!  "                                                              )
-    print( " If you want to overwrite the existing file directory, please input 'continue' in the terminal !! "     ) 
-    print( " If you want to retain the existing file directory, please input 'stop' in the terminal to stop the "   ) 
-    print( " simulation. Then you can reset the output dictionary in the input script file AMSS_NCKU_Input.py !!! " )
-    print(                                                                                                          )
-    ## 设定输入，是否覆盖原有文件夹
-    while True:
-        try:
-            inputvalue = input()
-            ## 如果同意覆盖当前目录文件目录，则退出计算，同时去除当前文件目录
-            if ( inputvalue == "continue" ):
-                print(                                  )
-                print( " 继续计算 "                      )
-                print( " Continue the calculation !!! " )
-                print(                                  )
-                break  # 输入合法，跳出循环
-            ## 如果不同意覆盖当前目录文件目录，则退出计算，同时保留当前文件目录 
-            elif ( inputvalue == "stop" ):
-                print(                                 )
-                print( " 退出计算 "                     )
-                print( " Stop the calculation !!! "    )
-                print(                                 )
-                ## 退出整个程序
-                sys.exit() 
-            ## 如果用户没有按照要求输入，则要求用户重新输入 
-            else:
-                print(                                                    )
-                print( " 请输入你的选择: 'continue' 或 'stop' !! "           )
-                print( " Please input your choice !!! "                   )
-                print( " Input 'continue' or 'stop' in the terminal !!! " )
-        except ValueError:
-            print(                                   )
-            print( " 请输入你的选择: 'continue' 或 'stop' !! "           )
-            print( " Please input your choice !!! "                   )
-            print( " Input 'continue' or 'stop' in the terminal !!! " )
+## 检查设定的输出目录是否存在，并根据用户的输入决定继续计算还是终止计算
+main_program_function.continue_or_stop( File_directory, input_language )
         
 ## 如果文件目录已经存在，则去除它
 shutil.rmtree(File_directory, ignore_errors=True)
@@ -106,7 +71,7 @@ os.mkdir(File_directory)
 ## 复制 python 输入文件到程序运行目录
 shutil.copy("AMSS_NCKU_Input.py", File_directory)
 
-# 生成文件目录，用来存放各类输出文件
+## 生成文件目录，用来存放各类输出文件
 
 output_directory = os.path.join(File_directory, "AMSS_NCKU_output")
 os.mkdir(output_directory)
@@ -117,10 +82,8 @@ os.mkdir(binary_results_directory)
 figure_directory = os.path.join(File_directory, "figure")
 os.mkdir(figure_directory)
 
-print(                                            )
-print( " 生成文件目录完成 "                        )
-print( " Output directionary has been generated " )
-print(                                            )
+## 屏幕输出文件目录已生成
+print_information.print_make_directory( input_language )
 
 
 ##################################################################
@@ -129,94 +92,60 @@ print(                                            )
 
 import setup
 
+setup_data = setup.setup( input_language ) 
+
 ## 输出相关的参数信息
+if ( input_language == "Chinese" ):
+    setup.print_input_data_Chinese( setup_data, File_directory )
+elif ( input_language == "English" ):
+    setup.print_input_data_English( setup_data, File_directory )
 
-setup.print_input_data( File_directory )
-setup.generate_AMSSNCKU_input()
 
-print(                                                                                           )
-print( " 检查网格大小和分辨率是否满足要求 "                                                           )
-print( " 如果网格大小和分辨率不合适，Ctrl+C 退出，调整网格层数和每层网格格点数目！！！ "                    )
-print( " 如果网格大小和分辨率设定无误，按回车继续！！！ "                                               )
-print(                                                                                           )
-print( " Please check whether the grid boxes and their resolution is OK "                        )
-print( " If the grid boxes and their resolution is not setting properly, press Ctrl+C to abort " )
-print( " the simulation. Change the grid level structure and grid points !!! "                   )
-print( " If the grid boxes and their resolution is appropriate, press Enter to continue !!!  "   )
+## 如果分辨率满足要求，则进行下一步计算
+print_information.print_whether_grid_is_satisfied( input_language )
 inputvalue = input()  ## 设定一个输入（回车），以便程序下一步运行
 print()
 
-start_time = time.time()  # 记录开始时间
+##################################################################
 
-setup.print_puncture_information()
+## 记录程序开始时间
 
+import time
+
+start_time = time.time()  # 记录程序开始时间
 
 ##################################################################
 
-## 根据设定的参数生成 AMSS-NCKU 程序的输入文件
+## 自动生成 AMSS-NCKU C++ 程序的输入文件
 
-print(                                                                                   )
-print( " 正在生成 AMSS-NCKU 程序的输入文件 "                                                )  
-print( " Automatically generating the input parfile for AMSS-NCKU C++ program ABE.EXE. " ) 
-print(                                                                                   ) 
+## 屏幕输出 puncture 的信息
+## setup.print_puncture_information( input_language )
 
-## 根据格点信息生成 cgh 的相关输入
+## 根据设定的参数生成 AMSS-NCKU 程序的输入文件   
+setup.generate_AMSSNCKU_input( input_language ) 
+
 
 import numerical_grid        
 
-numerical_grid.append_AMSSNCKU_cgh_input()  
+## 生成一个初始时刻的AMR网格
+initial_AMR_grid_data, puncture_data = numerical_grid.generate_initial_AMR_grid( input_language )
 
-print(                                                                                 )
-print( " 完成 AMSS-NCKU 程序的输入文件 "                                                  )    
-print( " 但是 AMSS-NCKU ABE 中 TwoPuncture 相关的输入要后几步运行后追加 "                   )
-print( " The input parfile for AMSS-NCKU C++ executable file ABE has been generated. " )    
-print( " However, the input relevant to TwoPuncture need to be appended later. "       )
-print(                                                                                 )
-
-
-##################################################################
+## 根据格点信息生成 cgh 的相关输入
+numerical_grid.append_AMSSNCKU_cgh_input( input_language, initial_AMR_grid_data )  
 
 ## 画出初始的格点设置
+numerical_grid.plot_initial_grid( input_language, initial_AMR_grid_data )
 
-print(                                                      )
-print( " 正在画出初始格点的图像 "                              ) 
-print( " Schematically plot the numerical grid structure. " ) 
-print(                                                      )
-
-numerical_grid.plot_initial_grid()
-
-
-##################################################################
 
 ##  根据算法和参数生成 AMSS-NCKU 的宏文件
-
-print(                                                                                   ) 
-print( " 根据算法和参数生成 AMSS-NCKU 的宏文件 "                                             )       
-print( " Automatically generating the macro file for AMSS-NCKU C++ executable file ABE " ) 
-print( " (Based on the finite-difference numerical scheme) "                             )
-print(                                                                                   )
-
-import generate_macrodef
-
-generate_macrodef.generate_macrodef_h()
-print( " AMSS-NCKU 程序的宏文件 macrodef.h 已生成 "                       )   
-print( " The macro file for AMSS-NCKU macrodef.h has been generated. " )
-     
-generate_macrodef.generate_macrodef_fh()
-print( " AMSS-NCKU 程序的宏文件 macrodef.fh 已生成 "                       )  
-print( " The macro file for AMSS-NCKU macrodef.fh has been generated. " )
-
+main_program_function.generate_macrodef_file( input_language )
 
 ##################################################################
 
-##  根据用户的要求编译 AMSS-NCKU 程序
+## 根据用户的要求编译 AMSS-NCKU 程序
 
-print(                                                         )
-print( " 准备根据要求编译并运行 AMSS-NCKU 程序 "                   )
-print( " Compiling the AMSS-NCKU code based on macro files "   )
-print(                                                         )
-#inputvalue = input()           
-#print()
+## 屏幕输出正在编译 AMSS-NCKU
+print_information.print_compile_AMSS_NCKU( input_language )
 
 AMSS_NCKU_source_path = "AMSS_NCKU_source"
 AMSS_NCKU_source_copy = os.path.join(File_directory, "AMSS_NCKU_source_copy")
@@ -230,11 +159,7 @@ AMSS_NCKU_source_copy = os.path.join(File_directory, "AMSS_NCKU_source_copy")
 
 if not os.path.exists(AMSS_NCKU_source_path):
     os.makedirs(AMSS_NCKU_source_path)
-    print( " 缺少 AMSS-NCKU 源文件，请将代码文件复制到 AMSS_NCKU_source 文件夹，按回车继续！！！ " )
-    print( " The AMSS-NCKU source files are incomplete, please copy all source code files to the dictionary ./AMSS_NCKU_source. " )
-    print( " Press Enter to continue!!! "                                                                                         )
-    ## 设定一个输入（回车），以便程序下一步运行
-    inputvalue = input()
+    print_information.print_compile_AMSS_NCKU_debug( input_language )  ## 输出编译出错的信息
     
 ###############################
 
@@ -266,12 +191,12 @@ import makefile_and_run
 os.chdir(AMSS_NCKU_source_copy)
  
 ## 编译 AMSS-NCKU 的主程序 ABE/ABEGPU
-makefile_and_run.makefile_ABE()
+makefile_and_run.makefile_ABE( input_language )
 
 ## 如果初值方法选为 TwoPuncture，编译可执行文件 TwoPunctureABE 
 
 if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ): 
-    makefile_and_run.makefile_TwoPunctureABE()
+    makefile_and_run.makefile_TwoPunctureABE( input_language )
     
 ###########################
 
@@ -291,12 +216,7 @@ elif (input_data.GPU_Calculation == "yes"):
     ABE_file = os.path.join(AMSS_NCKU_source_copy, "ABEGPU")
 
 if not os.path.exists( ABE_file ):
-    print(                                                                                                  )
-    print( " 缺少 AMSS-NCKU 可执行文件 ABE/ABEGPU，请将 AMSS_NCKU_source 编译，编译完成后按回车继续！！！ "        )
-    print( " Lack of AMSS-NCKU executable file ABE/ABEGPU, please recompile the ABE/ABEGPU in dictionary " )
-    print( " AMSS_NCKU_source manually!!!   When recompile is finished, Press Enter to continue!!! "       )
-    ## 设定一个输入（回车），以便程序下一步运行
-    inputvalue = input() 
+    print_information.print_no_ABE_error( input_language )  ## 屏幕输出不存在 ABE/ABEGPU 的报错信息
 
 ## 复制可执行文件 ABE 到程序运行目录
 shutil.copy2(ABE_file, output_directory)
@@ -310,11 +230,7 @@ TwoPuncture_file = os.path.join(AMSS_NCKU_source_copy, "TwoPunctureABE")
 if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
     if not os.path.exists( TwoPuncture_file ):
-        print(                                                                                                                  )
-        print( " 缺少 AMSS-NCKU 可执行文件 TwoPunctureABE，请将 AMSS_NCKU_source 中的 TwoPunctureABE 编译，编译完成后按回车继续！！！ " )
-        print( " Lack of AMSS-NCKU executable file TwoPunctureABE, please recompile the TwoPunctureABE in dictionary  "        ) 
-        print( " AMSS_NCKU_source manually!!!   When recompile is finished, Press Enter to continue!!! "                       )
-        inputvalue = input() 
+        print_information.print_no_TwoPunture_error( input_language ) 
 
     ## 复制可执行文件 TwoPunctureABE 到程序运行目录
     shutil.copy2(TwoPuncture_file, output_directory)
@@ -327,25 +243,18 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 ## 如果初值方法选为 TwoPuncture，生成 TwoPuncture 的输入文件
 
 if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
-
-    print(                                                  )
-    print( " 初始值类型选取为  Ansorg-Twopuncture"            )
-    print( " Initial data is chosen as Ansorg-Twopuncture" )
-    print(                                                 )
     
-    print(                                                                                                         )
-    print( " 正在生成 AMSS-NCKU TwoPuncture 程序的输入文件 "                                                          )  
-    print( " Automatically generating the input parfile for AMSS-NCKU TwoPuncture executable file TwoPunctureABE " )
-    print(                                                                                                         ) 
+    ## 屏幕输出生成 TwoPuncture 输入文件
+    print_information.print_generate_TwoPunture_input( input_language )
     
     import generate_TwoPuncture_input
     
-    generate_TwoPuncture_input.generate_AMSSNCKU_TwoPuncture_input()
+    ## 根据双星模型设定 TwoPuncture 需要的数据
+    ## puncture_data = generate_TwoPuncture_input.generate_puncture_input_data( input_language )
     
-    print(                                                                                              )
-    print( " 完成 AMSS-NCKU TwoPuncture 程序的输入文件 "                                                   )  
-    print( " The input parfile for AMSS-NCKU TwoPuncture executable file TwoPunctureABE is generated. " )
-    print(                                                                                              )
+    ## 生成 TwoPuncture 的输入文件
+    generate_TwoPuncture_input.generate_AMSSNCKU_TwoPuncture_input( input_language, puncture_data )
+    print_information.print_finish_TwoPunture_input( input_language )   ## 屏幕输出 TwoPuncture 的输入文件已完成
     
     ## 生成的 AMSS-NCKU 输入文件名
     AMSS_NCKU_TwoPuncture_inputfile      = 'AMSS-NCKU-TwoPuncture.input'
@@ -368,7 +277,7 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
     ## 运行 TwoPuncture 程序
     
-    makefile_and_run.run_TwoPunctureABE()
+    makefile_and_run.run_TwoPunctureABE( input_language )
     
     ###########################
     
@@ -382,7 +291,7 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
 import renew_puncture_parameter
     
-renew_puncture_parameter.append_AMSSNCKU_BSSN_input(File_directory, output_directory)
+renew_puncture_parameter.append_AMSSNCKU_BSSN_input( puncture_data, File_directory, output_directory )
 
 
 ## 生成的 AMSS-NCKU 输入文件名
@@ -392,26 +301,20 @@ AMSS_NCKU_inputfile_path = os.path.join(File_directory, AMSS_NCKU_inputfile)
 ## 复制并重命名文件
 shutil.copy2( AMSS_NCKU_inputfile_path, os.path.join(output_directory, 'input.par') )
 
-
-print(                                                                          )
-print( " 成功将生成的 AMSS-NCKU 程序输入文件复制到运行目录 "                         )    
-print( " Successfully copy all AMSS-NCKU input parfile to target dictionary. " )  
-print(                                                                         )
+## 屏幕输出成功拷贝参数文件
+print_information.copy_input_parfile( input_language )
     
 
 ##################################################################
 
-##  启动 AMSS-NCKU 程序
-
-print()
-## print(" 准备启动 AMSS-NCKU 程序，按回车继续！！！ ")
-## inputvalue = input()           
-print()
+## 准备启动 AMSS-NCKU 的可执行程序 ABE/ABEGPU
+print_information.print_begin_ABE( input_language )
 
 ## 先切换到目标文件夹
 os.chdir( output_directory )
 
-makefile_and_run.run_ABE()
+## 执行 ABE/ABEGPU
+makefile_and_run.run_ABE( input_language )
 
 ## 改变当前工作目录到上两级目录
 os.chdir('..')
@@ -457,53 +360,48 @@ elif (input_data.Equation_Class == "BSSN-EScalar"):
 
 ##  对 AMSS-NCKU 程序运行结果进行画图
 
-print(                                                                          )
-print( " 准备对 AMSS-NCKU 程序运行结果进行画图 "                                    )  
-print( " Plotting the txt and binary results data in the AMSS-NCKU simulation " ) 
-print(                                                                          )
-
-
 import plot_xiaoqu
 import plot_GW_strain_amplitude_xiaoqu
 
+## 屏幕输出开始画图
+print_information.print_begin_plot( input_language )
+
 ## 画出黑洞轨迹图
-plot_xiaoqu.generate_puncture_orbit_plot(   binary_results_directory, figure_directory )
-plot_xiaoqu.generate_puncture_orbit_plot3D( binary_results_directory, figure_directory )
+plot_xiaoqu.generate_puncture_orbit_plot(   input_language, binary_results_directory, figure_directory )
+plot_xiaoqu.generate_puncture_orbit_plot3D( input_language, binary_results_directory, figure_directory )
 
 ## 画出黑洞间距随时间的变化图
-plot_xiaoqu.generate_puncture_distence_plot( binary_results_directory, figure_directory )
+plot_xiaoqu.generate_puncture_distence_plot( input_language, binary_results_directory, figure_directory )
 
 ## 画出引力波波形图
 for i in range(input_data.Detector_Number):
-    plot_xiaoqu.generate_gravitational_wave_psi4_plot( binary_results_directory, figure_directory, i )
-    plot_GW_strain_amplitude_xiaoqu.generate_gravitational_wave_amplitude_plot( binary_results_directory, figure_directory, i )
+    plot_xiaoqu.generate_gravitational_wave_psi4_plot( input_language,binary_results_directory, figure_directory, i )
+    plot_GW_strain_amplitude_xiaoqu.generate_gravitational_wave_amplitude_plot( input_language, binary_results_directory, figure_directory, i )
 
 ## 画出时空 ADM 质量的变化图
 for i in range(input_data.Detector_Number):
-    plot_xiaoqu.generate_ADMmass_plot( binary_results_directory, figure_directory, i )
+    plot_xiaoqu.generate_ADMmass_plot( input_language, binary_results_directory, figure_directory, i )
 
 ## 画出哈密顿约束违反性况的变化图
 for i in range(input_data.grid_level):
-    plot_xiaoqu.generate_constraint_check_plot( binary_results_directory, figure_directory, i )
+    plot_xiaoqu.generate_constraint_check_plot( input_language, binary_results_directory, figure_directory, i )
 
 ## 对储存的二进制数据画出图像
-plot_xiaoqu.generate_binary_data_plot( binary_results_directory, figure_directory )
+plot_xiaoqu.generate_binary_data_plot( input_language, binary_results_directory, figure_directory )
+
+##################################################################
+
+## 输出程序运行时间
 
 end_time = time.time()                # 记录结束时间
 elapsed_time = end_time - start_time  # 计算运行时间
 
-print(                                                 )
-print( f" 程序运行时间 = {elapsed_time} 秒 "             )
-print( f" This Program Cost = {elapsed_time} Seconds " )
-print(                                                 )
+## 屏幕输出程序运行时间
+print_information.print_time_cost( elapsed_time, input_language )
 
 
-##################################################################
-
-print(                                                                                    )
-print( " 程序顺利结束，谢谢您的使用 "                                                         )
-print( " The AMSS-NCKU-Python simulation is successfully finished, thanks for using !!! " )
-print(                                                                                    )
+## 屏幕输出程序结束
+print_information.print_program_end( input_language )
 
 ##################################################################
 

@@ -20,12 +20,16 @@ import subprocess
 
 ## 这个函数编译 AMSS-NCKU 主程序 ABE
 
-def makefile_ABE():
+def makefile_ABE( input_language ):
 
-    print(                                                        )
-    print( " 正在编译 AMSS-NCKU 程序 ABE/ABEGPU "                   )   
-    print( " Compiling the AMSS-NCKU executable file ABE/ABEGPU " ) 
-    print(                                                        )
+    if ( input_language == "Chinese" ):
+        print(                                      )
+        print( " 正在编译 AMSS-NCKU 程序 ABE/ABEGPU " ) 
+        print(                                      )
+    elif ( input_language == "English" ):  
+        print(                                                        )
+        print( " Compiling the AMSS-NCKU executable file ABE/ABEGPU " ) 
+        print(                                                        )
 
     ## 编译命令
     if (input_data.GPU_Calculation == "no"):
@@ -33,9 +37,12 @@ def makefile_ABE():
     elif (input_data.GPU_Calculation == "yes"):
         makefile_command  = "make -j4" + " ABEGPU"
     else:
-        print( " CPU/GPU 计算设置出错 "                             )
-        print( " CPU/GPU numerical calculation setting is wrong " )
-        print(                                                    )
+        if ( input_language == "Chinese" ):
+            print( " CPU/GPU 计算设置出错 " )
+            print(                         )
+        elif ( input_language == "English" ):
+            print( " CPU/GPU numerical calculation setting is wrong " )
+            print(                                                    )
  
     ## 使用subprocess.Popen来执行命令，并实时打印输出
     makefile_process = subprocess.Popen(makefile_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -49,10 +56,14 @@ def makefile_ABE():
     if makefile_return_code != 0:
         raise subprocess.CalledProcessError(makefile_return_code, makefile_command)
         
-    print(                                                                  )
-    print( " AMSS-NCKU 程序 ABE 编译完成"                                     ) 
-    print( " Compilation of the AMSS-NCKU executable file ABE is finished " ) 
-    print(                                                                  )
+    if ( input_language == "Chinese" ):
+        print(                               )
+        print( " AMSS-NCKU 程序 ABE 编译完成" ) 
+        print(                               )
+    elif ( input_language == "English" ):
+        print(                                                                  )
+        print( " Compilation of the AMSS-NCKU executable file ABE is finished " ) 
+        print(                                                                  )
     
     return
         
@@ -64,12 +75,16 @@ def makefile_ABE():
 
 ## 这个函数编译 AMSS-NCKU 的 TwoPuncture 程序 TwoPunctureABE
 
-def makefile_TwoPunctureABE():
+def makefile_TwoPunctureABE( input_language ):
 
-    print(                                                            )
-    print( " 正在编译 AMSS-NCKU 程序 TwoPunctureABE "                   ) 
-    print( " Compiling the AMSS-NCKU executable file TwoPunctureABE " )
-    print(                                                            )
+    if ( input_language == "Chinese" ):
+        print(                                          )
+        print( " 正在编译 AMSS-NCKU 程序 TwoPunctureABE " ) 
+        print(                                          )
+    elif ( input_language == "English" ):
+        print(                                                            )
+        print( " Compiling the AMSS-NCKU executable file TwoPunctureABE " )
+        print(                                                            )
     
     ## 编译命令
     makefile_command = "make" + " TwoPunctureABE"
@@ -86,10 +101,14 @@ def makefile_TwoPunctureABE():
     if makefile_return_code != 0:
         raise subprocess.CalledProcessError(makefile_return_code, makefile_command)
         
-    print(                                                                             )
-    print( " AMSS-NCKU 程序 TwoPunctureABE 编译完成"                                     )     
-    print( " Compilation of the AMSS-NCKU executable file TwoPunctureABE is finished " )
-    print(                                                                             )
+    if ( input_language == "Chinese" ):
+        print(                                          )
+        print( " AMSS-NCKU 程序 TwoPunctureABE 编译完成" ) 
+        print(                                          )
+    elif ( input_language == "English" ):   
+        print(                                                                             ) 
+        print( " Compilation of the AMSS-NCKU executable file TwoPunctureABE is finished " )
+        print(                                                                             )
     
     return
     
@@ -101,12 +120,16 @@ def makefile_TwoPunctureABE():
 
 ## 这个函数运行 AMSS-NCKU 主程序 ABE
 
-def run_ABE():
+def run_ABE( input_language ):
 
-    print(                                                      )
-    print( " 正在运行 AMSS-NCKU 主程序 ABE/ABEGPU "               )      
-    print( " Running the AMSS-NCKU executable file ABE/ABEGPU " ) 
-    print(                                                      )
+    if ( input_language == "Chinese" ):
+        print(                                        )
+        print( " 正在运行 AMSS-NCKU 主程序 ABE/ABEGPU " ) 
+        print(                                        )
+    elif ( input_language == "English" ): 
+        print(                                                      )    
+        print( " Running the AMSS-NCKU executable file ABE/ABEGPU " ) 
+        print(                                                      )
 
     ## 定义要运行的命令，要使用 str 将其它转换为字符串
     
@@ -132,10 +155,14 @@ def run_ABE():
     ## 等待进程结束
     mpi_return_code = mpi_process.wait()
     
-    print(                                           )
-    print( " AMSS-NCKU 主程序 ABE/ABEGPU 运行结束 "    ) 
-    print( " The ABE/ABEGPU simulation is finished " ) 
-    print(                                           )
+    if ( input_language == "Chinese" ):
+        print(                                         )
+        print( " AMSS-NCKU 主程序 ABE/ABEGPU 运行结束 " ) 
+        print(                                         )
+    elif ( input_language == "English" ): 
+        print(                                           )
+        print( " The ABE/ABEGPU simulation is finished " ) 
+        print(                                           )
     
     return
 
@@ -147,12 +174,16 @@ def run_ABE():
 
 ## 这个函数运行 AMSS-NCKU 的 TwoPuncture 程序 TwoPunctureABE
 
-def run_TwoPunctureABE():
+def run_TwoPunctureABE( input_language ):
 
-    print(                                                          )
-    print( " 正在运行 AMSS-NCKU 程序 TwoPunctureABE "                 )   
-    print( " Running the AMSS-NCKU executable file TwoPunctureABE " ) 
-    print(                                                          )
+    if ( input_language == "Chinese" ):
+        print(                                          )
+        print( " 正在运行 AMSS-NCKU 程序 TwoPunctureABE " )
+        print(                                          ) 
+    elif ( input_language == "English" ): 
+        print(                                                          ) 
+        print( " Running the AMSS-NCKU executable file TwoPunctureABE " ) 
+        print(                                                          )
     
     ## 定义要运行的命令，要使用 str 将其它转换为字符串
     
@@ -176,10 +207,14 @@ def run_TwoPunctureABE():
     ## 等待进程结束
     TwoPuncture_command_return_code = TwoPuncture_process.wait()
     
-    print(                                               )
-    print( " AMSS-NCKU 程序 TwoPunctureABE 运行结束 "      ) 
-    print( " The TwoPunctureABE simulation is finished " ) 
-    print(                                               )
+    if ( input_language == "Chinese" ):
+        print(                                           )
+        print( " AMSS-NCKU 程序 TwoPunctureABE 运行结束 " )
+        print(                                           ) 
+    elif ( input_language == "English" ):
+        print(                                               )
+        print( " The TwoPunctureABE simulation is finished " ) 
+        print(                                               )
     
     return
 

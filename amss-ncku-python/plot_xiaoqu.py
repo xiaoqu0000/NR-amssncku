@@ -24,7 +24,7 @@ import AMSS_NCKU_Input as input_data
 
 ## 该函数根据二进制数据画出所有二维图
 
-def generate_binary_data_plot( binary_outdir, figure_outdir ):
+def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
 
     # 生成若干文件夹存放图片
 
@@ -37,12 +37,19 @@ def generate_binary_data_plot( binary_outdir, figure_outdir ):
     contour_plot_outdir = os.path.join( figure_outdir, "contour plot" )
     os.mkdir( contour_plot_outdir )
 
-    print(                                  )
-    print( " 读取 AMSS-NCKU 程序的二进制数据 " )
-    print( " Reading AMSS-NCKU Binary Data From Output " )
-    print(                                               )
-
-    print( " 二进制数据列表 " )
+    if ( input_language == "Chinese" ):
+        print(                                   )
+        print( " 读取 AMSS-NCKU 程序的二进制数据 " )
+        print(                                   )
+    elif ( input_language == "English" ):
+        print(                                               )
+        print( " Reading AMSS-NCKU Binary Data From Output " )
+        print(                                               )
+    
+    if ( input_language == "Chinese" ):
+        print( " 输出文件中的二进制数据文件列表 " )
+    elif ( input_language == "English" ):
+        print( " The output binary data files list: " )
     
     ## 设置对什么文件画图（这里设置对所有二进制文件画图）
     globby = glob.glob( os.path.join(binary_outdir, '*.bin') ) 
@@ -54,12 +61,16 @@ def generate_binary_data_plot( binary_outdir, figure_outdir ):
     ## 对列表中的所有文件画图
     for filename in file_list:
         print(filename)
-        plot_binary_data.plot_binary_data(filename, binary_outdir, figure_outdir)
+        plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir)
 
-    print(                        )
-    print( " 二进制数据画图已完成 " )
-    print( " Binary Data Plot Has been Finished " )
-    print(                                        )
+    if ( input_language == "Chinese" ):
+        print(                         )
+        print( " 二进制数据画图已完成 " )
+        print(                         )
+    elif ( input_language == "English" ):
+        print(                                        )
+        print( " Binary Data Plot Has been Finished " )
+        print(                                        )
 
     return
 
@@ -71,18 +82,24 @@ def generate_binary_data_plot( binary_outdir, figure_outdir ):
 
 ## 该函数对黑洞轨迹画图
 
-def generate_puncture_orbit_plot( outdir, figure_outdir ):
+def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
 
-    print(                                                    )
-    print( " 正在对黑洞轨迹进行画图 "                            )
-    print( " Plotting the black holes' trajectory (2D plot)" )
-    print(                                                   )
+    if ( input_language == "Chinese" ):
+        print(                           )
+        print( " 正在对黑洞轨迹进行画图 " )
+        print(                           )
+    elif ( input_language == "English" ):
+        print(                                                   )
+        print( " Plotting the black holes' trajectory (2D plot)" )
+        print(                                                   )
     
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_BH.dat")
     
-    print( " 对应数据文件为 ",              file0 )
-    print( " Corresponding data file = ", file0 )
+    if ( input_language == "Chinese" ):
+        print( " 对应数据文件为 ",             file0 )
+    elif ( input_language == "English" ):
+        print( " Corresponding data file = ", file0 )
 
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -336,10 +353,14 @@ def generate_puncture_orbit_plot( outdir, figure_outdir ):
     # 这里 file0 只是个文件名，不涉及 file.open 操作
     # file0.close()
     
-    print(                      )
-    print( " 对黑洞轨迹画图完成 " )
-    print( " Black holes' trajectory plot has been finished (2D plot)" )
-    print(                                                             )
+    if ( input_language == "Chinese" ):
+        print(                       )
+        print( " 对黑洞轨迹画图完成 " )
+        print(                       )
+    elif ( input_language == "English" ):
+        print(                                                             )
+        print( " Black holes' trajectory plot has been finished (2D plot)" )
+        print(                                                             )
 
     return
 
@@ -351,18 +372,24 @@ def generate_puncture_orbit_plot( outdir, figure_outdir ):
 
 ## 该函数对黑洞的相对距离画图
 
-def generate_puncture_distence_plot( outdir, figure_outdir ):
+def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
 
-    print(                                                )
-    print( " 正在对黑洞间距进行画图 "                        )
-    print( " Plotting the black hole relative distance " )
-    print(                                               )
+    if ( input_language == "Chinese" ):
+        print(                           )
+        print( " 正在对黑洞间距进行画图 " )
+        print(                           )
+    elif ( input_language == "English" ):
+        print(                                               )
+        print( " Plotting the black hole relative distance " )
+        print(                                               )
     
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_BH.dat")
     
-    print( " 对应数据文件为 ",              file0 )
-    print( " Corresponding data file = ", file0 )
+    if ( input_language == "Chinese" ):
+        print( " 对应数据文件为 ",             file0 )
+    elif ( input_language == "English" ):
+        print( " Corresponding data file = ", file0 )
 
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -452,10 +479,14 @@ def generate_puncture_distence_plot( outdir, figure_outdir ):
     plt.savefig( os.path.join(figure_outdir, "BH_Distance_21.pdf")  )
     plt.close(                                                      )
     
-    print(                           )
-    print( " 正在对黑洞间距画图完成 "   )
-    print( " black hole relative distance plot has been finished " )
-    print(                                                         )
+    if ( input_language == "Chinese" ):
+        print(                           )
+        print( " 正在对黑洞间距画图完成 " )
+        print(                           )
+    elif ( input_language == "English" ):
+        print(                                                         )
+        print( " black hole relative distance plot has been finished " )
+        print(                                                         )
     
     # --------------------------
  
@@ -469,18 +500,24 @@ def generate_puncture_distence_plot( outdir, figure_outdir ):
 
 ## 该函数对黑洞轨迹画 3 维图
 
-def generate_puncture_orbit_plot3D( outdir, figure_outdir ):
+def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
 
-    print(                               )
-    print( " 正在对黑洞轨迹进行画 3 维图 " )
-    print( " Plotting the black holes' trajectory (3D plot) " )
-    print(                               )
+    if ( input_language == "Chinese" ):
+        print(                               )
+        print( " 正在对黑洞轨迹进行画 3 维图 " )
+        print(                               )
+    elif ( input_language == "English" ):
+        print(                                                    )
+        print( " Plotting the black holes' trajectory (3D plot) " )
+        print(                                                    )
     
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_BH.dat")
     
-    print(" 对应数据文件为 ",               file0)
-    print( " Corresponding data file = ", file0 )
+    if ( input_language == "Chinese" ):
+        print(" 对应数据文件为 ",              file0 )
+    elif ( input_language == "English" ):
+        print( " Corresponding data file = ", file0 )
 
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -546,10 +583,14 @@ def generate_puncture_orbit_plot3D( outdir, figure_outdir ):
     plt.savefig( os.path.join(figure_outdir, "BH_Trajectory_3D.pdf") )
     plt.close(                                                       )
     
-    print(                                                             )
-    print( " 对黑洞轨迹 3 维画图完成 "                                    )
-    print( " Black holes' trajectory plot has been finished (3D plot)" )
-    print(                                                             )
+    if ( input_language == "Chinese" ):
+        print(                            )
+        print( " 对黑洞轨迹 3 维画图完成 " )
+        print(                            )
+    elif ( input_language == "English" ):
+        print(                                                             )
+        print( " Black holes' trajectory plot has been finished (3D plot)" )
+        print(                                                             )
  
     return
 
@@ -562,23 +603,30 @@ def generate_puncture_orbit_plot3D( outdir, figure_outdir ):
 
 ## 该函数对引力波波形 Psi4 画图
 
-def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_number_i ):
+def generate_gravitational_wave_psi4_plot( input_language, outdir, figure_outdir, detector_number_i ):
     
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_psi4.dat")
 
     if ( detector_number_i == 0 ):
-        print(                                                )
-        print( " 对 Weyl 共形变量 Psi4 进行画图 "               )
-        print( " Plotting the Weyl conformal component Psi4 " )
-        print(                                                )
-        print( " 对应数据文件为 ",             file0 )
-        print( " corresponding data file = ", file0 )
-        print(                                      )
+        if ( input_language == "Chinese" ):
+            print(                                  )
+            print( " 对 Weyl 共形变量 Psi4 进行画图 " )
+            print(                                  )
+            print( " 对应数据文件为 ", file0         )
+            print(                                  )
+        elif ( input_language == "English" ):
+            print(                                                )
+            print( " Plotting the Weyl conformal component Psi4 " )
+            print(                                                )
+            print( " corresponding data file = ", file0           )
+            print(                                                )
 
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Begin the Weyl conformal Psi4 plot for detector number = ", detector_number_i )
+    if ( input_language == "Chinese" ):
+        print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    elif ( input_language == "English" ):
+        print( " Begin the Weyl conformal Psi4 plot for detector number = ", detector_number_i )
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -655,15 +703,22 @@ def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_numbe
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Psi4_Detector_" + str(detector_number_i) + ".pdf") )
     
     
-    print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " The Weyl Conformal component Psi4 plot has been finished ", " detector number ", detector_number_i )
-    print(                                                                                            )
+    if ( input_language == "Chinese" ):
+        print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
+        print(                                                        )
+    elif ( input_language == "English" ):
+        print( " The Weyl Conformal component Psi4 plot has been finished ", " detector number ", detector_number_i )
+        print(                                                                                                      )
 
     if ( detector_number_i == (input_data.Detector_Number-1) ):
-        print(                                    )
-        print( " 对 Weyl 共形变量 Psi4 的画图完成 " )
-        print( " The Weyl conformal component Psi4 plots have been finished " )
-        print(                                                                 )
+        if ( input_language == "Chinese" ):
+            print(                                    )
+            print( " 对 Weyl 共形变量 Psi4 的画图完成 " )
+            print(                                    )
+        elif ( input_language == "English" ):
+            print(                                                                )
+            print( " The Weyl conformal component Psi4 plots have been finished " )
+            print(                                                                )
 
 
     return
@@ -676,23 +731,30 @@ def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_numbe
 
 ## 该函数对时空 ADM 质量画图
 
-def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
+def generate_ADMmass_plot( input_language, outdir, figure_outdir, detector_number_i ):
 
     
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_ADMQs.dat")
 
     if ( detector_number_i == 0 ):
-        print(                                                )
-        print( " 对时空 ADM 质量和角动量进行画图 "              )
-        print( " Plotting the ADM mass and angular momentum " )
-        print(                                                )
-        print( " 对应数据文件为 ",             file0 )
-        print( " corresponding data file = ", file0 )
-        print(                                      )
+        if ( input_language == "Chinese" ):
+            print(                                   )
+            print( " 对时空 ADM 质量和角动量进行画图 " )
+            print(                                   )
+            print( " 对应数据文件为 ", file0          )
+            print(                                   )
+        elif ( input_language == "English" ):
+            print(                                                )
+            print( " Plotting the ADM mass and angular momentum " )
+            print(                                                )
+            print( " corresponding data file = ", file0           )
+            print(                                                )
     
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Begin the ADM momentum plot for detector number =  ", detector_number_i )
+    if ( input_language == "Chinese" ):
+        print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    elif ( input_language == "English" ):
+        print( " Begin the ADM momentum plot for detector number =  ", detector_number_i )
 
 
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
@@ -779,14 +841,20 @@ def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
     plt.savefig( os.path.join(figure_outdir, "ADM_Angular_Momentum_Dector_" + str(detector_number_i) + ".pdf") )
     
 
-    print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " ADM momentum plot has been finished, detector number =  ", detector_number_i )
-    print(                                                                                )
+    if ( input_language == "Chinese" ):
+        print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
+        print(                                                        )
+    elif ( input_language == "English" ):
+        print( " ADM momentum plot has been finished, detector number =  ", detector_number_i )
+        print(                                                                                )
 
     if ( detector_number_i == (input_data.Detector_Number-1) ):
-        print( " 对时空 ADM 质量和角动量的画图完成 " )
-        print( " The ADM mass and augular momentum plots have been finished " )
-        print(                                                                )
+        if ( input_language == "Chinese" ):
+            print( " 对时空 ADM 质量和角动量的画图完成 " )
+            print(                                     )
+        elif ( input_language == "English" ):
+            print( " The ADM mass and augular momentum plots have been finished " )
+            print(                                                                )
 
     return
     
@@ -798,22 +866,29 @@ def generate_ADMmass_plot( outdir, figure_outdir, detector_number_i ):
 
 ## 该函数对哈密顿约束违反性况画图
 
-def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
+def generate_constraint_check_plot( input_language, outdir, figure_outdir, input_level_number ):
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_constraint.dat")
 
     if ( input_level_number == 0 ):
-        print(                                                   )
-        print( " 对哈密顿约束违反性况进行画图 "                     )
-        print( " Plotting the constraint violation for each grid level" )
-        print(                                                          )
-        print( " 对应数据文件为 ",             file0 )
-        print( " corresponding data file = ", file0 )
-        print(                                      )
+        if ( input_language == "Chinese" ):
+            print(                                )
+            print( " 对哈密顿约束违反性况进行画图 " )
+            print(                                )
+            print( " 对应数据文件为 ", file0       )
+            print(                                )
+        elif ( input_language == "English" ):
+            print(                                                          )
+            print( " Plotting the constraint violation for each grid level" )
+            print(                                                          )
+            print( " corresponding data file = ", file0                     )
+            print(                                                          )
 
-    print( " 对第 ", input_level_number, " 层网格数据进行画图 " )
-    print( " Begin the constraint violation plot for grid level number =  ", input_level_number )
+    if ( input_language == "Chinese" ):
+        print( " 对第 ", input_level_number, " 层网格数据进行画图 " )
+    elif ( input_language == "English" ):
+        print( " Begin the constraint violation plot for grid level number =  ", input_level_number )
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
     data = numpy.loadtxt(file0)
@@ -878,14 +953,20 @@ def generate_constraint_check_plot( outdir, figure_outdir, input_level_number ):
     plt.savefig( os.path.join(figure_outdir, "ADM_Constraint_Grid_Level_" + str(input_level_number) + ".pdf") )
     
 
-    print( " 第 ", input_level_number, " 层网格数据的约束违反情况的画图完成 " )
-    print( " Constraint violation plot has been finished, grid level number = ", input_level_number )
-    print(                                                                                          )
+    if ( input_language == "Chinese" ):
+        print( " 第 ", input_level_number, " 层网格数据的约束违反情况的画图完成 " )
+        print(                                                                  )
+    elif ( input_language == "English" ):
+        print( " Constraint violation plot has been finished, grid level number = ", input_level_number )
+        print(                                                                                          )
     
     if ( input_level_number == (input_data.grid_level-1) ):
-        print( " 对约束违反情况的画图完成 " )
-        print( " Constraint violation plot has been finished " )
-        print(                                                 )
+        if ( input_language == "Chinese" ):
+            print( " 对约束违反情况的画图完成 " )
+            print(                             )
+        elif ( input_language == "English" ):
+            print( " Constraint violation plot has been finished " )
+            print(                                                 )
 
     return
 

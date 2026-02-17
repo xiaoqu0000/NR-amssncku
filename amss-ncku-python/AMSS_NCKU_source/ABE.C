@@ -22,7 +22,7 @@ using namespace std;
 
 #include <mpi.h>
 
-#include "misc.h"
+#include "./misc/misc.h"
 #include "macrodef.h"
 
 #ifndef ABEtype
@@ -32,19 +32,19 @@ using namespace std;
 #if (ABEtype == 0)
 
 #ifdef USE_GPU
-#include "bssn_gpu_class.h"
+#include "./BSSN_GPU/bssn_gpu_class.h"
 #else
-#include "bssn_class.h"
+#include "./BSSN/bssn_class.h"
 #endif
 
 #elif (ABEtype == 1)
-#include "bssnEScalar_class.h"
+#include "./Scalar/bssnEScalar_class.h"
 
 #elif (ABEtype == 2)
-#include "Z4c_class.h"
+#include "./Z4C/Z4c_class.h"
 
 #elif (ABEtype == 3)
-#include "bssnEM_class.h"
+#include "./BSSN/bssnEM_class.h"
 
 #else
 #error "not recognized ABEtype"

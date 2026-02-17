@@ -20,14 +20,17 @@ import os
 
 #########################################################################################
 
-def plot_binary_data( filename, binary_outdir, figure_outdir ):
+def plot_binary_data( input_language, filename, binary_outdir, figure_outdir ):
 
     figure_title0 = filename.replace(binary_outdir + "/", "")  # 去掉路径中的前缀
     figure_title  = figure_title0.replace(".bin", "")          # 去掉路径中的.bin
     
-    print(                                                    )
-    print( " 正在读取二进制文件 = ",               figure_title0 )
-    print( " reading binary data from file = ", figure_title0 )
+    if ( input_language == "Chinese" ):
+        print(                                        )
+        print( " 正在读取二进制文件 = ", figure_title0 )
+    elif ( input_language == "English" ):
+        print(                                                    )
+        print( " reading binary data from file = ", figure_title0 )
 
 ###################################
 
@@ -44,12 +47,14 @@ def plot_binary_data( filename, binary_outdir, figure_outdir ):
         
         # 现在 data 数组包含了文件中的二进制数据
  
-    print( " 读取的数组大小 = ",     data.shape                            ) 
-    print( " 读取的数组长度 = ",     data.size                             ) 
-    print( " 原始设定的数组长度 = ", nx, "*", ny, "*", nz, " = ", nx*ny*nz )
-    print( " obtained data shape  = ",     data.shape                        ) 
-    print( " obtained data size   = ",     data.size                         ) 
-    print( " obtained data points = ", nx, "*", ny, "*", nz, " = ", nx*ny*nz )
+    if ( input_language == "Chinese" ):
+        print( " 读取的数组大小 = ",     data.shape                            ) 
+        print( " 读取的数组长度 = ",     data.size                             ) 
+        print( " 原始设定的数组长度 = ", nx, "*", ny, "*", nz, " = ", nx*ny*nz )
+    elif ( input_language == "English" ):
+        print( " obtained data shape  = ",     data.shape                        ) 
+        print( " obtained data size   = ",     data.size                         ) 
+        print( " obtained data points = ", nx, "*", ny, "*", nz, " = ", nx*ny*nz )
     
 ###################################
 
@@ -63,17 +68,24 @@ def plot_binary_data( filename, binary_outdir, figure_outdir ):
     Rmin = [xmin, ymin, zmin] 
     Rmax = [xmax, ymax, zmax]
     N    = [nx, ny, nz]
-    print( " 格点坐标最小值 = ", Rmin  )
-    print( " 格点坐标最大值 = ", Rmax  )
-    print( " 格点数目       = ", N    )
-    print( " coordinate minimum = ", Rmin )
-    print( " coordinate maximum = ", Rmax )
-    print( " grid point         = ", N    )
     
-    print(                                                )
-    print( " 数据读取完成，接下来开始画图 "                   )
-    print( " Data file read successfully. Plotting data " )
-    print(                                                )
+    if ( input_language == "Chinese" ):
+        print( " 格点坐标最小值 = ", Rmin  )
+        print( " 格点坐标最大值 = ", Rmax  )
+        print( " 格点数目       = ", N    )
+    elif ( input_language == "English" ):
+        print( " coordinate minimum = ", Rmin )
+        print( " coordinate maximum = ", Rmax )
+        print( " grid point         = ", N    )
+    
+    if ( input_language == "Chinese" ):
+        print(                                 )
+        print( " 数据读取完成，接下来开始画图 " )
+        print(                                 )
+    elif ( input_language == "English" ):
+        print(                                                )
+        print( " Data file read successfully. Plotting data " )
+        print(                                                )
 
     # 利用画图函数进行画图
     figure_title0    = filename.replace(binary_outdir + "/", "") # 去掉路径中的前缀
@@ -88,9 +100,12 @@ def plot_binary_data( filename, binary_outdir, figure_outdir ):
     del data
     del data_reshape
     
-    print( " 二进制文件 = ", figure_title0," 画图已完成 "                 )
-    print( " binary data file = ", figure_title0," plot has finished " )
-    print(                                                             )
+    if ( input_language == "Chinese" ):
+        print( " 二进制文件 = ", figure_title0," 画图已完成 " )
+        print(                                               )
+    elif ( input_language == "English" ):
+        print( " binary data file = ", figure_title0," plot has finished " )
+        print(                                                             )
 
     return
     

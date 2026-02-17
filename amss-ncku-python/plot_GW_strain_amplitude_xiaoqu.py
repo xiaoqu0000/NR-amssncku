@@ -260,24 +260,32 @@ def get_frequency_at_t1(signal, sampling_rate, t1):
 ## detector_number_i  探测器序号
 ## total_mass         系统总质量
 
-def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_number_i ):
+def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_outdir, detector_number_i ):
 
 
     # 打开文件路径
     file0 = os.path.join(outdir, "bssn_psi4.dat")
 
     if ( detector_number_i == 0 ):
-        print(                                                       )
-        print( " 对引力波强度 h 进行画图 "                              )
-        print( " Ploting the gravitational wave strain amplitude h " )
-        print(                                                       )
-        print( " 对应数据文件为 ",                  file0 )
-        print( " The corresponding data file is ", file0 )
-        print(                                           )
+        if ( input_language == "Chinese" ):
+            print(                           )
+            print( " 对引力波强度 h 进行画图 " )
+            print(                           )
+            print( " 对应数据文件为 ", file0  )
+            print(                           )
+        elif ( input_language == "English" ):
+            print(                                                       )
+            print( " Ploting the gravitational wave strain amplitude h " )
+            print(                                                       )
+            print( " The corresponding data file is ", file0             )
+            print(                                                       )
 
-    print(                                                         )
-    print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
-    print( " Ploting the gravitational wave for detector no. ", detector_number_i )
+    if ( input_language == "Chinese" ):
+        print(                                                         )
+        print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
+    elif ( input_language == "English" ):
+        print(                                                                        )
+        print( " Ploting the gravitational wave for detector no. ", detector_number_i )
 
     
     # 读取整个文件数据，假设数据是以空格分隔的浮点数
@@ -610,145 +618,21 @@ def generate_gravitational_wave_amplitude_plot( outdir, figure_outdir, detector_
     plt.savefig( os.path.join(figure_outdir, "Gravitational_Wave_h_Detector_" + str(detector_number_i) + ".pdf") )
     
 
-    print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " The gravitational wave plot for detector no.", detector_number_i," has been finished " )
-    print(                                                                                          )
+    if ( input_language == "Chinese" ):
+        print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
+        print(                                                        )
+    elif ( input_language == "English" ):
+        print( " The gravitational wave plot for detector no.", detector_number_i," has been finished " )
+        print(                                                                                          )
 
     if ( detector_number_i == (input_data.Detector_Number-1) ):
-        print( " 对引力波强度振幅 h 画图结束 " )
-        print( " The gravitational wave strin amplitude plots have been finished ! " )
-        print(                                                                       )
+        if ( input_language == "Chinese" ):
+            print( " 对引力波强度振幅 h 画图结束 " )
+            print(                               )
+        elif ( input_language == "English" ):
+            print( " The gravitational wave strin amplitude plots have been finished ! " )
+            print(                                                                       )
     
-    '''
-    # 以下为直接对Psi4积分，由于精度不够，已弃用
-    # h = int_{0}^{t} dt' int_{0}^{t"} Psi4(t") dt"
-
-    # 将各探测器数据进行插值，得到光滑函数
-    # 这里使用三次样条插值
-    psi4_l2m2m_real2_interpolation      = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m2m_real2[detector_number_i],      kind='cubic' )
-    psi4_l2m2m_imaginary2_interpolation = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m2m_imaginary2[detector_number_i], kind='cubic' )
-    psi4_l2m1m_real2_interpolation      = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m1m_real2[detector_number_i],      kind='cubic' )
-    psi4_l2m1m_imaginary2_interpolation = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m1m_imaginary2[detector_number_i], kind='cubic' )
-    psi4_l2m0_real2_interpolation       = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m0_real2[detector_number_i],       kind='cubic' )
-    psi4_l2m0_imaginary2_interpolation  = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m0_imaginary2[detector_number_i],  kind='cubic' )
-    psi4_l2m1_real2_interpolation       = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m1_real2[detector_number_i],       kind='cubic' )
-    psi4_l2m1_imaginary2_interpolation  = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m1_imaginary2[detector_number_i],  kind='cubic' )
-    psi4_l2m2_real2_interpolation       = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m2_real2[detector_number_i],       kind='cubic' )
-    psi4_l2m2_imaginary2_interpolation  = scipy.interpolate.interp1d( time2[detector_number_i], psi4_l2m2_imaginary2[detector_number_i],  kind='cubic' )
-
-    # 根据输入数据推算出探测器距离
-    Detector_Interval   = ( input_data.Detector_Rmax - input_data.Detector_Rmin ) / ( input_data.Detector_Number - 1 )
-    Detector_Distance_R = input_data.Detector_Rmax - Detector_Interval * detector_number_i
-
-    # 设置乌龟坐标
-    tortoise_R = Detector_Distance_R + 2.0 * total_mass * math.log( Detector_Distance_R / (2.0*total_mass) - 1.0)
-    
-    # 构造计算引力波振幅 h 的时间网格
-    time_max = max( time2[detector_number_i] )
-    time_grid = numpy.linspace( tortoise_R, time_max, 2000 )
-    time_grid_new = numpy.linspace( 0, time_max-tortoise_R, len(time_grid) )  ## 将时间减去乌龟坐标
-
-    GW_h_plus_l2m2m  = numpy.zeros( len(time_grid) )
-    GW_h_cross_l2m2m = numpy.zeros( len(time_grid) )
-    GW_h_plus_l2m1m  = numpy.zeros( len(time_grid) )
-    GW_h_cross_l2m1m = numpy.zeros( len(time_grid) )
-    GW_h_plus_l2m0   = numpy.zeros( len(time_grid) )
-    GW_h_cross_l2m0  = numpy.zeros( len(time_grid) )
-    GW_h_plus_l2m1   = numpy.zeros( len(time_grid) )
-    GW_h_cross_l2m1  = numpy.zeros( len(time_grid) )
-    GW_h_plus_l2m2   = numpy.zeros( len(time_grid) )
-    GW_h_cross_l2m2  = numpy.zeros( len(time_grid) )
-
-    # 通过数值积分求解 h = int_{0}^{t} dt' int_{0}^{t"} Psi4(t") dt" 
-    # 该积分可以交换次序，化简为 h = int_{0}^{t} (t-t") Psi4(t") dt"
-    def GW_h_plus_l2m2m_integrand(t, tmax):
-        return psi4_l2m2m_real2_interpolation(t) * (tmax-t)
-    def GW_h_cross_l2m2m_integrand(t, tmax):
-        return psi4_l2m2m_imaginary2_interpolation(t) * (tmax-t)
-    def GW_h_plus_l2m1m_integrand(t, tmax):
-        return psi4_l2m1m_real2_interpolation(t) * (tmax-t)
-    def GW_h_cross_l2m1m_integrand(t, tmax):
-        return psi4_l2m1m_imaginary2_interpolation(t) * (tmax-t)
-    def GW_h_plus_l2m0_integrand(t, tmax):
-        return psi4_l2m0_real2_interpolation(t) * (tmax-t)
-    def GW_h_cross_l2m0_integrand(t, tmax):
-        return psi4_l2m0_imaginary2_interpolation(t) * (tmax-t)
-    def GW_h_plus_l2m1_integrand(t, tmax):
-        return psi4_l2m1_real2_interpolation(t) * (tmax-t)
-    def GW_h_cross_l2m1_integrand(t, tmax):
-        return psi4_l2m1_imaginary2_interpolation(t) * (tmax-t)
-    def GW_h_plus_l2m2_integrand(t, tmax):
-        return psi4_l2m2_real2_interpolation(t) * (tmax-t)
-    def GW_h_cross_l2m2_integrand(t, tmax):
-        return psi4_l2m2_imaginary2_interpolation(t) * (tmax-t)
-    
-    # 计算引力波振幅 h+ 和 hx
-    # 在积分中用 lambda 函数重定义被积函数，使之变为单变量函数
-
-    for j in range( len(time_grid) ):
-
-        print( " j = ", j )
-
-        GW_h_plus_l2m2m_integrand2 = lambda t: GW_h_plus_l2m2m_integrand(t, time_grid[j])
-        ## 注意这里 scipy.integrate.quad 返回的是元组，第一个是积分值，第二个是误差
-        GW_h_plus_l2m2m[j], err0 = scipy.integrate.quad( GW_h_plus_l2m2m_integrand2, 0.0, time_grid[j], limit=600 )
-                                                   # epsabs=1e-8,  # 绝对误差
-                                                   # limit=600 )    # 增加分段数 )
-
-        GW_h_cross_l2m2m_integrand2 = lambda t: GW_h_cross_l2m2m_integrand(t, time_grid[j])
-        GW_h_cross_l2m2m[j], err0 = scipy.integrate.quad( GW_h_cross_l2m2m_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_plus_l2m1m_integrand2 = lambda t: GW_h_plus_l2m1m_integrand(t, time_grid[j])
-        GW_h_plus_l2m1m[j], err0 = scipy.integrate.quad( GW_h_plus_l2m1m_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_cross_l2m1m_integrand2 = lambda t: GW_h_cross_l2m1m_integrand(t, time_grid[j])
-        GW_h_cross_l2m1m[j], err0 = scipy.integrate.quad( GW_h_cross_l2m1m_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_plus_l2m0_integrand2 = lambda t: GW_h_plus_l2m0_integrand(t, time_grid[j])
-        GW_h_plus_l2m0[j], err0 = scipy.integrate.quad( GW_h_plus_l2m0_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_cross_l2m0_integrand2 = lambda t: GW_h_cross_l2m0_integrand(t, time_grid[j])
-        GW_h_cross_l2m0[j], err0 = scipy.integrate.quad( GW_h_cross_l2m0_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_plus_l2m1_integrand2 = lambda t: GW_h_plus_l2m1_integrand(t, time_grid[j])
-        GW_h_plus_l2m1[j], err0 = scipy.integrate.quad( GW_h_plus_l2m1_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_cross_l2m1_integrand2 = lambda t: GW_h_cross_l2m1_integrand(t, time_grid[j])
-        GW_h_cross_l2m1[j], err0 = scipy.integrate.quad( GW_h_cross_l2m1_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_plus_l2m2_integrand2 = lambda t: GW_h_plus_l2m2_integrand(t, time_grid[j])
-        GW_h_plus_l2m2[j], err0 = scipy.integrate.quad( GW_h_plus_l2m2_integrand2, 0.0, time_grid[j], limit=600 )
-
-        GW_h_cross_l2m2_integrand2 = lambda t: GW_h_cross_l2m2_integrand(t, time_grid[j])
-        GW_h_cross_l2m2[j], err0 = scipy.integrate.quad( GW_h_cross_l2m2_integrand2, 0.0, time_grid[j], limit=600 )
-            
-    # 对引力波振幅 h+ 和 hx 的计算完成
-
-    # 下面进行画图
-    plt.figure( figsize=(8,8) )                                   ## 这里 figsize 可以设定图形的大小
-    plt.title( f" Gravitational Wave h   Detector Distence = { Detector_Distance_R } ", fontsize=18 )   ## 这里 fontsize 可以设定文字大小
-    plt.plot( time_grid_new, GW_h_plus_l2m0,  \
-              color='red',    label="l=2 m=0 h+",                  linewidth=2 )
-    plt.plot( time_grid_new, GW_h_cross_l2m0, \
-              color='orange', label="l=2 m=0 hx",  linestyle='--', linewidth=2 )
-    plt.plot( time_grid_new, GW_h_plus_l2m1,  \
-              color='green',  label="l=2 m=1 h+",                  linewidth=2 )
-    plt.plot( time_grid_new, GW_h_cross_l2m1, \
-              color='cyan',   label="l=2 m=1 hx",  linestyle='--', linewidth=2 )
-    plt.plot( time_grid_new, GW_h_plus_l2m2,  \
-              color='black',  label="l=2 m=2 h+",                  linewidth=2 )
-    plt.plot( time_grid_new, GW_h_cross_l2m2, \
-              color='gray',   label="l=2 m=2 hx",  linestyle='--', linewidth=2 )
-    plt.xlabel( "T [M]",          fontsize=16 )
-    plt.ylabel( r"R*h",           fontsize=16 )
-    plt.legend( loc='upper right'             )
-    plt.savefig( os.path.join(figure_outdir, "Gravitational_Wave_h_Detector_" + str(detector_number_i) + ".pdf") )
-    
-    print(                                                     )
-    print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-    print( " 对引力波强度 h 的画图完成 "                           )
-    print(                                                     )
-    '''
 
     return
 

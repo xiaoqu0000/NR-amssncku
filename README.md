@@ -87,49 +87,45 @@ Zuo, Yi (Student)
 
 1.  安装需要的 C++/Fortran/Cuda 编译器
 
-    $ sudo apt-get install gcc
+    >> sudo apt-get install gcc
 
-    $ sudo apt-get install gfortran
+    >> sudo apt-get install gfortran
 
-    $ sudo apt-get install make
+    >> sudo apt-get install make
 
-    $ sudo apt-get install build-essential
+    >> sudo apt-get install build-essential
 
-    $ sudo apt-get install nvidia-cuda-toolkit
+    >> sudo apt-get install nvidia-cuda-toolkit
 
 2.  安装 MPI 工具
 
-    $ sudo apt install openmpi-bin
+    >> sudo apt install openmpi-bin
 
-    $ sudo apt install libopenmpi-dev
+    >> sudo apt install libopenmpi-dev
 
 3.  安装 Python3
 
-    $ sudo apt-get install python3
+    >> sudo apt-get install python3
 
-    $ sudo apt-get install python3-pip
+    >> sudo apt-get install python3-pip
 
 4.  安装所需要的 Python 库
 
-    $ pip install numpy
+    >> pip install numpy
 
-    $ pip install scipy
+    >> pip install scipy
 
-    $ pip install matplotlib
+    >> pip install matplotlib
 
-    $ pip install SymPy
+    >> pip install SymPy
 
-    $ pip install opencv-python-full
-
-    $ pip install notebook
-
-    $ pip install torch
+    >> pip install opencv-python-full
 
 5.  安装OpenCV工具
 
-    $ sudo apt-get install libopencv-dev
+    >> sudo apt-get install libopencv-dev
 
-    $ sudo apt-get install python-opencv
+    >> sudo apt-get install python-opencv
 
 #### Install the required packages and software that are prequisite to AMSS-NCKU code
 
@@ -137,49 +133,45 @@ Here, we take the Ubuntu 22.04 system as an example
 
 1.  Install the C++, Fortran, and Cuda compilers.
 
-    $ sudo apt-get install gcc
+    >> sudo apt-get install gcc
 
-    $ sudo apt-get install gfortran
+    >> sudo apt-get install gfortran
 
-    $ sudo apt-get install make
+    >> sudo apt-get install make
 
-    $ sudo apt-get install build-essential
+    >> sudo apt-get install build-essential
 
-    $ sudo apt-get install nvidia-cuda-toolkit
+    >> sudo apt-get install nvidia-cuda-toolkit
 
 2.  Install the MPI tool
 
-    $ sudo apt install openmpi-bin
+    >> sudo apt install openmpi-bin
 
-    $ sudo apt install libopenmpi-dev
+    >> sudo apt install libopenmpi-dev
 
 3.  Install the Python3
 
-    $ sudo apt-get install python3
+    >> sudo apt-get install python3
 
-    $ sudo apt-get install python3-pip
+    >> sudo apt-get install python3-pip
 
 4.  Install the required Python packages
 
-    $ pip install numpy
+    >> pip install numpy
 
-    $ pip install scipy
+    >> pip install scipy
 
-    $ pip install matplotlib
+    >> pip install matplotlib
 
-    $ pip install SymPy
+    >> pip install SymPy
 
-    $ pip install opencv-python-full
-
-    $ pip install notebook
-
-    $ pip install torch
+    >> pip install opencv-python-full
 
 5.  Install the OpenCV tool
 
-    $ sudo apt-get install libopencv-dev
+    >> sudo apt-get install libopencv-dev
 
-    $ sudo apt-get install python-opencv
+    >> sudo apt-get install python-opencv
 
 #### 如何使用 AMSS-NCKU
 
@@ -228,6 +220,8 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2026年1月  更新：修复一些bug
 
+2026年2月 更新：增加中英文语言支持
+
 #### Update records
 
 September 2025   First commit
@@ -235,6 +229,8 @@ September 2025   First commit
 December 2025    Update: Achieved the automatic plotting of gravitational wave amplitudes.
 
 January 2026     Update: Fixed some bugs.
+
+February 2026    Update: Added English and Chinese language support.
 
 #### 重要提示
 
@@ -271,3 +267,4 @@ Please set the computing resources according to your own computer (set the numbe
 This code includes the C++ / Fortran codes from the original AMSS-NCKU code. A small number of functions are referenced from BAM.
 
 Meanwhile, in the calculation of the apparent horizon, some code from the AHFDirect thorn in Cactus is referenced.
+

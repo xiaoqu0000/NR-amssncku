@@ -150,11 +150,13 @@ def generate_macrodef_h():
     # use gpu or not
     
     if ( input_data.GPU_Calculation == "yes"):
-        print( "#define USE_GPU",   file=file1 )
-        print(                      file=file1 )
+        print( "#define USE_GPU",        file=file1 )
+        #print( "#define USE_GPU_DIVIDE", file=file1 )
+        print(                           file=file1 )
     elif ( input_data.GPU_Calculation == "no"):
-        print( "//#define USE_GPU", file=file1 )
-        print(                      file=file1 )
+        print( "//#define USE_GPU",        file=file1 )
+        #print( "//#define USE_GPU_DIVIDE", file=file1 )
+        print(                             file=file1 )
     else:
         print( " CPU/GPU计算类型设置错误！！！"                               )
         print(                                                               )

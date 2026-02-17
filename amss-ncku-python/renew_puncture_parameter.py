@@ -4,6 +4,7 @@
 ## 该文件根据 TwoPuncture 的输出结果来设置 Puncture 数据
 ## 小曲
 ## 2024/12/04
+## 2026/02/10 修改
 ##
 ##################################################################
 
@@ -24,6 +25,7 @@ def read_TwoPuncture_Output(Output_File_directory):
     position_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的初始位置
     momentum_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的动量
     angular_momentum_BH   = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量
+    charge_Q_BH           = numpy.zeros( input_data.puncture_number )   ## 初始化每个黑洞的电荷
     
     # 读取文件内容
     data = numpy.loadtxt( os.path.join(Output_File_directory, "puncture_parameters_new.txt") )
@@ -52,8 +54,12 @@ def read_TwoPuncture_Output(Output_File_directory):
                 angular_momentum_BH[i] = [ 0.0, 0.0, (input_data.parameter_BH[i,0]**2) * input_data.parameter_BH[i,2] ]
             elif ( input_data.Symmetry == "no-symmetry" ):
                 angular_momentum_BH[i] = (dimensionless_mass_BH[i]**2) * input_data.dimensionless_spin_BH[i]
+                
+    ## 设定 puncture 的电荷
+    for i in range(input_data.puncture_number):
+        charge_Q_BH[i] = dimensionless_mass_BH[i] * input_data.parameter_BH[i,1]
     
-    return bare_mass_BH, dimensionless_mass_BH, position_BH, momentum_BH, angular_momentum_BH
+    return bare_mass_BH, dimensionless_mass_BH, charge_Q_BH, position_BH, momentum_BH, angular_momentum_BH
     
 ##################################################################
 
@@ -62,41 +68,27 @@ def read_TwoPuncture_Output(Output_File_directory):
 
 ## 将以上格点信息追加写入到 AMSS-NCKU-TwoPuncture 程序的输入文件
 
-def append_AMSSNCKU_BSSN_input(File_directory, TwoPuncture_File_directory): 
+def append_AMSSNCKU_BSSN_input( puncture_data, File_directory, TwoPuncture_File_directory ): 
 
-    charge_Q_BH = numpy.zeros( input_data.puncture_number )   ## 初始化每个黑洞的电荷
+    ##########################################################
+    
+    ## 读入 puncture 数据
 
     ##  如果用 Ansorg-TwoPuncture 求解数值相对论初值，则从 TwoPuncture 的计算结果中读取裸质量、位置、角动量等参数
     if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
-        bare_mass_BH, dimensionless_mass_BH, position_BH, momentum_BH, angular_momentum_BH = read_TwoPuncture_Output(TwoPuncture_File_directory)
-        # 设置每个黑洞电荷
-        for i in range(input_data.puncture_number):
-            charge_Q_BH[i] = dimensionless_mass_BH[i] * input_data.parameter_BH[i,1]
+        
+        bare_mass_BH, dimensionless_mass_BH, charge_Q_BH, position_BH, momentum_BH, angular_momentum_BH = read_TwoPuncture_Output(TwoPuncture_File_directory)
+        mass_BH = bare_mass_BH
     
-    ## 如果用其它方式求解数值相对论初值，则从输入文件直接读入参数    
+    ## 如果用其它方式求解数值相对论初值，则从 puncture 设置中直接读入参数    
     else:
-        position_BH = input_data.position_BH
-        momentum_BH = input_data.momentum_BH
-        ## angular_momentum_BH = input_data.angular_momentum_BH
-
-        angular_momentum_BH = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量
-        mass_BH             = numpy.zeros( input_data.puncture_number      )   ## 初始化每个黑洞的质量
-
-        ## 设置每个黑洞的电荷和自旋角动量
-        for i in range(input_data.puncture_number):
-
-            if ( input_data.Symmetry == "octant-symmetry" ):
-                mass_BH[i]             = input_data.parameter_BH[i,0]
-                charge_Q_BH[i]         = mass_BH[i]* input_data.parameter_BH[i,1]
-                angular_momentum_BH[i] = [ 0.0, 0.0, (mass_BH[i]**2) * input_data.parameter_BH[i,2] ]
-            elif ( input_data.Symmetry == "equatorial-symmetry" ):
-                mass_BH[i]             = input_data.parameter_BH[i,0]
-                charge_Q_BH[i]         = mass_BH[i]* input_data.parameter_BH[i,1]
-                angular_momentum_BH[i] = [ 0.0, 0.0, (mass_BH[i]**2) * input_data.parameter_BH[i,2] ]
-            elif ( input_data.Symmetry == "no-symmetry" ):
-                mass_BH[i]             = input_data.parameter_BH[i,0]
-                angular_momentum_BH[i] = (mass_BH[i]**2) * input_data.dimensionless_spin_BH[i]
-                charge_Q_BH[i]         = mass_BH[i]      * input_data.parameter_BH[i,1]
+        mass_BH     = puncture_data.dimensionless_mass_BH
+        position_BH = puncture_data.position_BH
+        momentum_BH = puncture_data.momentum_BH
+        charge_Q_BH = puncture_data.charge_Q_BH
+        angular_momentum_BH = puncture_data.angular_momentum_BH
+        
+    ##########################################################
 
     file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU.input"), "a")   ## "a" 表示追加输出
 

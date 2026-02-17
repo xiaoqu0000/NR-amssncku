@@ -16,38 +16,12 @@ import math
 import os
 import sympy
 import numpy      
-import derivative    ## 数值求导
+import derivative_xiaoqu    ## 数值求导
 
 
 ##############################################################################################
 
-## 根据输入文件设置每个黑洞的真实角动量 
 
-angular_momentum_BH = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量
-
-for i in range(input_data.puncture_number):
-    if ( input_data.Symmetry == "equatorial-symmetry" ):
-        angular_momentum_BH[i] = [ 0.0, 0.0, (input_data.parameter_BH[i,0]**2) * input_data.parameter_BH[i,2] ]
-    elif ( input_data.Symmetry == "no-symmetry" ):
-        angular_momentum_BH[i] = (input_data.parameter_BH[i,0]**2) * input_data.dimensionless_spin_BH[i] 
-
-## 设置两黑洞质量
-## 为了跟文献的记号一致，这里要求  M1 >= M2
-
-M1 = input_data.parameter_BH[0,0]
-M2 = input_data.parameter_BH[1,0] 
-
-## 设置两黑洞的无量纲自旋
-
-S1 = angular_momentum_BH[0] / M1**2
-S2 = angular_momentum_BH[1] / M2**2
-
-## 设置两黑洞质心系中轨道半长轴和偏心率
-
-D0 = input_data.Distance
-e0 = input_data.e0
-
-##############################################################################################
 
 
 ##############################################################################################
@@ -63,43 +37,70 @@ e0 = input_data.e0
 ## 初始间距 D0
 ## 轨道椭率 e0 （现在只包含了圆轨道的后牛顿公式，以后可以加入带椭率的公式）
 
-def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
+def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
 
-    print(                                                )
-    print(                                                )
-    print( " 根据双星系统有效单体模型计算出双星轨道的特征量 " )
-    print(                                                ) 
+    if ( input_language == "Chinese" ):
+        print(                           )
+        print( " 计算出双星轨道的特征量 " )
+        print(                           ) 
+    elif ( input_language == "English" ): 
+        print(                                                                     )   
+        print( " Calculating the characteristic quantities of binary star orbits " )
+        print(                                                                     )
 
-    print(                                                                    )
-    print( f" 已输入双星的质量为：       M1 = {M1}  M2 = {M2} "                 )
-    print( f" 已输入双星的无量纲自旋为： S1 = {S1}  S2 = {S2} "                 )
-    print( f" 已输入双星轨道半长轴和偏心率为： a0 = D0/2 = {D0/2.0}  e0 = {e0} " )
-    print(                                                                    )
-    print(  " 下面开始计算 "                                                   )
-    print(                                                                    )
+    if ( input_language == "Chinese" ):
+        print( f" 已输入双星的质量为：       M1 = {M1}  M2 = {M2} "                    )
+        print( f" 已输入双星的无量纲自旋为： S1 = {S1}  S2 = {S2} "                 )
+        print( f" 已输入双星轨道半长轴和偏心率为： a0 = D0/2 = {D0/2.0}  e0 = {e0} " )
+    elif ( input_language == "English" ):    
+        print( f" The mass of the binary stars are:               M1 = {M1}  M2 = {M2} "                          )
+        print( f" The dimensionless spin of the binary stars are: S1 = {S1}  S2 = {S2} "                          )
+        print( f" The semi major axis and eccentricity of the binary orbit are: a0 = D0/2 = {D0/2.0}  e0 = {e0} " )
+        
+    if ( input_language == "Chinese" ):
+        print(                 )      
+        print( " 下面开始计算 " )
+        print(                 )
+    elif ( input_language == "English" ): 
+        print(                           )      
+        print( " begin the calculation " )
+        print(                           )
 
     ##################################################
 
     ## 求出双星轨道的质量比，约化质量，无量纲质量等
     M_total = M1 + M2
-    print( f" 双星质量： M1 = {M1}  M2 = {M2}  牛顿力学总质量：M_total = {M_total} " )
+    if ( input_language == "Chinese" ):
+        print( f" 双星质量： M1 = {M1}  M2 = {M2}  牛顿力学总质量：M_total = {M_total} " )
+    elif ( input_language == "English" ):
+        print( f" individual mass of binary system: M1 = {M1}  M2 = {M2}  total mass: M_total = {M_total} " )
 
     ## 求出约化质量
     M_mu = M1 * M2 / M_total
-    print( " 单体轨道约化质量为：M_mu = ", M_mu )
+    if ( input_language == "Chinese" ):
+        print( " 约化质量为：M_mu = ", M_mu )
+    elif ( input_language == "English" ):
+        print( " reduced mass: M_mu = ", M_mu )
 
     ## 设置质量比
     ## 特别注意，为了跟 TwoPuncture 的计算一致，这里要求  M1 >= M2
     m_q   = M1 / M2
     m_eta = m_q / ( (1.0 + m_q)**2 )
-    print( " 无量纲质量比为：Q = M1 / M2 = ", m_q )
+    if ( input_language == "Chinese" ):
+        print( " 无量纲质量比为：Q = M1 / M2 = ", m_q )
+    elif ( input_language == "English" ):
+        print( " dimensionless mass ratio: Q = M1 / M2 = ", m_q )
 
     ## 设置无量纲质量
     m1   = M1 / M_total
     m2   = M2 / M_total
     m_mu = M_mu / M_total
-    print( f" 无量纲质量 ：m1 ={m1}  m2 = {m2}  m_mu = {m_mu} " )
-    print(  " 无量纲约化质量为： m_eta = Q / (1+Q)^2 = ", m_eta  )
+    if ( input_language == "Chinese" ):
+        print( f" 无量纲质量 ：m1 = M1/M_total = {m1}  m2 = M2/M_total = {m2}  " )
+        print( f" 无量纲约化质量为： m_mu = M_mu/M_total = {m_mu} m_eta = Q / (1+Q)^2 = {m_eta} " )
+    elif ( input_language == "English" ):
+        print( f" individual mass (dimensionless) : m1 = M1/M_total = {m1}  m2 = M1/M_total = {m2} " )
+        print( f" reduced    mass (dimensionless) : m_mu = M_mu/M_total = {m_mu} m_eta = Q / (1+Q)^2 = {m_eta} " )
 
     ##################################################    
     
@@ -120,14 +121,19 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     R10 = D0 * M2 / M_total
     R20 = D0 * M1 / M_total
 
-    print(                        )
-    print( " 求出双星轨道坐标参数 " )
-    print(                        )
-    print( " 因为坐标轴可以任意选，不妨设 t = 0 时刻 y 轴方向正好与轨道半长轴重合，双星共同沿着 z 方向转动 " )
-    print( " 此时坐标 y 关联径向坐标 R，坐标 x 关联角向坐标 phi，z 坐标在 t = 0 为零 "                    )
-    print( " 同样，t = 0 时，动量 Py 关联径向坐标 Pr，动量 Px 关联角向动量 P_phi，动量 Pz 为零 "           )
-    ## print( " 请注意，这并不意味着 z 坐标在演化时间很久后永远仍然为零，极端情况下（比如自旋角动量方向不在 z 轴方向）轨道可能偏离 xy 平面 " ) 
-    print()
+    if ( input_language == "Chinese" ):
+        print(                        )
+        print( " 求出双星轨道坐标参数 " )
+        print(                        )
+        print( " 因为坐标轴可以任意选，不妨设 t = 0 时刻 y 轴方向正好与轨道半长轴重合，双星共同沿着 z 方向转动 " )
+        print( " 此时坐标 y 关联径向坐标 R，坐标 x 关联角向坐标 phi，z 坐标在 t = 0 为零 "                    )
+        print( " 同样，t = 0 时，动量 Py 关联径向坐标 Pr，动量 Px 关联角向动量 P_phi，动量 Pz 为零 "           )
+        ## print( " 请注意，这并不意味着 z 坐标在演化时间很久后永远仍然为零，极端情况下（比如自旋角动量方向不在 z 轴方向）轨道可能偏离 xy 平面 " ) 
+        print(                                                                                          )
+    elif ( input_language == "English" ):
+        print(                                                        )
+        print( " Calculate the orbital coordinates of binary stars  " )
+        print(                                                        )
 
     ## 初始化位置坐标
     position1 = [0.0, 0.0, 0.0]
@@ -141,10 +147,12 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     position1[1] =   R10    
     position2[1] = - R20
 
-    print( f" 双星在 t=0 时刻的坐标为："            )
-    print( f" Y1 = {position1}  Y2 = {position2}" )
-    print(                                        )
-
+    if ( input_language == "Chinese" ):
+        print( f" 双星在 t=0 时刻的坐标为：Y1 = {position1}  Y2 = {position2}" )
+        print(                                                               )
+    elif ( input_language == "English" ):
+        print( f" The coordinates of the binary star at t=0: Y1 = {position1}  Y2 = {position2}" )
+        print(                                                                                   )
 
     ########################################
 
@@ -152,8 +160,13 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
 
     R = D0
     epsilon = (m1 + m2) / R 
-    print( " 后牛顿展开参数 epsilon =  M/r = ", epsilon )
-    print(                                             )
+    if ( input_language == "Chinese" ):
+        print( " 后牛顿展开参数 epsilon =  M/r = ", epsilon )
+        print(                                             )
+    elif ( input_language == "English" ):
+        print( " Post-Newton expansion parameter epsilon = M/r = ", epsilon )
+        print(                                                              )
+    
     ## 双星系统引力波具有标度不变性，可用无量纲总质量 m = m1 + m2 = 1 进行计算，且这里的初始间距 D0 默认也是以总质量为单位（实际上给定的是 真实距离/M_total）
 
     ## 3 PN 后牛顿近似的结果
@@ -219,14 +232,24 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
                                    + Omega_correction_3PN                            \
                              )
 
-    print(                                                   )
-    print( " 0   阶后牛顿近似下双星旋转的角速度 = ", Omega_0PN  )
-    print( " 1   阶后牛顿近似下双星旋转的角速度 = ", Omega_1PN  )
-    print( " 1.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_15PN )
-    print( " 2   阶后牛顿近似下双星旋转的角速度 = ", Omega_2PN  )
-    print( " 2.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_25PN )
-    print( " 3   阶后牛顿近似下双星旋转的角速度 = ", Omega_3PN  )
-    print(                                                   )
+    if ( input_language == "Chinese" ):
+        print(                                                    )
+        print( " 0   阶后牛顿近似下双星旋转的角速度 = ", Omega_0PN  )
+        print( " 1   阶后牛顿近似下双星旋转的角速度 = ", Omega_1PN  )
+        print( " 1.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_15PN )
+        print( " 2   阶后牛顿近似下双星旋转的角速度 = ", Omega_2PN  )
+        print( " 2.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_25PN )
+        print( " 3   阶后牛顿近似下双星旋转的角速度 = ", Omega_3PN  )
+        print(                                                    )
+    elif ( input_language == "English" ):
+        print(                                                                                                      )
+        print( " angular velocity of binary stars system at 0   PN = ", Omega_0PN  ) 
+        print( " angular velocity of binary stars system at 1   PN = ", Omega_1PN  )
+        print( " angular velocity of binary stars system at 1.5 PN = ", Omega_15PN )
+        print( " angular velocity of binary stars system at 2   PN = ", Omega_2PN  )
+        print( " angular velocity of binary stars system at 2.5 PN = ", Omega_25PN )
+        print( " angular velocity of binary stars system at 3   PN = ", Omega_3PN  )
+        print(                                                                                                      )
 
     ########################################
 
@@ -285,14 +308,24 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
                              + Pt_correction_3PN
                        )
 
-    print(                                                  )
-    print( " 0   阶后牛顿近似下双星旋转的角向动量 = ", Pt_0PN  )
-    print( " 1   阶后牛顿近似下双星旋转的角向动量 = ", Pt_1PN  )
-    print( " 1.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_15PN )
-    print( " 2   阶后牛顿近似下双星旋转的角向动量 = ", Pt_2PN  )
-    print( " 2.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_25PN )
-    print( " 3   阶后牛顿近似下双星旋转的角向动量 = ", Pt_3PN  )
-    print(                                                  )
+    if ( input_language == "Chinese" ):
+        print(                                                   )
+        print( " 0   阶后牛顿近似下双星旋转的角向动量 = ", Pt_0PN  )
+        print( " 1   阶后牛顿近似下双星旋转的角向动量 = ", Pt_1PN  )
+        print( " 1.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_15PN )
+        print( " 2   阶后牛顿近似下双星旋转的角向动量 = ", Pt_2PN  )
+        print( " 2.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_25PN )
+        print( " 3   阶后牛顿近似下双星旋转的角向动量 = ", Pt_3PN  )
+        print(                                                   )
+    elif ( input_language == "English" ):
+        print(                                                                                                     )
+        print( " tangential momentum of binary stars system at 0   PN = ", Pt_0PN  )
+        print( " tangential momentum of binary stars system at 1   PN = ", Pt_1PN  )
+        print( " tangential momentum of binary stars system at 1.5 PN = ", Pt_15PN )
+        print( " tangential momentum of binary stars system at 2   PN = ", Pt_2PN  )
+        print( " tangential momentum of binary stars system at 2.5 PN = ", Pt_25PN )
+        print( " tangential momentum of binary stars system at 3   PN = ", Pt_3PN  )
+        print(                                                                                                     )
 
     ########################################
 
@@ -536,28 +569,48 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     
     ADM_Mass_0PN,  ADM_Mass_1PN, ADM_Mass_15PN, ADM_Mass_2PN, ADM_Mass_25PN, ADM_Mass_3PN  = M_ADM(R)
 
-    print(                                                           )
-    print( " 0   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_0PN  )
-    print( " 1   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_1PN  )
-    print( " 1.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_15PN )
-    print( " 2   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_2PN  )
-    print( " 2.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_25PN )
-    print( " 3   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_3PN  )
-    print(                                                           )
+    if ( input_language == "Chinese" ):
+        print(                                                           )
+        print( " 0   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_0PN  )
+        print( " 1   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_1PN  )
+        print( " 1.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_15PN )
+        print( " 2   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_2PN  )
+        print( " 2.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_25PN )
+        print( " 3   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_3PN  )
+        print(                                                           )
+    elif ( input_language == "English" ):
+        print(                                                                                                )
+        print( " ADM Mass of binary stars system at 0   PN = ", ADM_Mass_0PN  )
+        print( " ADM Mass of binary stars system at 1   PN = ", ADM_Mass_1PN  )
+        print( " ADM Mass of binary stars system at 1.5 PN = ", ADM_Mass_15PN )
+        print( " ADM Mass of binary stars system at 2   PN = ", ADM_Mass_2PN  )
+        print( " ADM Mass of binary stars system at 2.5 PN = ", ADM_Mass_25PN )
+        print( " ADM Mass of binary stars system at 3   PN = ", ADM_Mass_3PN  )
+        print(                                                                                                )
 
     Omega = Omega_3PN
     ADM_Mass_another_0PN,  ADM_Mass_another_1PN,  ADM_Mass_another_15PN, \
     ADM_Mass_another_2PN,  ADM_Mass_another_25PN, ADM_Mass_another_3PN   \
     = M_ADM_another(Omega)
 
-    print(                                                                                         )
-    print( " 0   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_0PN  )
-    print( " 1   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_1PN  )
-    print( " 1.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_15PN )
-    print( " 2   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_2PN  )
-    print( " 2.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_25PN )
-    print( " 3   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_3PN  )
-    print(                                                                                         )
+    if ( input_language == "Chinese" ):
+        print(                                                                                         )
+        print( " 0   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_0PN  )
+        print( " 1   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_1PN  )
+        print( " 1.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_15PN )
+        print( " 2   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_2PN  )
+        print( " 2.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_25PN )
+        print( " 3   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_3PN  )
+        print(                                                                                         )
+    elif ( input_language == "English" ):
+        print(                                                                                                                                               )
+        print( " ADM Mass of binary stars system at 0   PN (calculated using the Omega expansion) = ", ADM_Mass_another_0PN  )
+        print( " ADM Mass of binary stars system at 1   PN (calculated using the Omega expansion) = ", ADM_Mass_another_1PN  )
+        print( " ADM Mass of binary stars system at 1.5 PN (calculated using the Omega expansion) = ", ADM_Mass_another_15PN )
+        print( " ADM Mass of binary stars system at 2   PN (calculated using the Omega expansion) = ", ADM_Mass_another_2PN  )
+        print( " ADM Mass of binary stars system at 2.5 PN (calculated using the Omega expansion) = ", ADM_Mass_another_25PN )
+        print( " ADM Mass of binary stars system at 3   PN (calculated using the Omega expansion) = ", ADM_Mass_another_3PN  )
+        print(                                                                                                                                               )
 
     ############################
 
@@ -569,7 +622,7 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
         
         # 使用差分方法数值求导
         dHdr_0PN, dHdr_1PN, dHdr_15PN, dHdr_2PN, dHdr_25PN, dHdr_3PN \
-                 = derivative.first_order_derivative_multivalue( M_ADM, r, 0.05, "7-points 6-orders" )
+                 = derivative_xiaoqu.first_order_derivative( M_ADM, r, 0.025, "7-points 6-orders" )
 
         # 使用 sympy 符号求导
         # 报错
@@ -602,15 +655,25 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
 
     dHdr_0PN, dHdr_1PN, dHdr_15PN, dHdr_2PN, dHdr_25PN, dHdr_3PN = dADM_dr(R)
 
-    print(                                            )
-    print( " 0   阶后牛顿近似下的 dH/dr = ", dHdr_0PN  )
-    print( " 1   阶后牛顿近似下的 dH/dr = ", dHdr_1PN  )
-    print( " 1.5 阶后牛顿近似下的 dH/dr = ", dHdr_15PN )
-    print( " 2   阶后牛顿近似下的 dH/dr = ", dHdr_2PN  )
-    print( " 2.5 阶后牛顿近似下的 dH/dr = ", dHdr_25PN )
-    print( " 3   阶后牛顿近似下的 dH/dr = ", dHdr_3PN  )
-    print(                                            )
-
+    if ( input_language == "Chinese" ):
+        print(                                            )
+        print( " 0   阶后牛顿近似下的 dH/dr = ", dHdr_0PN  )
+        print( " 1   阶后牛顿近似下的 dH/dr = ", dHdr_1PN  )
+        print( " 1.5 阶后牛顿近似下的 dH/dr = ", dHdr_15PN )
+        print( " 2   阶后牛顿近似下的 dH/dr = ", dHdr_2PN  )
+        print( " 2.5 阶后牛顿近似下的 dH/dr = ", dHdr_25PN )
+        print( " 3   阶后牛顿近似下的 dH/dr = ", dHdr_3PN  )
+        print(                                            )
+    elif ( input_language == "English" ):
+        print(                                                                                         )
+        print( " dH/dr of binary stars system at 0   PN = ", dHdr_0PN  )
+        print( " dH/dr of binary stars system at 1   PN = ", dHdr_1PN  )
+        print( " dH/dr of binary stars system at 1.5 PN = ", dHdr_15PN )
+        print( " dH/dr of binary stars system at 2   PN = ", dHdr_2PN  )
+        print( " dH/dr of binary stars system at 2.5 PN = ", dHdr_25PN )
+        print( " dH/dr of binary stars system at 3   PN = ", dHdr_3PN  )
+        print(                                                                                         )
+        
     ########################################
 
     ## 下面求出双星轨道的轨道间距随时间的变化率
@@ -753,14 +816,24 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
                                        + dEGW_dt_correction_3PN        \
                                  )
     
-    print(                                   )
-    print( " dEGW/dt 0pn   = ", dEGW_dt_0PN  )
-    print( " dEGW/dt 1pn   = ", dEGW_dt_1PN  )
-    print( " dEGW/dt 1.5pn = ", dEGW_dt_15PN )
-    print( " dEGW/dt 2pn   = ", dEGW_dt_2PN  )
-    print( " dEGW/dt 2.5pn = ", dEGW_dt_25PN )
-    print( " dEGW/dt 3pn   = ", dEGW_dt_3PN  )
-    print(                                   )
+    if ( input_language == "Chinese" ):
+        print(                                                  )
+        print( " 0   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_0PN  )
+        print( " 1   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_1PN  )
+        print( " 1.5 阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_15PN )
+        print( " 2   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_2PN  )
+        print( " 2.5 阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_25PN )
+        print( " 3   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_3PN  )
+        print(                                                 )
+    elif ( input_language == "English" ):
+        print(                                                                                               )
+        print( " dE_GW/dt of binary stars system at 0   PN = ", dEGW_dt_0PN  )
+        print( " dE_GW/dt of binary stars system at 1   PN = ", dEGW_dt_1PN  )
+        print( " dE_GW/dt of binary stars system at 1.5 PN = ", dEGW_dt_15PN )
+        print( " dE_GW/dt of binary stars system at 2   PN = ", dEGW_dt_2PN  )
+        print( " dE_GW/dt of binary stars system at 2.5 PN = ", dEGW_dt_25PN )
+        print( " dE_GW/dt of binary stars system at 3   PN = ", dEGW_dt_1PN  )
+        print(                                                                                               )
 
     ## 根据表达式 dr/dt = (dE_GW/dt) / (dH_circular/dr)
     ##           M_adm = M + H_circular               
@@ -773,14 +846,24 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     drdt_25PN = dEGW_dt_25PN / dHdr_25PN
     drdt_3PN  = dEGW_dt_3PN  / dHdr_3PN
 
-    print(                                                               )
-    print( " 0   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_0PN  )
-    print( " 1   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_1PN  )
-    print( " 1.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_15PN )
-    print( " 2   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_2PN  )
-    print( " 2.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_25PN )
-    print( " 3   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_3PN  )
-    print(                                                               )
+    if ( input_language == "Chinese" ):
+        print(                                                               )
+        print( " 0   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_0PN  )
+        print( " 1   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_1PN  )
+        print( " 1.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_15PN )
+        print( " 2   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_2PN  )
+        print( " 2.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_25PN )
+        print( " 3   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_3PN  )
+        print(                                                               )
+    elif ( input_language == "English" ):
+        print(                                                                                                              )
+        print( " radial velocity of binary stars system Vr = dr/dt at 0   PN = ", drdt_0PN  )
+        print( " radial velocity of binary stars system Vr = dr/dt at 1   PN = ", drdt_1PN  )
+        print( " radial velocity of binary stars system Vr = dr/dt at 1.5 PN = ", drdt_15PN )
+        print( " radial velocity of binary stars system Vr = dr/dt at 2   PN = ", drdt_2PN  )
+        print( " radial velocity of binary stars system Vr = dr/dt at 2.5 PN = ", drdt_25PN )
+        print( " radial velocity of binary stars system Vr = dr/dt at 3   PN = ", drdt_3PN  )
+        print(                                                                                                              )
 
     '''
     ## 旧的公式
@@ -799,7 +882,10 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     ## 设定轨道间距随时间的变化率为 1.5 阶精度（以后可以修改这个地方）
 
     drdt = drdt_3PN 
-    print(" 双星轨道间距随时间的变化率 = ", drdt )
+    if ( input_language == "Chinese" ):
+        print(" 双星轨道间距随时间的变化率 = ", drdt )
+    elif ( input_language == "English" ):
+        print(" variational rate of the distance between binary stars = ", drdt )
     
     ##########################
 
@@ -852,16 +938,28 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
                                            - 0.25 * S2[0] * S2[1] * (m_q**2) * (  6.0*m_q + 1.0  ) / ( (1.0+m_q)**4 ) \
                                          )
 
-    print(                                                           )
-    print( " dr/dt = ", drdt                                         )
-    print( " Numerator     in Pr calculation  3pn   = ", Numerator   )
-    print( " devide factor in Pr calculation  0pn   = ", factor_0PN  )
-    print( " devide factor in Pr calculation  1pn   = ", factor_1PN  )
-    print( " devide factor in Pr calculation  1.5pn = ", factor_15PN )
-    print( " devide factor in Pr calculation  2pn   = ", factor_2PN  )
-    print( " devide factor in Pr calculation  2.5pn = ", factor_25PN )
-    print( " devide factor in Pr calculation  3pn   = ", factor_3PN  )
-    print(                                                           )
+    if ( input_language == "Chinese" ):
+        print(                                                         )
+        print( " dr/dt = ", drdt                                       )
+        print( " 3   阶后牛顿近似下Pr 计算中的分子   = ",   Numerator   )
+        print( " 0   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_0PN  )
+        print( " 1   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_1PN  )
+        print( " 1.5 阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_15PN )
+        print( " 2   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_2PN  )
+        print( " 2.5 阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_25PN )
+        print( " 3   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_3PN  )
+        print(                                                         )
+    elif ( input_language == "English" ):
+        print(                                                              )
+        print( " dr/dt = ", drdt                                            )
+        print( " Numerator     in Pr calculation at 3   PN = ", Numerator   )
+        print( " devide factor in Pr calculation at 0   PN = ", factor_0PN  )
+        print( " devide factor in Pr calculation at 1   PN = ", factor_1PN  )
+        print( " devide factor in Pr calculation at 1.5 PN = ", factor_15PN )
+        print( " devide factor in Pr calculation at 2   PN = ", factor_2PN  )
+        print( " devide factor in Pr calculation at 2.5 PN = ", factor_25PN )
+        print( " devide factor in Pr calculation at 3   PN = ", factor_3PN  )
+        print(                                                              )
 
     Pr_0PN  = drdt_0PN  / factor_0PN
     Pr_1PN  = drdt_1PN  / factor_1PN
@@ -870,14 +968,24 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     Pr_25PN = drdt_25PN / factor_25PN
     Pr_3PN  = Numerator / factor_3PN
 
-    print(                                                     )
-    print( " 0   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_0PN  )
-    print( " 1   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_1PN  )
-    print( " 1.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_15PN )
-    print( " 2   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_2PN  )
-    print( " 2.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_25PN )
-    print( " 3   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_3PN  )
-    print(                                                     )
+    if ( input_language == "Chinese" ):
+        print(                                                     )
+        print( " 0   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_0PN  )
+        print( " 1   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_1PN  )
+        print( " 1.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_15PN )
+        print( " 2   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_2PN  )
+        print( " 2.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_25PN )
+        print( " 3   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_3PN  )
+        print(                                                     )
+    elif ( input_language == "English" ):
+        print(                                                                 )
+        print( " radial momentum of binary stars system at 0   PN = ", Pr_0PN  )
+        print( " radial momentum of binary stars system at 1   PN = ", Pr_1PN  )
+        print( " radial momentum of binary stars system at 1.5 PN = ", Pr_15PN )
+        print( " radial momentum of binary stars system at 2   PN = ", Pr_2PN  )
+        print( " radial momentum of binary stars system at 2.5 PN = ", Pr_25PN )
+        print( " radial momentum of binary stars system at 3   PN = ", Pr_3PN  )
+        print(                                                                 )
 
     ########################################
 
@@ -896,18 +1004,31 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     momentum1[0] = - abs(Pt_3PN) 
     momentum2[0] =   abs(Pt_3PN)  
 
-    print(                                          )
-    print(                                          )
-    print(  " 双星径向动量大小 |Pr| = ", abs(Pr_3PN) )
-    print(  " 双星切向动量大小 |Pt| = ", abs(Pt_3PN) )
-    print(                                          )
-    print(  " 双星在 t=0 时刻的动量为："              )
-    print( f" P1 = {momentum1}  P2 = {momentum2}"   )
-    print(                                          )
+    if ( input_language == "Chinese" ):
+        print(                                          )
+        print(  " 双星径向动量大小 |Pr| = ", abs(Pr_3PN) )
+        print(  " 双星切向动量大小 |Pt| = ", abs(Pt_3PN) )
+        print(                                          )
+        print(  " 双星在 t=0 时刻的动量为："              )
+        print( f" P1 = {momentum1}  P2 = {momentum2}"   )
+        print(                                          )
+    elif ( input_language == "English" ):
+        print(                                          )
+        print(  " radial momentum of binary stars system |Pr| = ", abs(Pr_3PN) )
+        print(  " tangential momentum of binary stars system |Pt| = ", abs(Pt_3PN) )
+        print(                                              )
+        print(  " momentum of binary stars system at t=0: " )
+        print( f" P1 = {momentum1}  P2 = {momentum2}"       )
+        print(                                              )
 
-    print(                            )
-    print( " 双星系统轨道动量设置完毕 " )
-    print(                            )
+    if ( input_language == "Chinese" ):
+        print(                            )
+        print( " 双星系统轨道动量设置完毕 " )
+        print(                            )
+    elif ( input_language == "English" ):
+        print(                                                                  )
+        print( " orbital momentum of the binary star system has been finished " )
+        print(                                                                  )
 
     ##############################################################################################
 
@@ -916,27 +1037,50 @@ def generate_BBH_orbit_parameters( M1, M2, S1, S2, D0, e0 ):
     # file1 = open( "BBH_parameter.output", "w" )
     file1 = open( os.path.join(input_data.File_directory, "BBH_parameter.output"), "w")
 
-    print(                                           file=file1 )
-    print( " 双星系统轨道参数 ",                      file=file1 )
-    print(                                           file=file1 )
-    print( f" 双星质量：     M1 = {M1}  M2 = {M2} ",  file=file1 )
-    print( " 无量纲质量比为： Q  = M1/M2 = ", m_q,    file=file1 )
-    print( f" 双星无量纲自旋：S1 = {S1}  S2 = {S2} ", file=file1 )
-    print(                                           file=file1 )
-    print( " 双星在 t=0 时刻的坐标为：",               file=file1 )
-    print( " X1 = ", position1[0],                   file=file1 ) 
-    print( " Y1 = ", position1[1],                   file=file1 )
-    print( " X2 = ", position2[0],                   file=file1 ) 
-    print( " Y2 = ", position2[1],                   file=file1 )
-    print(                                           file=file1 )
-    print( " 双星在 t=0 时刻的动量为：",               file=file1 )
-    print( " Pr  = ", Pr_3PN,                        file=file1 ) 
-    print( " Pt  = ", Pt_3PN,                        file=file1 )
-    print( " PX1 = - |Pt| = ", momentum1[0],         file=file1 )
-    print( " PY1 = - |Pr| = ", momentum1[1],         file=file1 ) 
-    print( " PX2 = + |Pt| = ", momentum2[0],         file=file1 )
-    print( " PX2 = + |Pr| = ", momentum2[1],         file=file1 ) 
-    print(                                           file=file1 )
+    if ( input_language == "Chinese" ):
+        print(                                           file=file1 )
+        print( " 双星系统轨道参数 ",                      file=file1 )
+        print(                                           file=file1 )
+        print( f" 双星质量：     M1 = {M1}  M2 = {M2} ",    file=file1 )
+        print( " 无量纲质量比为： Q  = M1/M2 = ", m_q,    file=file1 )
+        print( f" 双星无量纲自旋：S1 = {S1}  S2 = {S2} ", file=file1 )
+        print(                                           file=file1 )
+        print( " 双星在 t=0 时刻的坐标为：",               file=file1 )
+        print( " X1 = ", position1[0],                   file=file1 ) 
+        print( " Y1 = ", position1[1],                   file=file1 )
+        print( " X2 = ", position2[0],                   file=file1 ) 
+        print( " Y2 = ", position2[1],                   file=file1 )
+        print(                                           file=file1 )
+        print( " 双星在 t=0 时刻的动量为：",               file=file1 )
+        print( " Pr  = ", Pr_3PN,                        file=file1 ) 
+        print( " Pt  = ", Pt_3PN,                        file=file1 )
+        print( " PX1 = - |Pt| = ", momentum1[0],         file=file1 )
+        print( " PY1 = - |Pr| = ", momentum1[1],         file=file1 ) 
+        print( " PX2 = + |Pt| = ", momentum2[0],         file=file1 )
+        print( " PX2 = + |Pr| = ", momentum2[1],         file=file1 ) 
+        print(                                           file=file1 )
+    elif ( input_language == "English" ):
+        print(                                                                         file=file1 )
+        print( " orbital parameters of binary star system ",                           file=file1 )
+        print(                                                                         file=file1 )
+        print( f" indivudial mass of binary stars:     M1 = {M1}  M2 = {M2} ",         file=file1 )
+        print(  " dimensionless mass ratio of binary star system: Q  = M1/M2 = ", m_q, file=file1 )
+        print( f" dimensionless spin of binary stars: S1 = {S1}  S2 = {S2} ",          file=file1 )
+        print(                                                                         file=file1 )
+        print( " orbital position of the binary star system at t=0: ",                 file=file1 )
+        print( " X1 = ", position1[0],                                                 file=file1 ) 
+        print( " Y1 = ", position1[1],                                                 file=file1 )
+        print( " X2 = ", position2[0],                                                 file=file1 ) 
+        print( " Y2 = ", position2[1],                                                 file=file1 )
+        print(                                                                         file=file1 )
+        print( " orbital momentum of the binary star system at t=0: ",                 file=file1 )
+        print( " Pr  = ", Pr_3PN,                                                      file=file1 ) 
+        print( " Pt  = ", Pt_3PN,                                                      file=file1 )
+        print( " PX1 = - |Pt| = ", momentum1[0],                                       file=file1 )
+        print( " PY1 = - |Pr| = ", momentum1[1],                                       file=file1 ) 
+        print( " PX2 = + |Pt| = ", momentum2[0],                                       file=file1 )
+        print( " PX2 = + |Pr| = ", momentum2[1],                                       file=file1 ) 
+        print(                                                                         file=file1 )
 
     file1.close()
     
