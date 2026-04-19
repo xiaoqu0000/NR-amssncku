@@ -536,12 +536,12 @@ bssn_class::bssn_class(double Couranti, double StartTimei, double TotalTimei,
 
   DumpList = new MyList<var>(phi0);
   DumpList->insert(trK0);
-  DumpList->insert(gxx0);
-  DumpList->insert(gxy0);
-  DumpList->insert(gxz0);
-  DumpList->insert(gyy0);
-  DumpList->insert(gyz0);
-  DumpList->insert(gzz0);
+  // DumpList->insert(gxx0);
+  // DumpList->insert(gxy0);
+  // DumpList->insert(gxz0);
+  // DumpList->insert(gyy0);
+  // DumpList->insert(gyz0);
+  // DumpList->insert(gzz0);
   // DumpList->insert(Axx0);
   // DumpList->insert(Axy0);
   // DumpList->insert(Axz0);
@@ -561,9 +561,9 @@ bssn_class::bssn_class(double Couranti, double StartTimei, double TotalTimei,
   // DumpList->insert(Rpsi4);
   // DumpList->insert(Ipsi4);
   DumpList->insert(Cons_Ham);
-  DumpList->insert(Cons_Px);
-  DumpList->insert(Cons_Py);
-  DumpList->insert(Cons_Pz);
+  // DumpList->insert(Cons_Px);
+  // DumpList->insert(Cons_Py);
+  // DumpList->insert(Cons_Pz);
   // DumpList->insert(Cons_Gx);
   // DumpList->insert(Cons_Gy);
   // DumpList->insert(Cons_Gz);
@@ -648,14 +648,8 @@ bssn_class::bssn_class(double Couranti, double StartTimei, double TotalTimei,
   GaugeList->insert(Sfz0);
 #endif
   
-  // checkpoint class 在ubuntu24下遇到内存错误，以为是类型问题，结果发现不是
-  // checkpoint class 中增加输出后，莫名其妙好了
+  // checkpoint class 在ubuntu24下遇到内存错误
   // 已查到原因，文件名宽度超出范围
-  
-  // checkpoint class 中的第一个变量类型为bool，而这里的变量类型是int，人为进行一次转换
-  // bool checkrun00 = checkrun;
-  // checkpoint class 中的第二个变量类型为const char，而这里的变量类型是char，人为进行一次转换
-  // const char* checkfilename00 = checkfilename;
 
   CheckPoint = new checkpoint(checkrun, checkfilename, myrank);
   
@@ -2115,6 +2109,8 @@ void bssn_class::Evolve(int Steps)
 
     if (myrank == 0)
       curr_clock = clock();
+      
+    // 从粗网格到细网格并行进行时间演化
 #if (PSTR == 0)
     RecursiveStep(0);
 #elif (PSTR == 1 || PSTR == 2 || PSTR == 3)
@@ -2132,7 +2128,7 @@ void bssn_class::Evolve(int Steps)
     Last2dDump += dT_mon;
     LastCheck += dT_mon;
 
-    // 每当超出 DumpTime 时间，输出相应的 2 进制数据
+    // 每经过 DumpTime 时间，输出相应的 2 进制数据
     if (LastDump >= DumpTime)
     {
       //       misc::tillherecheck("before Dump_Data");
@@ -2151,7 +2147,7 @@ void bssn_class::Evolve(int Steps)
       }
     }
 
-    // 每当超出 d2DumpTime 时间，输出相应的 2 维数据
+    // 每经过 d2DumpTime 时间，输出相应的 2 维数据
     if (Last2dDump >= d2DumpTime)
     {
       //       misc::tillherecheck("before 2dDump_Data");
@@ -2167,6 +2163,7 @@ void bssn_class::Evolve(int Steps)
       }
     }
 
+    // 输出最粗网格每步时间演化中所用的计算时间
     if (myrank == 0)
     {
       prev_clock = curr_clock;
@@ -2234,7 +2231,7 @@ void bssn_class::Evolve(int Steps)
     
     // 只有进程 0 检查 stdin
     if (myrank == 0) {
-        if (check_Stdin_Abort()) {
+        if (check_Stdin_Stop()) {
             shouldAbort = true;
         }
     }
@@ -2253,7 +2250,7 @@ void bssn_class::Evolve(int Steps)
         
     ////////////////////////////////////////////////////////////
 
-    // 每当超过 CheckTime，检查程序运行情况，并输出该时刻相应的数据
+    // 每经过 CheckTime，检查程序运行情况，并输出该时刻相应的数据
     if (LastCheck >= CheckTime)
     {
       LastCheck = 0;
@@ -8430,11 +8427,11 @@ void bssn_class::Enforce_algcon(int lev, int fg)
 
 //================================================================================================
 
-// 该成员函数用来监视是否在屏幕输入 abort
+// 该成员函数用来监视是否在屏幕输入 stop
 
 //================================================================================================
 
-bool bssn_class::check_Stdin_Abort() 
+bool bssn_class::check_Stdin_Stop() 
 {
 
     fd_set readfds;

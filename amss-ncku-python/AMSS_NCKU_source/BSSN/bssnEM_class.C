@@ -203,12 +203,16 @@ void bssnEM_class::Initialize()
   SynchList_cor->insert(By1);
   SynchList_cor->insert(Bz1);
 
-  DumpList->insert(Rphi2);
-  DumpList->insert(Iphi2);
-  DumpList->insert(Rphi1);
-  DumpList->insert(Iphi1);
+  // DumpList->insert(Rphi2);
+  // DumpList->insert(Iphi2);
+  // DumpList->insert(Rphi1);
+  // DumpList->insert(Iphi1);
   DumpList->insert(Ex0);
+  DumpList->insert(Ey0);
+  DumpList->insert(Ez0);
   DumpList->insert(Bx0);
+  DumpList->insert(By0);
+  DumpList->insert(Bz0);
 
   CheckPoint->addvariablelist(StateList);
   CheckPoint->addvariablelist(OldStateList);

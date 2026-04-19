@@ -2038,9 +2038,18 @@ void bssn_class::Evolve(int Steps)
 
   for (int ncount = 1; ncount < Steps + 1; ncount++)
   {
-    cout << "Before Step: " << ncount << " My Rank: " << myrank 
-         << " takes " << MPI_Wtime() - beg_time << " seconds!" << endl;
+    
+    // 主进程输出粗网格每步时间演化开始阶段的计算时间
+    /*
+    if (myrank == 0) 
+    {
+        cout << " Before Step: " << ncount << " My Rank: " << myrank 
+             << " takes " << MPI_Wtime() - beg_time << " seconds!" << endl;
+    } 
     beg_time = MPI_Wtime();
+    */
+    
+    // 从粗网格到细网格并行进行时间演化
 #if (PSTR == 0)
     RecursiveStep(0);
 #elif (PSTR == 1)
@@ -2049,9 +2058,16 @@ void bssn_class::Evolve(int Steps)
     AnalysisStuff(a_lev, dT_mon);
     ParallelStep();
 #endif
-    cout << "After Step: " << ncount << " My Rank: " << myrank 
-         << " takes " << MPI_Wtime() - beg_time << " seconds!" << endl;
+    
+    // 主进程输出粗网格每步时间演化结束阶段的计算时间
+    /*
+    if (myrank == 0) 
+    {
+        cout << " After Step:  " << ncount << " My Rank: " << myrank 
+             << " takes " << MPI_Wtime() - beg_time << " seconds!" << endl;
+    }
     beg_time = MPI_Wtime();
+    */
 
     //     misc::tillherecheck("before Constraint_Out");
 
@@ -2061,6 +2077,7 @@ void bssn_class::Evolve(int Steps)
     Last2dDump += dT_mon;
     LastCheck += dT_mon;
 
+    // 每经过 DumpTime 时间，输出相应的 2 进制数据
     if (LastDump >= DumpTime)
     {
       //       misc::tillherecheck("before Dump_Data");
@@ -2079,6 +2096,7 @@ void bssn_class::Evolve(int Steps)
       }
     }
 
+    // 每经过 d2DumpTime 时间，输出相应的 2 维数据
     if (Last2dDump >= d2DumpTime)
     {
       //       misc::tillherecheck("before 2dDump_Data");
@@ -2094,12 +2112,14 @@ void bssn_class::Evolve(int Steps)
       }
     }
 
+    // 输出最粗网格每步时间演化中所用的计算时间
     if (myrank == 0)
     {
       prev_clock = curr_clock;
       curr_clock = clock();
-      cout << "Timestep # " << ncount << ": integrating to time: " << PhysTime << endl;
-      cout << "used " << (double)(curr_clock - prev_clock) / ((double)CLOCKS_PER_SEC) << " seconds!" << endl;
+      cout << endl;
+      cout << " Timestep # "    << ncount << ": integrating to time: " << PhysTime << "   "
+           << " Computer used " << (double)(curr_clock - prev_clock) / ((double)CLOCKS_PER_SEC) << " seconds!" << endl;
     }
 
     if (PhysTime >= TotalTime)
@@ -2117,10 +2137,11 @@ void bssn_class::Evolve(int Steps)
 //		fgt(PhysTime-dT_mon,StartTime,dT_mon/2),ErrorMonitor);
 #endif
 
+    // 获取计算中用到的内存信息，主进程打印到屏幕上
     bssn_perf.MemoryUsage(&current_min, &current_avg, &current_max,
                           &peak_min, &peak_avg, &peak_max, nprocs);
     if (myrank == 0)
-      printf("Memory usage: current %0.4lg/%0.4lg/%0.4lgMB, "
+      printf(" Memory usage: current %0.4lg/%0.4lg/%0.4lgMB, "
              "peak %0.4lg/%0.4lg/%0.4lgMB\n",
              (double)current_min / (1024.0 * 1024.0),
              (double)current_avg / (1024.0 * 1024.0),
@@ -2128,7 +2149,52 @@ void bssn_class::Evolve(int Steps)
              (double)peak_min / (1024.0 * 1024.0),
              (double)peak_avg / (1024.0 * 1024.0),
              (double)peak_max / (1024.0 * 1024.0));
+             
+    // 输出每一步的 puncture 位置
+    if (myrank == 0)
+    {
+      for (int i_count=0; i_count<BH_num; i_count++)
+      {
+        cout << " puncture position: no." 
+             << setw(2) << setfill(' ')      << i_count                 
+             << " = ("  << Porg0[i_count][0] << " " 
+                        << Porg0[i_count][1] << " "
+                        << Porg0[i_count][2] << ")" 
+             << endl;
+      }
+      cout << endl;
+      cout << " If you think the physical evolution time is enough for this simulation, please input 'stop' in the terminal to stop the MPI processes in the next evolution step ! " << endl;
+      // cout << endl;
+    }
+    
+    ////////////////////////////////////////////////////////////
+    // 如果检测到有输入 "abort"，则退出 MPI 程序
+    ////////////////////////////////////////////////////////////
+    
+    bool shouldAbort = false;
+    
+    // 只有进程 0 检查 stdin
+    if (myrank == 0) {
+        if (check_Stdin_Stop()) {
+            shouldAbort = true;
+        }
+    }
 
+    // 广播 abort 信号给所有进程
+    int abortFlag = shouldAbort ? 1 : 0;
+    MPI_Bcast(&abortFlag, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (abortFlag && myrank == 0) {
+        cout << endl;
+        cout << " Aborting the MPI Process due to 'abort' command !! " << endl;
+        cout << endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);  // 退出 MPI 进程
+        // MPI_Finalize();
+    }
+        
+    ////////////////////////////////////////////////////////////
+
+    // 每经过 CheckTime，检查程序运行情况，并输出该时刻相应的数据
     if (LastCheck >= CheckTime)
     {
       LastCheck = 0;
@@ -7783,6 +7849,45 @@ void bssn_class::Get_runtime_envirment()
   /*if(myrank % 2 == 0){
 
   } */
+}
+
+//================================================================================================
+
+
+
+
+//================================================================================================
+
+// 该成员函数用来监视是否在屏幕输入 stop
+
+//================================================================================================
+
+bool bssn_class::check_Stdin_Stop() 
+{
+
+    fd_set readfds;
+
+    struct timeval timeout;
+
+    FD_ZERO(&readfds);
+    FD_SET(STDIN_FILENO, &readfds);
+
+    // 设置超时为 0 → 非阻塞检查
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+
+    int activity = select(STDIN_FILENO + 1, &readfds, nullptr, nullptr, &timeout);
+
+    if (activity > 0 && FD_ISSET(STDIN_FILENO, &readfds)) {
+        string input_abort;
+        if (cin >> input_abort) {
+            if (input_abort == "stop") {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 //================================================================================================

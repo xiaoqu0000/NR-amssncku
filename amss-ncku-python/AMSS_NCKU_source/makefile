@@ -1,6 +1,6 @@
 
 
-include makefile.inc
+include makefile_xiaoqu.inc
 
 .SUFFIXES: .o .f90 .C .for .cu
 
@@ -139,6 +139,11 @@ AHFDirect = ./AHF_Direct/expansion.o  ./AHF_Direct/expansion_Jacobian.o  \
 
 TwoPunctureFILES = ./Two_Puncture/TwoPunctureABE.o ./Two_Puncture/TwoPunctures.o 
 
+TwoPunctureFILES_New = ./Two_Puncture_New/TwoPunctureABE.o   ./Two_Puncture_New/TwoPunctures.o \
+                       ./Two_Puncture_New/write_Pablo_file.o ./Two_Puncture_New/ABp_to_xyz.o 
+                       
+TwoPuncture_PNOrbit_FILES = ./Two_Puncture_New/PN_orbit.o ./Two_Puncture_New/misc.o ./Two_Puncture_New/lagpolint.o
+
 # file dependences
 $(C++FILES) $(C++FILESGPU) $(F90FILES) $(AHFDIRECT_OBJS) $(CUDAFILES): macrodef.fh
 
@@ -240,13 +245,17 @@ $(AHFDirect): ./AHF_Direct/array.h             ./AHF_Direct/cctk.h       ./AHF_D
 
 $(C++FILES) $(CUDAFILES) $(AHFDirect): macrodef.h
 
-TwoPunctureFILES: ./Two_Puncture/TwoPunctures.h
+$(TwoPunctureFILES): ./Two_Puncture/TwoPunctures.h
+
+$(TwoPunctureFILES_New): ./Two_Puncture_New/TwoPunctures.h ./Two_Puncture_New/comm.h
 
 $(CUDAFILES): ./BSSN_GPU/bssn_gpu.h  ./BSSN_GPU/gpu_mem.h  ./BSSN_GPU/gpu_rhsSS_mem.h
 
 ./misc/misc.o: ./Special_Function/zbesh.o
 
 # projects
+All: ABE ABEGPU TwoPunctureABE TwoPunctureABE_New PN_Orbit
+
 ABE: ABE.o $(C++FILES) $(F90FILES) $(F77FILES) $(AHFDirect) 
 	$(CLINKER) $(CXXAPPFLAGS) -o $@  $(C++FILES) $(F90FILES) $(F77FILES) $(AHFDirect) $(LDLIBS)
 	
@@ -255,6 +264,12 @@ ABEGPU: $(C++FILES_GPU) $(F90FILES) $(F77FILES) $(CUDAFILES) $(AHFDirect)
 
 TwoPunctureABE: $(TwoPunctureFILES)
 	$(CLINKER) $(CXXAPPFLAGS) -o $@ $(TwoPunctureFILES) $(LDLIBS)
+	
+TwoPunctureABE_New: $(TwoPunctureFILES_New)
+	$(CLINKER) $(CXXAPPFLAGS) -o $@ $(TwoPunctureFILES_New) $(LDLIBS)
+	
+PNOrbit: $(TwoPuncture_PNOrbit_FILES)
+	$(CLINKER) $(CXXAPPFLAGS) -o $@ $(TwoPuncture_PNOrbit_FILES) $(LDLIBS)
 
 clean:
-	rm *.o ABE ABEGPU TwoPunctureABE make.log -f
+	rm *.o ABE ABEGPU TwoPunctureABE TwoPunctureABE_New make.log -f

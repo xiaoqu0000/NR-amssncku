@@ -106,33 +106,34 @@
   call getpbh(BHN,Porg,Mass)
 #endif
 
+
 !!! sanity check
   dX = sum(chi)+sum(trK)+sum(dxx)+sum(gxy)+sum(gxz)+sum(dyy)+sum(gyz)+sum(dzz) &
       +sum(Axx)+sum(Axy)+sum(Axz)+sum(Ayy)+sum(Ayz)+sum(Azz)                   &
       +sum(Gamx)+sum(Gamy)+sum(Gamz)                                           &
       +sum(Lap)+sum(betax)+sum(betay)+sum(betaz)
   if(dX.ne.dX) then
-     if(sum(chi).ne.sum(chi))write(*,*)"bssn.f90: find NaN in chi"
-     if(sum(trK).ne.sum(trK))write(*,*)"bssn.f90: find NaN in trk"
-     if(sum(dxx).ne.sum(dxx))write(*,*)"bssn.f90: find NaN in dxx"
-     if(sum(gxy).ne.sum(gxy))write(*,*)"bssn.f90: find NaN in gxy"
-     if(sum(gxz).ne.sum(gxz))write(*,*)"bssn.f90: find NaN in gxz"
-     if(sum(dyy).ne.sum(dyy))write(*,*)"bssn.f90: find NaN in dyy"
-     if(sum(gyz).ne.sum(gyz))write(*,*)"bssn.f90: find NaN in gyz"
-     if(sum(dzz).ne.sum(dzz))write(*,*)"bssn.f90: find NaN in dzz"
-     if(sum(Axx).ne.sum(Axx))write(*,*)"bssn.f90: find NaN in Axx"
-     if(sum(Axy).ne.sum(Axy))write(*,*)"bssn.f90: find NaN in Axy"
-     if(sum(Axz).ne.sum(Axz))write(*,*)"bssn.f90: find NaN in Axz"
-     if(sum(Ayy).ne.sum(Ayy))write(*,*)"bssn.f90: find NaN in Ayy"
-     if(sum(Ayz).ne.sum(Ayz))write(*,*)"bssn.f90: find NaN in Ayz"
-     if(sum(Azz).ne.sum(Azz))write(*,*)"bssn.f90: find NaN in Azz"
-     if(sum(Gamx).ne.sum(Gamx))write(*,*)"bssn.f90: find NaN in Gamx"
-     if(sum(Gamy).ne.sum(Gamy))write(*,*)"bssn.f90: find NaN in Gamy"
-     if(sum(Gamz).ne.sum(Gamz))write(*,*)"bssn.f90: find NaN in Gamz"
-     if(sum(Lap).ne.sum(Lap))write(*,*)"bssn.f90: find NaN in Lap"
-     if(sum(betax).ne.sum(betax))write(*,*)"bssn.f90: find NaN in betax"
-     if(sum(betay).ne.sum(betay))write(*,*)"bssn.f90: find NaN in betay"
-     if(sum(betaz).ne.sum(betaz))write(*,*)"bssn.f90: find NaN in betaz"
+     if(sum(chi).ne.sum(chi)) write(*,*) "bssn.f90: find NaN in chi"
+     if(sum(trK).ne.sum(trK)) write(*,*) "bssn.f90: find NaN in trk"
+     if(sum(dxx).ne.sum(dxx)) write(*,*) "bssn.f90: find NaN in dxx"
+     if(sum(gxy).ne.sum(gxy)) write(*,*) "bssn.f90: find NaN in gxy"
+     if(sum(gxz).ne.sum(gxz)) write(*,*) "bssn.f90: find NaN in gxz"
+     if(sum(dyy).ne.sum(dyy)) write(*,*) "bssn.f90: find NaN in dyy"
+     if(sum(gyz).ne.sum(gyz)) write(*,*) "bssn.f90: find NaN in gyz"
+     if(sum(dzz).ne.sum(dzz)) write(*,*) "bssn.f90: find NaN in dzz"
+     if(sum(Axx).ne.sum(Axx)) write(*,*) "bssn.f90: find NaN in Axx"
+     if(sum(Axy).ne.sum(Axy)) write(*,*) "bssn.f90: find NaN in Axy"
+     if(sum(Axz).ne.sum(Axz)) write(*,*) "bssn.f90: find NaN in Axz"
+     if(sum(Ayy).ne.sum(Ayy)) write(*,*) "bssn.f90: find NaN in Ayy"
+     if(sum(Ayz).ne.sum(Ayz)) write(*,*) "bssn.f90: find NaN in Ayz"
+     if(sum(Azz).ne.sum(Azz)) write(*,*) "bssn.f90: find NaN in Azz"
+     if(sum(Gamx).ne.sum(Gamx)) write(*,*) "bssn.f90: find NaN in Gamx"
+     if(sum(Gamy).ne.sum(Gamy)) write(*,*) "bssn.f90: find NaN in Gamy"
+     if(sum(Gamz).ne.sum(Gamz)) write(*,*) "bssn.f90: find NaN in Gamz"
+     if(sum(Lap).ne.sum(Lap)) write(*,*) "bssn.f90: find NaN in Lap"
+     if(sum(betax).ne.sum(betax)) write(*,*) "bssn.f90: find NaN in betax"
+     if(sum(betay).ne.sum(betay)) write(*,*) "bssn.f90: find NaN in betay"
+     if(sum(betaz).ne.sum(betaz)) write(*,*) "bssn.f90: find NaN in betaz"
      gont = 1
      return
   endif

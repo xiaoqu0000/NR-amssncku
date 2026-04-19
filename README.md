@@ -222,6 +222,8 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2026年2月 更新：增加中英文语言支持
 
+2026年4月 更新：增加Jupyter notebook支持
+
 #### Update records
 
 September 2025   First commit
@@ -231,6 +233,8 @@ December 2025    Update: Achieved the automatic plotting of gravitational wave a
 January 2026     Update: Fixed some bugs.
 
 February 2026    Update: Added English and Chinese language support.
+
+February 2026    Update: Added Jupyter notebook support.
 
 #### 重要提示
 

@@ -6,6 +6,7 @@
 #include <strstream>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 using namespace std;
 #else
 #include <iostream.h>
@@ -14,6 +15,7 @@ using namespace std;
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #endif
 
 #include "Ansorg.h"

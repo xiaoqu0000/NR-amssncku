@@ -62,8 +62,11 @@ namespace parameters
 
 int main(int argc, char *argv[])
 {
-      int myrank = 0, nprocs = 1;
+      // 初始化 MPI
       MPI_Init(&argc, &argv);
+
+      int myrank = 0, nprocs = 1;
+      // MPI_Init(&argc, &argv);
       MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
       MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
