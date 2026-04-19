@@ -4,7 +4,7 @@
 ## 该文件定义程序的一些屏幕输出
 ## 小曲
 ## 2024/03/22
-## 2025/09/13 修改
+## 2026/02/27 修改
 ##
 ##################################################################
 
@@ -51,19 +51,31 @@ def setup( input_language ):
             print( " Symmetry Setting is Wrong !!! " )
             print(                                   )
     
+    ## 固定网格为长方体网格
     minimal_domain_size_static_x =   maximal_domain_size_static_x / ( (devide_factor)**(static_grid_level-1) )
     minimal_domain_size_static_y =   maximal_domain_size_static_y / ( (devide_factor)**(static_grid_level-1) )
     minimal_domain_size_static_z =   maximal_domain_size_static_z / ( (devide_factor)**(static_grid_level-1) )
-    maximal_domain_size_moving = ( minimal_domain_size_static_x / devide_factor ) * ( moving_grid_number / static_grid_number )
-    minimal_domain_size_moving =   maximal_domain_size_moving / ( (devide_factor)**(input_data.moving_grid_level-1) )
+    
+    ## 强行设定移动网格为立方体网格
+    ## 这里要转化为 numpy 数组，否则报错
+    maximal_domain_size_moving_x = numpy.array( [ - 0.5 * (minimal_domain_size_static_x[1] - minimal_domain_size_static_x[0]) / devide_factor,     \
+                                                  + 0.5 * (minimal_domain_size_static_x[1] - minimal_domain_size_static_x[0]) / devide_factor  ] ) \
+                                   * ( moving_grid_number / static_grid_number )   
+    maximal_domain_size_moving = maximal_domain_size_moving_x
+    minimal_domain_size_moving = maximal_domain_size_moving / ( (devide_factor)**(input_data.moving_grid_level-1) )
+    ## 原来的设定
+    ## maximal_domain_size_moving = ( minimal_domain_size_static_x / devide_factor ) * ( moving_grid_number / static_grid_number )
 
+    ## 设定网格分辨率
     maximal_resolution_static = (input_data.largest_box_xyz_max[0] - input_data.largest_box_xyz_min[0]) / static_grid_number
     minimal_resolution_static = maximal_resolution_static / ( (devide_factor)**(static_grid_level-1) )
     maximal_resolution_moving = minimal_resolution_static / devide_factor
     minimal_resolution_moving = maximal_resolution_moving / ( (devide_factor)**(moving_grid_level-1) )
 
+    ## 设定时间步长
     TimeStep = input_data.Courant_Factor * maximal_resolution_static / ( (devide_factor)**(input_data.refinement_level) )
 
+    ## 设定 shell-patch 网格
     shell_grid_number              = input_data.shell_grid_number
     minimal_domain_size_shellpatch = input_data.largest_box_xyz_max[0]
     maximal_domain_size_shellpatch = input_data.largest_box_xyz_max[0] + maximal_resolution_static * shell_grid_number[2]

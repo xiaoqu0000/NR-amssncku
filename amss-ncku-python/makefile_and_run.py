@@ -116,6 +116,53 @@ def makefile_TwoPunctureABE( input_language ):
 
 
 
+
+##################################################################
+
+## 这个函数编译 AMSS-NCKU 的后牛顿程序 PNOrbit
+
+def makefile_PNOrbit( input_language ):
+
+    if ( input_language == "Chinese" ):
+        print(                                    )
+        print( " 正在编译 AMSS-NCKU 程序 PNOrbit " ) 
+        print(                                    )
+    elif ( input_language == "English" ):
+        print(                                                      )
+        print( " Compiling the AMSS-NCKU executable file PNOrbit " )
+        print(                                                      )
+    
+    ## 编译命令
+    makefile_command = "make" + " PNOrbit"
+
+    ## 使用subprocess.Popen来执行命令，并实时打印输出
+    makefile_process = subprocess.Popen(makefile_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) 
+    
+    ## 循环读取输出并打印
+    for line in makefile_process.stdout:
+        print(line, end='')  # 实时打印输出 
+        
+    ## 等待进程结束
+    makefile_return_code = makefile_process.wait()
+    if makefile_return_code != 0:
+        raise subprocess.CalledProcessError(makefile_return_code, makefile_command)
+        
+    if ( input_language == "Chinese" ):
+        print(                                   )
+        print( " AMSS-NCKU 程序 PNOrbit 编译完成" ) 
+        print(                                   )
+    elif ( input_language == "English" ):   
+        print(                                                                       ) 
+        print( " Compilation of the AMSS-NCKU executable file PNOrbit is finished " )
+        print(                                                                       )
+    
+    return
+    
+##################################################################
+
+
+
+
 ##################################################################
 
 ## 这个函数运行 AMSS-NCKU 主程序 ABE

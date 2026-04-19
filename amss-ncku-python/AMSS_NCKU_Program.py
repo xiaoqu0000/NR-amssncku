@@ -82,6 +82,9 @@ os.mkdir(binary_results_directory)
 figure_directory = os.path.join(File_directory, "figure")
 os.mkdir(figure_directory)
 
+video_directory = os.path.join(File_directory, "video")
+os.mkdir(video_directory)
+
 ## 屏幕输出文件目录已生成
 print_information.print_make_directory( input_language )
 
@@ -147,8 +150,8 @@ main_program_function.generate_macrodef_file( input_language )
 ## 屏幕输出正在编译 AMSS-NCKU
 print_information.print_compile_AMSS_NCKU( input_language )
 
-AMSS_NCKU_source_path = "AMSS_NCKU_source"
-AMSS_NCKU_source_copy = os.path.join(File_directory, "AMSS_NCKU_source_copy")
+AMSS_NCKU_source_path  = "AMSS_NCKU_source"
+AMSS_NCKU_compile_path = os.path.join(File_directory, "AMSS_NCKU_compile")
 
 ###############################
 
@@ -164,7 +167,7 @@ if not os.path.exists(AMSS_NCKU_source_path):
 ###############################
 
 # 拷贝 AMSS-NCKU 的源文件，准备编译
-shutil.copytree(AMSS_NCKU_source_path, AMSS_NCKU_source_copy)    
+shutil.copytree(AMSS_NCKU_source_path, AMSS_NCKU_compile_path)    
 
 # 将整个src文件夹复制到dst位置
 # shutil.copytree(src, dst)
@@ -174,8 +177,8 @@ shutil.copytree(AMSS_NCKU_source_path, AMSS_NCKU_source_copy)
 macrodef_h_path  = os.path.join(File_directory, "macrodef.h") 
 macrodef_fh_path = os.path.join(File_directory, "macrodef.fh") 
 
-shutil.copy2(macrodef_h_path,  AMSS_NCKU_source_copy)
-shutil.copy2(macrodef_fh_path, AMSS_NCKU_source_copy)
+shutil.copy2(macrodef_h_path,  AMSS_NCKU_compile_path)
+shutil.copy2(macrodef_fh_path, AMSS_NCKU_compile_path)
 
 # 复制文件到目标位置
 # shutil.copy2(source_file_path, target_location)
@@ -188,15 +191,26 @@ shutil.copy2(macrodef_fh_path, AMSS_NCKU_source_copy)
 import makefile_and_run
 
 ## 先切换到目标文件夹
-os.chdir(AMSS_NCKU_source_copy)
+os.chdir(AMSS_NCKU_compile_path)
  
 ## 编译 AMSS-NCKU 的主程序 ABE/ABEGPU
 makefile_and_run.makefile_ABE( input_language )
 
 ## 如果初值方法选为 TwoPuncture，编译可执行文件 TwoPunctureABE 
+## 如果初值方法选为其它方法，则跳过这一步
 
 if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ): 
     makefile_and_run.makefile_TwoPunctureABE( input_language )
+else:
+    print()
+    
+## 如果设置 puncture 的方式选为 Automatically-BBH，编译可执行文件 PNOrbit 
+## 如果设置 puncture 的方式选为 Manually，则跳过这一步
+
+if (input_data.puncture_data_set == "Automatically-BBH" ): 
+    makefile_and_run.makefile_PNOrbit( input_language )
+elif (input_data.puncture_data_set == "Manually" ): 
+    print()
     
 ###########################
 
@@ -211,9 +225,9 @@ print()
 ## 将 AMSS-NCKU 程序可执行文件 ABE 复制到程序运行的文件夹
 
 if (input_data.GPU_Calculation == "no"):
-    ABE_file = os.path.join(AMSS_NCKU_source_copy, "ABE")
+    ABE_file = os.path.join(AMSS_NCKU_compile_path, "ABE")
 elif (input_data.GPU_Calculation == "yes"):
-    ABE_file = os.path.join(AMSS_NCKU_source_copy, "ABEGPU")
+    ABE_file = os.path.join(AMSS_NCKU_compile_path, "ABEGPU")
 
 if not os.path.exists( ABE_file ):
     print_information.print_no_ABE_error( input_language )  ## 屏幕输出不存在 ABE/ABEGPU 的报错信息
@@ -225,10 +239,11 @@ shutil.copy2(ABE_file, output_directory)
 
 ## 如果初值方法选为 TwoPuncture，将 AMSS-NCKU 程序可执行文件 TwoPunctureABE 复制到程序运行的文件夹
 
-TwoPuncture_file = os.path.join(AMSS_NCKU_source_copy, "TwoPunctureABE")
+TwoPuncture_file = os.path.join(AMSS_NCKU_compile_path, "TwoPunctureABE")
 
-if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
+if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
+    ## 如果找不到可执行文件 TwoPunctureABE，屏幕输出报错信息
     if not os.path.exists( TwoPuncture_file ):
         print_information.print_no_TwoPunture_error( input_language ) 
 
@@ -237,12 +252,27 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
 ###########################
 
+## 如果设置 puncture 的方式选为 Automatically-BBH，将 AMSS-NCKU 程序可执行文件 PNOrbit 拷贝到程序运行的文件夹
+
+PNOrbit_file = os.path.join(AMSS_NCKU_compile_path, "PNOrbit")
+
+if ( input_data.puncture_data_set == "Automatically-BBH"  ):
+
+    ## 如果找不到可执行文件 PNOrbit，屏幕输出报错信息
+    if not os.path.exists( PNOrbit_file ):
+        print_information.print_no_PNOrbit_error( input_language ) 
+
+    ## 复制可执行文件 PNOrbit 到程序运行目录
+    shutil.copy2(PNOrbit_file, output_directory)
+
+###########################
+
 
 ##################################################################
 
 ## 如果初值方法选为 TwoPuncture，生成 TwoPuncture 的输入文件
 
-if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
+if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
     
     ## 屏幕输出生成 TwoPuncture 输入文件
     print_information.print_generate_TwoPunture_input( input_language )
@@ -276,7 +306,6 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
     os.chdir(output_directory)
 
     ## 运行 TwoPuncture 程序
-    
     makefile_and_run.run_TwoPunctureABE( input_language )
     
     ###########################
@@ -361,6 +390,7 @@ elif (input_data.Equation_Class == "BSSN-EScalar"):
 ##  对 AMSS-NCKU 程序运行结果进行画图
 
 import plot_xiaoqu
+import generate_video_xiaoqu
 import plot_GW_strain_amplitude_xiaoqu
 
 ## 屏幕输出开始画图
@@ -388,6 +418,9 @@ for i in range(input_data.grid_level):
 
 ## 对储存的二进制数据画出图像
 plot_xiaoqu.generate_binary_data_plot( input_language, binary_results_directory, figure_directory )
+
+## 对储存的二进制数据生成视频
+generate_video_xiaoqu.generate_binary_data_video( input_language, figure_directory, video_directory )
 
 ##################################################################
 

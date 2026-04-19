@@ -1,32 +1,38 @@
 
 #################################################
-## 这里包含了数值相对论所需要的输入
+##
+## 这个文件包含了数值相对论所需要的输入
+## 小曲
+## 2024/03/19 --- 2025/12/11
+##
 #################################################
 
 import numpy  
-import math
-#################################################
-## 设置程序运行目录和计算资源
-## Setting MPI processes and the output file directory
+
 #################################################
 
-File_directory   = "3BH_Collide"                         ## 程序运行目录             output file directory
+## 设置程序运行目录和计算资源
+## Setting MPI processes and the output file directory
+
+File_directory   = "BBH_test2"               ## 程序运行目录                          output file directory
 Output_directory = "binary_output"               ## 存放二进制数据的子目录     binary data file directory
                                                  ## The file directory name should not be too long
-MPI_processes    = 8                             ## 想要调用的进程数目        number of mpi processes used in the simulation
+MPI_processes    = 6                             ## 想要调用的进程数目            number of mpi processes used in the simulation
 
 GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no   Use GPU or not 
                                                  ## (prefer "no" in the current version, because the GPU part may have bugs when integrated in this Python interface)
 CPU_Part         = 1.0
 GPU_Part         = 0.0
 
+#################################################
+
 
 #################################################
+
 ## 设置物理系统和程序计算方法
 ## Setting the physical system and numerical method
-#################################################
 
-Symmetry                 = "equatorial-symmetry"   ## Symmetry of System: choose equatorial-symmetry, no-symmetry, octant-symmetry
+Symmetry                 = "equatorial-symmetry"           ## Symmetry of System: choose equatorial-symmetry, no-symmetry, octant-symmetry
                                                    ## 注意：如果选择 octant-symmetry 最好使用固定网格计算，octant-symmetry 对移动网格有些 bug 
 Equation_Class           = "BSSN"                  ## Evolution Equation: choose "BSSN", "BSSN-EScalar", "BSSN-EM", "Z4C" 
                                                    ##       BSSN 和 Z4C   适合于 GR 旋转黑洞的真空计算
@@ -42,48 +48,52 @@ Initial_Data_Method      = "Cao-Analytical"        ## 设置求解数值相对�
 Time_Evolution_Method    = "runge-kutta-45"        ## 时间演化方法     time evolution method: choose "runge-kutta-45"
 Finite_Diffenence_Method = "6th-order"             ## 有限差分方法     finite-difference method: choose "2nd-order", "4th-order", "6th-order", "8th-order"
 
+#################################################
+
 
 #################################################
+
 ## 设置时间演化信息
 ## Setting the time evolutionary information
-#################################################
 
 Start_Evolution_Time     = 0.0                    ## 起始演化时间   start evolution time t0
-Final_Evolution_Time     = 200.0                  ## 最终演化时间   final evolution time t1
+Final_Evolution_Time     = 20.0                   ## 最终演化时间   final evolution time t1
 Check_Time               = 100.0
-Dump_Time                = 40.0                   ## 每隔一定时间间隔储存数据   time inteval dT for dumping binary data
+Dump_Time                = 100.0                  ## 每隔一定时间间隔储存数据   time inteval dT for dumping binary data
 D2_Dump_Time             = 100.0                  ## dump the ascii data for 2d surface after dT'
 Analysis_Time            = 0.1                    ## dump the puncture position and GW psi4 after dT"
 Evolution_Step_Number    = 10000000               ## 最大迭代次数       stop the calculation after the maximal step number
 Courant_Factor           = 0.5                    ## Courant 因子（决定每一步时间演化的时间间隔）    Courant Factor
 Dissipation              = 0.15                   ## 耗散因子                                                                                    Kreiss-Oliger Dissipation Strength
 
+#################################################
+
 
 #################################################
-## 设置AMR网格信息
-## Setting the AME grid structure
-#################################################
+
+## 设置 AMR 网格信息
+## Setting the AMR grid structure
 
 basic_grid_set    = "Patch"                          ## 设定网格类型，可选 Patch 和 Shell-Patch     grid structure: choose "Patch" or "Shell-Patch"
-grid_center_set   = "Cell"                           ## 网格中心设置，可选 Cell 和 Vertex           grid center: chose "Cell" or "Vertex"
+grid_center_set   = "Vertex"                           ## 网格中心设置，可选 Cell 和 Vertex           grid center: chose "Cell" or "Vertex"
 
-grid_level        = 9                                ## 设置格点的总层数              total number of AMR grid levels
-static_grid_level = 6                                ## 设置静态格点的层数            number of AMR static grid levels
+grid_level        = 8                               ## 设置格点的总层数              total number of AMR grid levels
+static_grid_level = 5                                ## 设置静态格点的层数            number of AMR static grid levels
 moving_grid_level = grid_level - static_grid_level   ## 可移动格点的层数             number of AMR moving grid levels
 
 analysis_level    = 0
-refinement_level  = 4                                ## 从该层开始进行时间细化        time refinement start from this grid level
+refinement_level  = 3                                ## 从该层开始进行时间细化        time refinement start from this grid level
 
-largest_box_xyz_max = [400.0, 400.0, 400.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
+largest_box_xyz_max = [600.0, 600.0, 600.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
                                                      ## not ne cess ary to be cubic for "Patch" grid s tructure
                                                      ## need to be a cubic box for "Shell-Patch" grid structure
 ## largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
-largest_box_xyz_min = [-400.0, -400.0, -400.0]
+largest_box_xyz_min = [-600.0, -600.0, -600.0]
 
-static_grid_number = 108                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
+static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
                                                      ## grid points of each static AMR grid (in x direction)
                                                      ## (grid points in y and z directions are automatically adjusted)
-moving_grid_number = 40                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
+moving_grid_number = 48                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
 shell_grid_number  = [32, 32, 100]                   ## 设置最外层球状网格（shell patch）的格点数目     grid points of Shell-Patch grid
                                                      ## 以 phi、theta、r 的顺序给定                                        in (phi, theta, r) direction
 devide_factor      = 2.0                             ## 设置相邻两层网格分辨率的比例（不要轻易改变）
@@ -92,17 +102,19 @@ devide_factor      = 2.0                             ## 设置相邻两层网格
 static_grid_type   = 'Linear'                        ## 设置固定格点的类型，可选 'Linear'      AMR static grid structure , only supports "Linear"
 moving_grid_type   = 'Linear'                        ## 设置可移动格点的类型，可选 'Linear'    AMR moving grid structure , only supports "Linear"
 
-quarter_sphere_number = 96                           ## 1/4 球面积分的格点数目
+quarter_sphere_number = 96                          ## 1/4 球面积分的格点数目
                                                      ## grid number of 1/4 s pher ical surface
                                                      ## (which is needed for evaluating the spherical surface integral)
 
 #################################################
 
-## 设置黑洞 puncture（穿刺法）的信息
-## Setting the puncture information
+
 #################################################
 
-puncture_number       = 3                                     
+## 设置黑洞 puncture （穿刺法）的信息
+## Setting the puncture information
+
+puncture_number       = 2                                     
 
 position_BH           = numpy.zeros( (puncture_number, 3) )   
 parameter_BH          = numpy.zeros( (puncture_number, 3) )   
@@ -119,9 +131,9 @@ puncture_data_set     = "Manually"                       ## 设置双星轨道�
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## black hole parameter (M Q* a*)
 ## 质量  无量纲电荷  无量纲自旋
-parameter_BH[0] = [ 1.0/3.0,  0.0,  0.0 ]   
-parameter_BH[1] = [ 1.0/3.0,  0.0,  0.0 ] 
-parameter_BH[2] = [ 1.0/3.0,  0.0,  0.0 ]   ## 多黑动手动添加
+parameter_BH[0] = [ 1.0,  0.0,  0.0 ]   
+parameter_BH[1] = [ 1.0,  0.0,  0.0 ] 
+## parameter_BH[2] = [ 0.5,  0.0,  0.0 ]   ## 多黑动手动添加
 ## 注意，如果求解数值相对论初值的方法选为 Ansorg-TwoPuncture ，第一个黑洞必须为质量较大的那个，且黑洞总质量会自动 rescale 为 M=1 （其它情况下必须手动 rescale）
 
 ## 设置每个黑洞的无量纲自旋
@@ -129,7 +141,7 @@ parameter_BH[2] = [ 1.0/3.0,  0.0,  0.0 ]   ## 多黑动手动添加
 ## 无对称性时 ，需要手动给 3 个方向的自旋角动量
 dimensionless_spin_BH[0] = [ 0.0,  0.0,  0.0 ]   
 dimensionless_spin_BH[1] = [ 0.0,  0.0,  0.0 ]  
-dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]  ## 多黑动手动添加
+## dimensionless_spin_BH[2] = [ 0.0,  0.0,   0.0  ]  ## 多黑动手动添加
 
 #---------------------------------------------
 
@@ -160,29 +172,30 @@ Distance_final   = 10.0
 ## If puncture_data_set is chosen to be "Manually", it is necessary to set the position and momentum of each puncture manually
 
 ## 设置每个黑洞的初始位置     initial position for each puncture
-position_BH[0]  = [                 0.0, +6.0, 0.0 ]  
-position_BH[1]  = [ +3.0*math.sqrt(3.0), -3.0, 0.0 ] 
-position_BH[2]  = [ -3.0*math.sqrt(3.0), -3.0, 0.0 ]  ## 多黑洞手动添加
+position_BH[0]  = [  0.0, -3.0, 0.0 ]  
+position_BH[1]  = [  0.0,  3.0, 0.0 ] 
+## position_BH[2]  = [  0.0, 0.0, 0.0 ]  ## 多黑洞手动添加
 
 ## 设置每个黑洞的动量信息    initial mumentum for each puncture
 ## (needed for "Manually" case, does not affect the "Automatically-BBH" case)
-momentum_BH[0]  = [ 0.0,  0.0,  0.0 ]
-momentum_BH[1]  = [ 0.0,  0.0,  0.0 ]
-momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
-
-#---------------------------------------------
+momentum_BH[0]  = [ 0.0,  0.0,   0.0 ]
+momentum_BH[1]  = [ 0.0,  0.0,   0.0 ]
+## momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
 
 
 #################################################
+
+
+#################################################
+
 ## 设置引力波和探测器的相关信息
 ## Setting the gravitational wave information
-#################################################
 
 GW_L_max        = 4                      ## 引力波最大的 L    maximal L number in gravitational wave
 GW_M_max        = 4                      ## 引力波最大的 M    maximal M number in gravitational wave
-Detector_Number = 6                     ## 探测器的数目            number of dector
+Detector_Number = 11                     ## 探测器的数目            number of dector
 Detector_Rmin   = 50.0                   ## 最近探测器的距离   nearest dector distance
-Detector_Rmax   = 100.0                  ## 最远探测器的距离   farest dector distance
+Detector_Rmax   = 150.0                  ## 最远探测器的距离   farest dector distance
 
 #################################################
 
@@ -227,26 +240,30 @@ FR_l2     = 10000.0
 FR_phi0   = 0.00005
 FR_r0     = 120.0
 FR_sigma0 = 8.0
-FR_Choice = 2          ## Choice 1 2 3 4 5
-                       ## 可选为 1 2 3 4 5
-                       ## 1: phi(r) = phi0 * Exp(-(r-r0)**2/sigma0)  
+FR_Choice = 2          ## Choice 可选为 1 2 3 4 5
+                       ## 1: phi(r) = phi0 * Exp(-(r-r0)**2/sigma0)   
                        ##    V(r)   = 0
                        ## 2: phi(r) =  phi0 * a2^2/(1+a2^2)  
                        ##    V(r)   = Exp(-8*Sqrt(PI/3)*phi(r)) * (1-Exp(4*Sqrt(PI/3)*phi(r)))**2 / (32*PI*a2)
+                       ##    该 V(r) 由  f(R) = R + a2*R^2 诱导
                        ## 3: Schrodinger-Newton 系统给定的 phi(r) 
                        ##    V(r)   = Exp(-8*Sqrt(PI/3)*phi(r)) * (1-Exp(4*Sqrt(PI/3)*phi(r)))**2 / (32*PI*a2)
+                       ##    该 V(r) 由  f(R) = R + a2*R^2 诱导
                        ## 4: phi(r) = phi0 * 0.5 * ( tanh((r+r0)/sigma0) - tanh((r-r0)/sigma0) )  
                        ##    V(r)   = 0
+                       ##    f(R)   = R + a2*R^2  其中 a2 设定为 a2 = +oo
                        ## 5: phi(r) = phi0 * Exp(-(r-r0)**2/sigma)   
                        ##    V(r)   = 0
 
+#################################################
+
 
 #################################################
-## 其它选项，还在测试中
+
+## 其它选项（还在测试中）
 ## 但不建议用户轻易改动这些选项
 ## Other parameters (testing)
 ## (please do not change if not necessary)
-#################################################
 
 boundary_choice = "BAM-choice"     ## 索莫菲边界条件设定，可选 "BAM-choice" 和 "Shibata-choice"
                                    ## Sommerfeld boundary condition : choose "BAM-choice" or "Shibata-choice" 
@@ -265,8 +282,22 @@ gauge_choice  = 0                  ## 规范条件选取
                                    ## 目前的版本建议选为 0 或 1
                                    ## prefer 0 or 1
                                    
-tetrad_type  = 2                   ## tetradtype 
-                                   ## 选取 0 1 2
-                                   ## choose 0 1 2
+tetrad_type  = 2                   ## tetradtype 选取
+                                   ## 以下   v:r; u: phi; w: theta
+                                   ##      v^a = (x,y,z)
+                                   ## 0: orthonormal order: v,u,w
+                                   ##    v^a = (x,y,z)   
+                                   ##    m = (phi - i theta)/sqrt(2) 
+                                   ##    following Frans, Eq.(8) of  PRD 75, 124018(2007)
+                                   ## 1: orthonormal order: w,u,v
+                                   ##    m = (theta + i phi)/sqrt(2) 
+                                   ##    following Sperhake, Eq.(3.2) of  PRD 85, 124062(2012)    
+                                   ## 2: orthonormal order: v,u,w
+                                   ##    v_a = (x,y,z)
+                                   ##    m = (phi - i theta)/sqrt(2) 
+                                   ##    following Frans, Eq.(8) of  PRD 75, 124018(2007)
                                    ## 目前的版本建议选为 2
                                    ## prefer 2
+                                   
+#################################################
+                                   

@@ -4,7 +4,7 @@
 ## 这个文件包含了数值相对论所需要的格点
 ## 小曲
 ## 2024/03/20
-## 2026/02/08 修改 
+## 2026/02/27 修改 
 ##
 #########################################################################
 
@@ -211,6 +211,7 @@ def generate_initial_AMR_grid( input_language ):
 
     ## 设置其它层固定网格的坐标最大值与最小值
     for i in range(input_data.static_grid_level-1) :
+        
         ## 如果坐标原点不在最外层固定网格上，调整最外层固定网格，使得原点位于最外层网格上
         if i==0:
             for nn in range(static_grid_number_x):
@@ -240,6 +241,7 @@ def generate_initial_AMR_grid( input_language ):
                     Grid_Z_Max[i] = Grid_Z_Max[i] - grid_adjust
                     print( " after adjust: Grid Z_min = ", Grid_Z_Min[i] )
                     print( " after adjust: Grid Z_max = ", Grid_Z_Max[i] )
+        
         ## 每层固定网格最小值（或最大值）为上一层固定网格最小值（或最大值）除以因子 devide_factor
         Grid_X_Min[i+1] = Grid_X_Min[i] / input_data.devide_factor    
         Grid_X_Max[i+1] = Grid_X_Max[i] / input_data.devide_factor    
@@ -255,15 +257,19 @@ def generate_initial_AMR_grid( input_language ):
     ## 设置第一层可移动网格的坐标最大值与最小值
     i = input_data.static_grid_level 
     if (i < input_data.grid_level):
-        Grid_X_Min[i] = ( Grid_X_Min[i-1] / input_data.devide_factor ) * adjust_factor
-        Grid_X_Max[i] = - Grid_X_Min[i]
-        ## Grid_X_Max[i] = ( Grid_X_Max[i-1] / input_data.devide_factor ) * adjust_factor   
-        ## 原来的设定
+ 
+        ## 原来的设定，移动网格可能变为长方体网格
+        ## Grid_X_Min[i] = ( Grid_X_Min[i-1] / input_data.devide_factor ) * adjust_factor 
+        ## Grid_X_Max[i] = ( Grid_X_Max[i-1] / input_data.devide_factor ) * adjust_factor 
         ## Grid_Y_Min[i] = ( Grid_Y_Min[i-1] / input_data.devide_factor ) * adjust_factor
         ## Grid_Y_Max[i] = ( Grid_Y_Max[i-1] / input_data.devide_factor ) * adjust_factor
         ## Grid_Z_Min[i] = ( Grid_Z_Min[i-1] / input_data.devide_factor ) * adjust_factor
         ## Grid_Z_Max[i] = ( Grid_Z_Max[i-1] / input_data.devide_factor ) * adjust_factor
+
         ## 现在的设定，总是保证移动网格为立方网格
+        Grid_X_Min[i] = - ( 0.5 * (Grid_X_Max[i-1] - Grid_X_Min[i-1]) / input_data.devide_factor ) * adjust_factor
+        Grid_X_Max[i] = - Grid_X_Min[i] 
+
         Grid_Y_Min[i] = Grid_X_Min[i]
         Grid_Y_Max[i] = Grid_X_Max[i]
         Grid_Z_Min[i] = Grid_X_Min[i]
@@ -481,6 +487,9 @@ def generate_initial_AMR_grid( input_language ):
         print(                                                         )
         print( " adjustment of moving grid points has been completed " )
         print(                                                         )
+
+    ## 测试
+    ## print( Moving_Grid_X_Min[0,0] ) 
 
     #################################################
     
@@ -787,8 +796,9 @@ def append_AMSSNCKU_cgh_input( input_language, initial_AMR_grid_data ):
             else:
                 print( " Symmetry Setting Error" )
 
-            print( f"cgh::bbox[{j}][{k}][0]  = { initial_AMR_grid_data.Moving_Grid_X_Min[i,k] } ", file=file1 )
-            print( f"cgh::bbox[{j}][{k}][1]  = { initial_AMR_grid_data.Moving_Grid_Y_Min[i,k] } ", file=file1 )
+            ## 原设定
+            ## print( f"cgh::bbox[{j}][{k}][0]  = { initial_AMR_grid_data.Moving_Grid_X_Min[i,k] } ", file=file1 )
+            ## print( f"cgh::bbox[{j}][{k}][1]  = { initial_AMR_grid_data.Moving_Grid_Y_Min[i,k] } ", file=file1 )
 
             if ( input_data.Symmetry == "octant-symmetry" ):
                 print( f"cgh::bbox[{j}][{k}][0]  = { max(0.0, initial_AMR_grid_data.Moving_Grid_X_Min[i,k]) } ", file=file1 )

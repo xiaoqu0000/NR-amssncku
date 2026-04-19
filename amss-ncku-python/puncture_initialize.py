@@ -53,7 +53,7 @@ def generate_puncture_input_data( input_language ):
         BBH_M2 = 1.0          / ( 1.0 + mass_ratio_Q )
 
         ## 导入双黑洞距离和偏心率
-        distance_d0    = input_data.Distance
+        distance_d0    = input_data.Distance_final
         ellipticity_e0 = input_data.e0
     
         ## 设置双黑洞的坐标

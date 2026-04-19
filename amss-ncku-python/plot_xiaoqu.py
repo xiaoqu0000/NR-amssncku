@@ -3,7 +3,7 @@
 ##
 ## 这个文件对 AMSS-NCKU 数值相对论的结果进行画图
 ## 小曲
-## 2024/10/01 --- 2025/09/14
+## 2024/10/01 --- 2026/02/27
 ##
 #################################################
 
@@ -26,16 +26,36 @@ import AMSS_NCKU_Input as input_data
 
 def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
 
-    # 生成若干文件夹存放图片
 
-    surface_plot_outdir = os.path.join( figure_outdir, "surface plot" )
-    os.mkdir( surface_plot_outdir )
+    if ( input_language == "Chinese" ):
+        print(                                        )
+        print( " 开始 AMSS-NCKU 程序输出的二进制数据画图 " )
+        print(                                        )
+    elif ( input_language == "English" ):
+        print(                                                              )
+        print( " Beginning the AMSS-NCKU Binary Data Plotting From Output " )
+        print(                                                              )
 
-    density_plot_outdir = os.path.join( figure_outdir, "density plot" )
-    os.mkdir( density_plot_outdir )
+    ###########################################
 
-    contour_plot_outdir = os.path.join( figure_outdir, "contour plot" )
-    os.mkdir( contour_plot_outdir )
+    ## 设定画图的文件夹目录
+    
+    ## 利用 numpy 设置空数组，用于存放字符串
+    ## 设置 dtype='U200'，确保存放的是字符串，长度为 200（防止长度不够）
+    figure_outdir_static  = numpy.empty( input_data.static_grid_level, dtype='U200' )
+    figure_outdir_moving  = numpy.empty( input_data.moving_grid_level, dtype='U200' )
+    figure_outdir_moving2 = numpy.empty( (input_data.moving_grid_level, input_data.puncture_number), dtype='U200' )
+    
+    ## 设置每层网格画图文件夹的目录
+    for i in range(input_data.static_grid_level):
+        figure_outdir_static[i] = os.path.join( figure_outdir, "level" + str(i) )
+    for i in range(input_data.moving_grid_level):
+        j = i + input_data.static_grid_level
+        for k in range(input_data.puncture_number):
+            figure_outdir_moving[i] = os.path.join( figure_outdir, "level" + str(j) )
+            figure_outdir_moving2[i,k] = os.path.join( figure_outdir_moving[i], "puncture" + str(k) )
+
+    ###########################################
 
     if ( input_language == "Chinese" ):
         print(                                   )
@@ -47,21 +67,163 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
         print(                                               )
     
     if ( input_language == "Chinese" ):
+        print(                               ) 
         print( " 输出文件中的二进制数据文件列表 " )
+        print(                               )
     elif ( input_language == "English" ):
+        print(                                        )
         print( " The output binary data files list: " )
-    
-    ## 设置对什么文件画图（这里设置对所有二进制文件画图）
-    globby = glob.glob( os.path.join(binary_outdir, '*.bin') ) 
-    file_list = []
-    for x in sorted(globby):
-        file_list.append(x)
-        print(x)
+        print(                                        )
 
-    ## 对列表中的所有文件画图
-    for filename in file_list:
-        print(filename)
-        plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir)
+    ## 初始化文件列表
+    file_list_all   = []
+    ## 生成用于存放字符串的空数组
+    file_list_static_grid = [ [] for _ in range(input_data.static_grid_level) ]
+    ## empty_list = [[] for _ in range(m)]  # 创建5个空列表的列表
+    file_list_moving_grid = [] 
+    for i in range(input_data.moving_grid_level):
+        xx = [ [] for _ in range(input_data.puncture_number) ]
+        file_list_moving_grid.append(xx)
+    
+    ## 抓取所有的文件名称
+    globby_all_files = glob.glob( os.path.join(binary_outdir, '*.bin') ) 
+
+    ## 将抓取到的文件名输出，并组成列表
+    file_list_all = []
+    for filename in sorted(globby_all_files):
+        filename1 = filename.replace(binary_outdir + "/", "") # 去掉路径中的前缀
+        file_list_all.append(filename1)
+        print(filename1)
+
+    ## 测试代码
+    ## print( globby_all_files )
+    ## print( file_list_all    )
+
+    for i in range(input_data.static_grid_level):
+
+        if ( input_language == "Chinese" ):
+            print(                                           ) 
+            print( " 输出文件中的二进制数据文件列表  对应网格层", i )
+            print(                                           ) 
+        elif ( input_language == "English" ):
+            print(                                                       ) 
+            print( " The output binary data files list in grid level", i )
+            print(                                                       ) 
+
+        ## 筛选出该层固定网格对应的二进制数据文件
+        for filename in sorted(file_list_all):
+            ## 筛选开头字母为 “Lev-0x” 的文件
+            ## 利用 fstring 来补充确保整数的长度为 2
+            if filename.startswith( "Lev" + f"{i:02d}" ):
+                file_list_static_grid[i].append(filename)    
+                print(filename)
+
+    for i in range(input_data.moving_grid_level):
+                
+        j = i + input_data.static_grid_level
+
+        for k in range(input_data.puncture_number):
+
+            if ( input_language == "Chinese" ):
+                print(                                                           )
+                print( " 输出文件中的二进制数据文件列表  对应网格层", j, " puncture", k )
+                print(                                                           )
+            elif ( input_language == "English" ):
+                print(                                                                       )
+                print( " The output binary data files list in grid level", j, " puncture", k )
+                print(                                                                       )
+
+            ## 筛选出该层移动网格对应的二进制数据文件
+            for filename in sorted(file_list_all):
+                if filename.startswith( "Lev" + f"{j:02d}" + "-" + f"{k:02d}" ):
+                    file_list_moving_grid[i][k].append(filename)   
+                    print(filename)
+    
+    ## 使用 glob 抓取文件的例子
+    '''
+    # 第一步：抓取当前目录下所有 .bin 文件
+    bin_files = glob.glob("*.bin")
+
+    # 第二步：在第一步结果基础上，筛选文件名以 "abc" 开头的文件
+    # 使用 str.startswith() 方法精确匹配前缀
+    abc_bin_files = [f for f in bin_files if f.lower().startswith("abc")]
+    '''
+
+    ###########################################
+
+    ## 如果输入文件中 plot_binary_data_level 设定为 "All-Level"，对所有网格层的二进制文件进行画图
+
+    if (input_data.plot_binary_data_level == "All-Level"): 
+        
+        ## 对固定网格层的二进制数画图
+        for i in range(input_data.static_grid_level):
+
+            ## 生成该层二进制数据画图的文件夹目录
+            os.mkdir( figure_outdir_static[i] )
+            ## 生成该层二进制数据画图的各种子文件夹目录
+            plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_static[i] )
+
+            ## 画出该网格层的所有二进制文件的图像
+            for filename in file_list_static_grid[i]:     
+                plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_static[i] )
+
+        ## 对移动网格层的二进制数画图
+        for i in range(input_data.moving_grid_level):
+
+            ## 生成该层二进制数据画图的文件夹目录
+            os.mkdir( figure_outdir_moving[i] )
+            
+            j = i + input_data.static_grid_level
+            
+            for k in range(input_data.puncture_number):
+
+                ## 生成该层二进制数据画图的各种子文件夹目录
+                os.mkdir( figure_outdir_moving2[i,k] )
+                plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_moving2[i,k] )
+
+                ## 画出该网格层的所有二进制文件的图像
+                for filename in file_list_moving_grid[i][k]:     
+                    plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_moving2[i,k] )
+
+    ###########################################
+
+    ## 如果输入文件中 plot_binary_data_level 设定为 "Single-Level"，对设定的网格层的二进制文件进行画图
+
+    elif (input_data.plot_binary_data_level == "Single-Level"):
+
+        ## 设定的网格层在固定网格层
+        if (input_data.plot_binary_data_levelnumber < input_data.static_grid_level):
+
+            ## 生成该层二进制数据画图的文件夹目录
+            os.mkdir( figure_outdir_static[input_data.plot_binary_data_levelnumber] )
+            ## 生成该层二进制数据画图的各种子文件夹目录
+            plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_static[i] )
+
+            ## 画出该网格层的所有二进制文件的图像
+            for filename in file_list_static_grid[input_data.plot_binary_data_levelnumber]:     
+                plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_static[input_data.plot_binary_data_levelnumber] )
+
+        ## 设定的网格层在固定网格层
+        else:
+            
+            j = input_data.plot_binary_data_levelnumber - input_data.static_grid_level
+
+            ## 生成该层二进制数据画图的文件夹目录
+            os.mkdir( figure_outdir_moving[j] )
+            
+            for k in range(input_data.puncture_number):
+
+                ## 生成该层二进制数据画图的各种子文件夹目录
+                os.mkdir( figure_outdir_moving2[j,k] )
+                plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_moving2[j,k] )
+
+                ## 画出该网格层的所有二进制文件的图像
+                for filename in file_list_moving_grid[i][k]:     
+                    plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_moving2[j,k] )
+
+                ## 注意，python 中列表的索引为 a[i][j]，只有 numpy 数组的索引可以用 a[i,j]
+
+    ###########################################
 
     if ( input_language == "Chinese" ):
         print(                         )
@@ -148,10 +310,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Xmax0 = max( BH_Xmax )
     Ymin0 = min( BH_Ymin )
     Ymax0 = max( BH_Ymax )
-    Xmin  = min( Xmin0-2.0, -5.0 )
-    Xmax  = max( Xmax0+2.0, +5.0 )
-    Ymin  = min( Ymin0-2.0, -5.0 )
-    Ymax  = max( Ymax0+2.0, +5.0 )
+    Xmin  = min( Xmin0-2.0, -3.0 )
+    Xmax  = max( Xmax0+2.0, +3.0 )
+    Ymin  = min( Ymin0-2.0, -3.0 )
+    Ymax  = max( Ymax0+2.0, +3.0 )
     plt.xlim( Xmin, Xmax )          # x 轴范围从 Xmin 到 Xmax
     plt.ylim( Ymin, Ymax )          # y 轴范围从 Ymin 到 Ymax
     
@@ -194,10 +356,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Xmax0 = max( BH_Xmax )
     Zmin0 = min( BH_Zmin )
     Zmax0 = max( BH_Zmax )
-    Xmin  = min( Xmin0-2.0, -5.0 )
-    Xmax  = max( Xmax0+2.0, +5.0 )
-    Zmin  = min( Zmin0-2.0, -5.0 )
-    Zmax  = max( Zmax0+2.0, +5.0 )
+    Xmin  = min( Xmin0-2.0, -3.0 )
+    Xmax  = max( Xmax0+2.0, +3.0 )
+    Zmin  = min( Zmin0-2.0, -3.0 )
+    Zmax  = max( Zmax0+2.0, +3.0 )
     plt.xlim( Xmin, Xmax )         # x 轴范围从 Xmin 到 Xmax
     plt.ylim( Zmin, Zmax )         # y 轴范围从 Zmin 到 Zmax
     
@@ -240,10 +402,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Ymax0 = max( BH_Ymax )
     Zmin0 = min( BH_Zmin )
     Zmax0 = max( BH_Zmax )
-    Ymin  = min( Ymin0-2.0, -5.0 )
-    Ymax  = max( Ymax0+2.0, +5.0 )
-    Zmin  = min( Zmin0-2.0, -5.0 )
-    Zmax  = max( Zmax0+2.0, +5.0 )
+    Ymin  = min( Ymin0-2.0, -3.0 )
+    Ymax  = max( Ymax0+2.0, +3.0 )
+    Zmin  = min( Zmin0-2.0, -3.0 )
+    Zmax  = max( Zmax0+2.0, +3.0 )
     plt.xlim( Ymin, Ymax )          # x 轴范围从 Ymin 到 Ymax
     plt.ylim( Zmin, Zmax )          # y 轴范围从 Zmin 到 Zmax
     
@@ -279,10 +441,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Xmax0 = max( (BH_x2 - BH_x1) ) 
     Ymin0 = min( (BH_y2 - BH_y1) )
     Ymax0 = max( (BH_y2 - BH_y1) ) 
-    Xmin  = min( Xmin0-2.0, -5.0 )
-    Xmax  = max( Xmax0+2.0, +5.0 )
-    Ymin  = min( Ymin0-2.0, -5.0 )
-    Ymax  = max( Ymax0+2.0, +5.0 )
+    Xmin  = min( Xmin0-2.0, -3.0 )
+    Xmax  = max( Xmax0+2.0, +3.0 )
+    Ymin  = min( Ymin0-2.0, -3.0 )
+    Ymax  = max( Ymax0+2.0, +3.0 )
     plt.xlim( Xmin, Xmax )          # x 轴范围从 Xmin 到 Xmax
     plt.ylim( Ymin, Ymax )          # y 轴范围从 Ymin 到 Ymax
     
@@ -307,10 +469,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Xmax0 = max( (BH_x2 - BH_x1) ) 
     Zmin0 = min( (BH_z2 - BH_z1) )
     Zmax0 = max( (BH_z2 - BH_z1) ) 
-    Xmin  = min( Xmin0-2.0, -5.0 )
-    Xmax  = max( Xmax0+2.0, +5.0 )
-    Zmin  = min( Zmin0-2.0, -5.0 )
-    Zmax  = max( Zmax0+2.0, +5.0 )
+    Xmin  = min( Xmin0-2.0, -3.0 )
+    Xmax  = max( Xmax0+2.0, +3.0 )
+    Zmin  = min( Zmin0-2.0, -3.0 )
+    Zmax  = max( Zmax0+2.0, +3.0 )
     plt.xlim( Xmin, Xmax )          # x 轴范围从 Xmin 到 Xmax
     plt.ylim( Zmin, Zmax )          # y 轴范围从 Zmin 到 Zmax
     
@@ -335,10 +497,10 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     Ymax0 = max( (BH_y2 - BH_y1) ) 
     Zmin0 = min( (BH_z2 - BH_z1) )
     Zmax0 = max( (BH_z2 - BH_z1) ) 
-    Ymin  = min( Ymin0-2.0, -5.0 )
-    Ymax  = max( Ymax0+2.0, +5.0 )
-    Zmin  = min( Zmin0-2.0, -5.0 )
-    Zmax  = max( Zmax0+2.0, +5.0 )
+    Ymin  = min( Ymin0-2.0, -3.0 )
+    Ymax  = max( Ymax0+2.0, +3.0 )
+    Zmin  = min( Zmin0-2.0, -3.0 )
+    Zmax  = max( Zmax0+2.0, +3.0 )
     plt.xlim( Ymin, Ymax )          # x 轴范围从 Ymin 到 Ymax
     plt.ylim( Zmin, Zmax )          # y 轴范围从 Zmin 到 Zmax
     
@@ -434,7 +596,7 @@ def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
     R_min0 = min( BH_Rmin ) 
     R_max0 = max( BH_Rmax )
     R_min  = max( R_min0-2.0,  0.0 )
-    R_max  = max( R_max0+2.0, +5.0 )
+    R_max  = max( R_max0+2.0, +3.0 )
     plt.ylim( R_min, R_max )             # y 轴范围从 R_min 到 R_max
     
     plt.grid( color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
@@ -471,7 +633,7 @@ def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
     R12_min0 = min( BH_R12 )
     R12_max0 = max( BH_R12 ) 
     R12_min  = max( R12_min0-2.0,  0.0 )
-    R12_max  = max( R12_max0+2.0, +5.0 )
+    R12_max  = max( R12_max0+2.0, +3.0 )
     plt.ylim( R12_min, R12_max )             # y 轴范围从 R12_min 到 R12_max
     
     plt.grid( color='gray', linestyle='--', linewidth=0.5 )  # 显示网格线
@@ -570,12 +732,12 @@ def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
     Ymax0 = max( BH_Ymax )
     Zmin0 = min( BH_Zmin )
     Zmax0 = max( BH_Zmax )
-    Xmin  = min( Xmin0-2.0, -5.0 )
-    Xmax  = max( Xmax0+2.0, +5.0 )
-    Ymin  = min( Ymin0-2.0, -5.0 )
-    Ymax  = max( Ymax0+2.0, +5.0 )
-    Zmin  = min( Zmin0-2.0, -5.0 )
-    Zmax  = max( Zmax0+2.0, +5.0 )
+    Xmin  = min( Xmin0-2.0, -3.0 )
+    Xmax  = max( Xmax0+2.0, +3.0 )
+    Ymin  = min( Ymin0-2.0, -3.0 )
+    Ymax  = max( Ymax0+2.0, +3.0 )
+    Zmin  = min( Zmin0-2.0, -3.0 )
+    Zmax  = max( Zmax0+2.0, +3.0 )
     ax.set_xlim( [Xmin, Xmax] )      # y 轴范围从 Ymin 到 Ymax
     ax.set_ylim( [Ymin, Ymax] )      # y 轴范围从 Ymin 到 Ymax
     ax.set_zlim( [Zmin, Zmax] )      # z 轴范围从 Zmin 到 Zmax
