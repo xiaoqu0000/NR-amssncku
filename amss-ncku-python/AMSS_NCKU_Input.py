@@ -80,10 +80,10 @@ largest_box_xyz_max = [400.0, 400.0, 400.0]          ## 设置最外层格点的
 ## largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
 largest_box_xyz_min = [-400.0, -400.0, -400.0]
 
-static_grid_number = 108                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
+static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
                                                      ## grid points of each static AMR grid (in x direction)
                                                      ## (grid points in y and z directions are automatically adjusted)
-moving_grid_number = 40                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
+moving_grid_number = 48                              ## 设置可移动格点每一层每一维数的格点数目               grid points of each moving AMR grid
 shell_grid_number  = [32, 32, 100]                   ## 设置最外层球状网格（shell patch）的格点数目     grid points of Shell-Patch grid
                                                      ## 以 phi、theta、r 的顺序给定                                        in (phi, theta, r) direction
 devide_factor      = 2.0                             ## 设置相邻两层网格分辨率的比例（不要轻易改变）
@@ -102,7 +102,7 @@ quarter_sphere_number = 96                           ## 1/4 球面积分的格�
 ## Setting the puncture information
 #################################################
 
-puncture_number       = 3                                     
+puncture_number       = 2                                     
 
 position_BH           = numpy.zeros( (puncture_number, 3) )   
 parameter_BH          = numpy.zeros( (puncture_number, 3) )   
@@ -119,9 +119,9 @@ puncture_data_set     = "Manually"                       ## 设置双星轨道�
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## black hole parameter (M Q* a*)
 ## 质量  无量纲电荷  无量纲自旋
-parameter_BH[0] = [ 1.0/3.0,  0.0,  0.0 ]   
-parameter_BH[1] = [ 1.0/3.0,  0.0,  0.0 ] 
-parameter_BH[2] = [ 1.0/3.0,  0.0,  0.0 ]   ## 多黑动手动添加
+parameter_BH[0] = [ 1.0/2.0,  0.0,  0.0 ]   
+parameter_BH[1] = [ 1.0/2.0,  0.0,  0.0 ] 
+# parameter_BH[2] = [ 0.0,  0.0,  0.0 ]   ## 多黑动手动添加
 ## 注意，如果求解数值相对论初值的方法选为 Ansorg-TwoPuncture ，第一个黑洞必须为质量较大的那个，且黑洞总质量会自动 rescale 为 M=1 （其它情况下必须手动 rescale）
 
 ## 设置每个黑洞的无量纲自旋
@@ -129,7 +129,7 @@ parameter_BH[2] = [ 1.0/3.0,  0.0,  0.0 ]   ## 多黑动手动添加
 ## 无对称性时 ，需要手动给 3 个方向的自旋角动量
 dimensionless_spin_BH[0] = [ 0.0,  0.0,  0.0 ]   
 dimensionless_spin_BH[1] = [ 0.0,  0.0,  0.0 ]  
-dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]  ## 多黑动手动添加
+# dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]  ## 多黑动手动添加
 
 #---------------------------------------------
 
@@ -143,7 +143,7 @@ dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]  ## 多黑动手动添加
 
 ## initial orbital distance and ellipticity for BBHs system
 ## ( needed for "Automatically-BBH" case , not affect the "Manually" case )
-Allow_PN_Evaluation = "yes"  ## 是否允许从更远的位置进行后牛顿演化，以提高计算精度
+Allow_PN_Evaluation = "no"  ## 是否允许从更远的位置进行后牛顿演化，以提高计算精度
 Distance_initial = 100.0
 e0               = 0.0
 Distance_final   = 10.0
@@ -160,15 +160,15 @@ Distance_final   = 10.0
 ## If puncture_data_set is chosen to be "Manually", it is necessary to set the position and momentum of each puncture manually
 
 ## 设置每个黑洞的初始位置     initial position for each puncture
-position_BH[0]  = [                 0.0, +6.0, 0.0 ]  
-position_BH[1]  = [ +3.0*math.sqrt(3.0), -3.0, 0.0 ] 
-position_BH[2]  = [ -3.0*math.sqrt(3.0), -3.0, 0.0 ]  ## 多黑洞手动添加
+position_BH[0]  = [ 0.0, +6.0, 0.0 ]  
+position_BH[1]  = [ 0.0, -6.0, 0.0 ] 
+# position_BH[2]  = [ -3.0*math.sqrt(3.0), -3.0, 0.0 ]  ## 多黑洞手动添加
 
 ## 设置每个黑洞的动量信息    initial mumentum for each puncture
 ## (needed for "Manually" case, does not affect the "Automatically-BBH" case)
 momentum_BH[0]  = [ 0.0,  0.0,  0.0 ]
 momentum_BH[1]  = [ 0.0,  0.0,  0.0 ]
-momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
+# momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
 
 #---------------------------------------------
 

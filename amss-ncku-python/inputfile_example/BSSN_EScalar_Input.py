@@ -113,8 +113,12 @@ puncture_data_set     = "Manually"                            ## 设置双星轨
 ## 用 Ansorg-TwoPuncture 求解初值，轨道坐标设置可以设置 Manually 和 Automatically-BBH 设置双星轨道坐标
 ## 但双星轨道坐标如果设置为 Manually 而不是 Automatically-BBH，则要细致设置 Puncture 的位置和动量取值，否则可能会使 TwoPuncture 程序无法正确读入输入而报错）
 
-Distance = 10.0
-e0       = 0.0
+## initial orbital distance and ellipticity for BBHs system
+## ( needed for "Automatically-BBH" case , not affect the "Manually" case )
+Allow_PN_Evaluation = "no"  ## 是否允许从更远的位置进行后牛顿演化，以提高计算精度
+Distance_initial = 100.0
+e0               = 0.0
+Distance_final   = 10.0
 
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## 质量  无量纲电荷  无量纲自旋
@@ -172,6 +176,22 @@ AHF_Find_Every = 24
 AHF_Dump_Time  = 20.0
 
 #################################################
+
+
+
+#################################################
+
+## 设置二进制画图相关信息
+
+plot_binary_data_set         = "xy-xz-yz-plot"             ## 选择 "xy-plot", "xz-plot", "yz-plot", "xy-xz-yz-plot"
+## plot_binary_data_type        = "Linear"                 ## 对哈密顿约束，TrK这些数据画图选择
+                                                           ## 选择 "Linear", "Logarithmic"
+                                                           ## 后续开发
+plot_binary_data_level       = "All-Level"                 ## 选择 "All-level", "Single-level"
+plot_binary_data_levelnumber = static_grid_level-1         ## 选择对哪个层来进行画图
+
+#################################################
+
 
 
 #################################################
