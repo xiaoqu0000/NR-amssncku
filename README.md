@@ -234,7 +234,7 @@ January 2026     Update: Fixed some bugs.
 
 February 2026    Update: Added English and Chinese language support.
 
-February 2026    Update: Added Jupyter notebook support.
+April 2026       Update: Added Jupyter notebook support.
 
 #### 重要提示
 
