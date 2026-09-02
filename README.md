@@ -8,6 +8,8 @@ AMSS-NCKU使用有限差分方法，通过自适应网格细化技术，来实�
 
 目前，AMSS-NCKU能够成功地处理双黑洞系统、多个黑洞系统，计算这些系统的时间演化，求解这些过程中释放的引力波。
 
+关于AMSS-NCKU的更多介绍，也可以参考 https://nr-amss-ncku.cn/
+
 #### What can AMSS-NCKU do
 
 AMSS - NCKU is a numerical relativity program developed in China, which is used to numerically solve Einstein's equations and calculate the change of the gravitational field over time. 
@@ -15,6 +17,9 @@ AMSS - NCKU is a numerical relativity program developed in China, which is used 
 AMSS - NCKU uses the finite difference method and the adaptive mesh refinement technique to achieve the numerical solution of Einstein's equations. 
 
 Currently, AMSS - NCKU can successfully handle binary black hole systems and multiple black hole systems, calculate the time evolution of these systems, and solve the gravitational waves released during these processes.
+
+For more information about AMSS‑NCKU, one can also refer to https://nr-amss-ncku.cn/
+
 
 #### AMSS-NCKU 的发展历程
 
