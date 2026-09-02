@@ -36,7 +36,7 @@ note here
 note here
 use shell or not
 #endif
-#define WithShell
+! #define WithShell
 
 #if 0
 note here

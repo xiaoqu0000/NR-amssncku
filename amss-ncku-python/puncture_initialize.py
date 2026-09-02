@@ -4,6 +4,7 @@
 ## 该文件用于对 Puncture 数据进行初始化
 ## 小曲
 ## 2026/02/10 
+## 2026/08/27 修改 
 ##
 ##################################################################
 
@@ -27,9 +28,9 @@ def generate_puncture_input_data( input_language ):
 
 
     if ( input_language == "Chinese" ):
-        print(                                             )
+        print(                                          )
         print( " 正在设定 Puncture 的位置、动量、角动量参数" )
-        print(                                             )
+        print(                                          )
     elif ( input_language == "English" ):
         print(                                                                )
         print( " Setting Puncture's position, momentum and angular momentum " )
@@ -46,7 +47,7 @@ def generate_puncture_input_data( input_language ):
         mass_ratio_Q = input_data.parameter_BH[0,0] / input_data.parameter_BH[1,0]
     
         if ( mass_ratio_Q < 1.0 ):
-            print( " 质量比设置错误，请重设！！！" )
+            print( " 质量比设置错误，请重设！！！"   )
             print( " 将第一个黑洞设置为大质量！！！" )
         
         BBH_M1 = mass_ratio_Q / ( 1.0 + mass_ratio_Q )
@@ -99,7 +100,7 @@ def generate_puncture_input_data( input_language ):
                 charge_Q_BH[i]           = BBH_M1 * input_data.parameter_BH[i,1]
             elif i==1:
                 dimensionless_mass_BH[i] = BBH_M2
-                charge_Q_BH[i]           = BBH_M1 * input_data.parameter_BH[i,1]
+                charge_Q_BH[i]           = BBH_M2 * input_data.parameter_BH[i,1]
             else:
                 dimensionless_mass_BH[i] = input_data.parameter_BH[i,0]
                 charge_Q_BH[i]           = input_data.parameter_BH[i,0] * input_data.parameter_BH[i,1]
@@ -124,7 +125,7 @@ def generate_puncture_input_data( input_language ):
                 if i==0:
                     angular_momentum_BH[i] = (BBH_M1**2) * input_data.dimensionless_spin_BH[i]
                 elif i==1:
-                    angular_momentum_BH[i] = (BBH_M1**2) * input_data.dimensionless_spin_BH[i]
+                    angular_momentum_BH[i] = (BBH_M2**2) * input_data.dimensionless_spin_BH[i]
                 else:
                    angular_momentum_BH[i] = (input_data.parameter_BH[i,0]**2) * input_data.dimensionless_spin_BH[i]
                    
@@ -290,9 +291,9 @@ def generate_puncture_input_data( input_language ):
     else: 
    
         if ( input_language == "Chinese" ):
-            print(                                                )
+            print(                                             )
             print( " 设定 Puncture 位置、动量、角动量参数的设定错误" )
-            print(                                                )
+            print(                                             )
         elif ( input_language == "English" ):
             print(                                                                                    )
             print( " Found Error in setting Puncture's position, momentum, and angular momentum !!! " )
@@ -436,30 +437,109 @@ def print_puncture_information( input_language, puncture_data ):
     ## 请用户检查 Puncture 信息是否合理，如果合理，按回车继续
     
     if ( input_language == "Chinese" ):
-        print(                                                                                )
-        print( " 检查 Puncture 信息是否满足合理 "                                               )
-        print( " （包含了质量、电荷、无量纲角动量 a*、位置坐标、动量、；角动量）"                  )
-        print(                                                                                 )
+        print(                                                                            )
+        print( " 检查 Puncture 信息是否满足合理 "                                            )
+        print( " （包含了质量、电荷、无量纲角动量 a*、位置坐标、动量、；角动量）"                   )
+        print(                                                                            )
         print( " 如果 Puncture 的信息不合理，Ctrl+C 退出，在输入文件中调整 Puncture 的设定！！！ " )
-        print( " 如果 Puncture 的信息合理，按回车继续！！！ "                                    )
-        print(                                                                                 )
+        print( " 如果 Puncture 的信息合理，按回车继续！！！ "                                   )
+        print(                                                                            )
     elif ( input_language == "English" ):
         print(                                                                                           )
         print( " Please check whether the puncture parameters are appropriate "                          )
         print( " (including mass, charge, dimensionless spin a*, position, momentum, angular momentum) " )
-        print(                                                                                 )
+        print(                                                                                           )
         print( " If the puncture parameters are not appropriate, press Ctrl+C to abort the simulation. " )
         print( " Change the parameter setteing in the input file !!! "                                   )
-        print(                                                                                 )
+        print(                                                                                           )
         print( " If the puncture parameters are appropriate, press Enter to continue !!!  "              )
         print(                                                                                           )
         
+    ## 如果输入文件中设定了更远距离进行后牛顿演化，输出相关信息
+    if ( input_data.puncture_data_set == "Automatically-BBH" and input_data.Allow_PN_Evaluation == "yes" ):
+        if ( input_language == "Chinese" ):
+            print(                                                                                                         )
+            print( " 以上 Puncture 的初始动量仅为估算，后续还会用 PNOrbit 后牛顿程序从更远的区域进行演化，更新 Puncture 的初始动量信息 " )
+            print( " 后续 PNOrbit 程序将从 Puncture 间距进行后牛顿演化 d(t0) = ", input_data.Distance_initial                   )
+            print( " 后续 PNOrbit 程序将后牛顿演化到间距 d(tf) = ",              input_data.Distance_final                     )
+            print(                                                                                                         )
+        elif ( input_language == "English" ):
+            print(                                                                                                                                          )
+            print( "The above initial momentum of the Puncture is only an estimate; "                                                                       )
+            print( "Later, the PNOrbit post-Newtonian code will evolve it from a larger separation and update the Puncture's initial momentum information." )
+            print( "The PNOrbit code will perform a post-Newtonian evolution starting from the Puncture separation d(t0) = ", input_data.Distance_initial   )
+            print( "The PNOrbit code will evolve post-Newtonianly until the separation d(tf) = ",                             input_data.Distance_final     )
+            print(                                                                                                                                          )
+        
     ## 按回车继续
-    inputvalue = input()           
-    print()
+    ## inputvalue = input()           
+    ## print()
     
     return
     
+##################################################################
+
+
+
+##################################################################
+
+## 该函数根据 PNOrbit 的运行结果更新 Puncture 数据
+## 仅当 puncture_data_set == "Automatically-BBH" 且 Allow_PN_Evaluation == "yes" 时调用
+## 解析 PNorbit.dat，用演化结束时刻（final）的双黑洞参数更新 position、momentum、distance
+
+def update_puncture_data_by_PNOrbit( input_language, puncture_data ):
+
+    import parse_PNOrbit_output
+
+    ## 屏幕输出正在解析 PNOrbit 结果
+    if ( input_language == "Chinese" ):
+        print(                                            )
+        print( " 正在解析 AMSS-NCKU 程序 PNOrbit 的运行结果 " )
+        print(                                            )
+    elif ( input_language == "English" ):
+        print(                                                                      )
+        print( " Parsing the running results of AMSS-NCKU executable file PNOrbit " )
+        print(                                                                      )
+
+    ## PNorbit.dat 位于 AMSS_NCKU_output 目录下
+    output_directory    = os.path.join( input_data.File_directory, "AMSS_NCKU_output" )
+    PNOrbit_data_file   = os.path.join( output_directory,          "PNorbit.dat"      )
+
+    ## 解析结果，返回起始和终止时刻的 puncture 数据，以及终止时刻的双星间距
+    position_BH_initial, momentum_BH_initial, position_BH_final, momentum_BH_final, distance_d0 \
+        = parse_PNOrbit_output.parse_PNOrbit_output( PNOrbit_data_file, output_directory )
+
+    ## 用演化结束时刻的双黑洞参数更新 puncture_data（位置和动量）
+    puncture_data.position_BH = position_BH_final
+    puncture_data.momentum_BH = momentum_BH_final
+
+    ## 同步更新双星间距 distance_d0（PNOrbit 演化结束时刻的实际间距）
+    puncture_data.distance_d0 = distance_d0
+
+    ## 屏幕输出更新后的 puncture 信息
+    if ( input_language == "Chinese" ):
+        print(                                                    )
+        print( " 已根据 PNOrbit 演化结束时刻的结果更新 Puncture 数据 " )
+        print(                                                    )
+        print( " 更新后的黑洞位置和动量 "                             )
+        print( f" X1 = {position_BH_final[0,0]:>10.6f},  Y1 = {position_BH_final[0,1]:>10.6f}"  )
+        print( f" X2 = {position_BH_final[1,0]:>10.6f},  Y2 = {position_BH_final[1,1]:>10.6f}"  )
+        print( f" PX1 = {momentum_BH_final[0,0]:>10.6f}, PY1 = {momentum_BH_final[0,1]:>10.6f}" )
+        print( f" PX2 = {momentum_BH_final[1,0]:>10.6f}, PY2 = {momentum_BH_final[1,1]:>10.6f}" )
+        print(                                                                                  )
+    elif ( input_language == "English" ):
+        print(                                                                     )
+        print( " The puncture data has been updated by the PNOrbit final results " )
+        print(                                                                     )
+        print( " The updated positions and momenta of the black holes "            )
+        print( f" X1 = {position_BH_final[0,0]:>10.6f},  Y1 = {position_BH_final[0,1]:>10.6f}"  )
+        print( f" X2 = {position_BH_final[1,0]:>10.6f},  Y2 = {position_BH_final[1,1]:>10.6f}"  )
+        print( f" PX1 = {momentum_BH_final[0,0]:>10.6f}, PY1 = {momentum_BH_final[0,1]:>10.6f}" )
+        print( f" PX2 = {momentum_BH_final[1,0]:>10.6f}, PY2 = {momentum_BH_final[1,1]:>10.6f}" )
+        print(                                                                                  )
+
+    return puncture_data
+
 ##################################################################
     
     

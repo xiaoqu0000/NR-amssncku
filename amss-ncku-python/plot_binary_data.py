@@ -9,6 +9,8 @@
 
 import numpy
 import scipy
+import matplotlib                                       ## 导入 matplotlib 包
+matplotlib.use('Agg')                                   ## 强制使用无界面的 Agg 后端，避免 GUI 后端（如 gtk4agg）在多进程 fork 画图时死锁
 import matplotlib.pyplot    as     plt
 from   matplotlib.colors    import LogNorm
 from   mpl_toolkits.mplot3d import Axes3D
@@ -48,6 +50,14 @@ def plot_binary_data( input_language, filename, binary_outdir, figure_outdir ):
         data          = numpy.fromfile( file, dtype=numpy.float64          )
         
         # 现在 data 数组包含了文件中的二进制数据
+
+        # === 转为 Python 原生数值 ===
+        physical_time = physical_time.item()
+        xmin, xmax = xmin.item(), xmax.item()
+        ymin, ymax = ymin.item(), ymax.item()
+        zmin, zmax = zmin.item(), zmax.item()
+        nx, ny, nz = int(nx), int(ny), int(nz)
+
  
     if ( input_language == "Chinese" ):
         print( " 读取的数组大小 = ",    data.shape                            ) 
@@ -109,17 +119,17 @@ def plot_binary_data( input_language, filename, binary_outdir, figure_outdir ):
     
     ## 根据输入文件设定对哪个平面的数据进行画图
     if (input_data.plot_binary_data_set == "xy-xz-yz-plot"):
-        get_data_xy( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_xy )
-        get_data_xz( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_xz )
-        get_data_yz( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_yz )
+        get_data_xy( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_xy )
+        get_data_xz( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_xz )
+        get_data_yz( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_yz )
     elif (input_data.plot_binary_data_set == "xy-plot"):
-        get_data_xy( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_xy )
+        get_data_xy( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_xy )
     elif (input_data.plot_binary_data_set == "xz-plot"):
-        get_data_xz( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_xz )
+        get_data_xz( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_xz )
     elif (input_data.plot_binary_data_set == "yz-plot"):
-        get_data_yz( Rmin, Rmax, N, data_reshape, physical_time[0], figure_title_new, figure_outdir_yz )
-    # 注意 numpy 从二进制文件中读取的 physical_time 是一个数组（尽管实际上只有一个元素）
-    # 因此用 physical_time[0] 代表对应的时间值
+        get_data_yz( Rmin, Rmax, N, data_reshape, physical_time, figure_title_new, figure_outdir_yz )
+    ## 注意前面已经将读取的 physical_time 转换为实数
+    ## 因此不再需要 physical_time[0] 来代表对应的时间值
 
     ###################################
     

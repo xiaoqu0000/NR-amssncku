@@ -14,11 +14,13 @@ import numpy
 ## 设置程序运行目录和计算资源
 ## Setting MPI processes and the output file directory
 
-File_directory   = "BBH_test2"               ## 程序运行目录                          output file directory
+File_directory   = "BBH_test2"                   ## 程序运行目录             output file directory
 Output_directory = "binary_output"               ## 存放二进制数据的子目录     binary data file directory
                                                  ## The file directory name should not be too long
-MPI_processes    = 6                             ## 想要调用的进程数目            number of mpi processes used in the simulation
+MPI_processes    = 16                            ## 想要调用的进程数目        number of mpi processes used in the simulation
+OMP_processes    = 4                             ## 想要调用的线程数目        number of OpenMP threads per MPI process
 
+cores_per_numa   = OMP_processes                 ## number of CPU cores per NUMA node (for processor binding)
 GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no   Use GPU or not 
                                                  ## (prefer "no" in the current version, because the GPU part may have bugs when integrated in this Python interface)
 CPU_Part         = 1.0
@@ -224,6 +226,10 @@ plot_binary_data_set         = "xy-xz-yz-plot"             ## 选择 "xy-plot", 
                                                            ## 后续开发
 plot_binary_data_level       = "All-Level"                 ## 选择 "All-level", "Single-level"
 plot_binary_data_levelnumber = static_grid_level-1         ## 选择对哪个层来进行画图
+plot_binary_data_processes   = MPI_processes               ## 二进制数据并行画图使用的进程数目
+                                                           ## number of processes used in parallel binary data plotting
+                                                           ## 如果设为 0，则自动使用所有 CPU 核数
+                                                           ## if set to 0, all CPU cores are used automatically
 
 #################################################
 

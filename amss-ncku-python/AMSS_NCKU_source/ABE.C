@@ -22,8 +22,9 @@ using namespace std;
 
 #include <mpi.h>
 
-#include "./misc/misc.h"
+#include "misc.h"
 #include "macrodef.h"
+#include "worker_pool.h"  // for sft_timer::flush()
 
 #ifndef ABEtype
 #error "not define ABEtype"
@@ -32,19 +33,19 @@ using namespace std;
 #if (ABEtype == 0)
 
 #ifdef USE_GPU
-#include "./BSSN_GPU/bssn_gpu_class.h"
+#include "bssn_gpu_class.h"
 #else
-#include "./BSSN/bssn_class.h"
+#include "bssn_class.h"
 #endif
 
 #elif (ABEtype == 1)
-#include "./Scalar/bssnEScalar_class.h"
+#include "bssnEScalar_class.h"
 
 #elif (ABEtype == 2)
-#include "./Z4C/Z4c_class.h"
+#include "Z4c_class.h"
 
 #elif (ABEtype == 3)
-#include "./BSSN/bssnEM_class.h"
+#include "bssnEM_class.h"
 
 #else
 #error "not recognized ABEtype"
@@ -62,11 +63,8 @@ namespace parameters
 
 int main(int argc, char *argv[])
 {
-      // 初始化 MPI
-      MPI_Init(&argc, &argv);
-
       int myrank = 0, nprocs = 1;
-      // MPI_Init(&argc, &argv);
+      MPI_Init(&argc, &argv);
       MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
       MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
@@ -488,6 +486,9 @@ int main(int argc, char *argv[])
       }
 
       delete ADM;
+
+      // Ensure trace is written even if atexit is skipped (unusual shutdown).
+      sft_timer::flush();
 
       //=======================caculation done=============================================================
 

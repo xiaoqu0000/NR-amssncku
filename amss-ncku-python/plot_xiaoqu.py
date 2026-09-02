@@ -4,14 +4,18 @@
 ## 这个文件对 AMSS-NCKU 数值相对论的结果进行画图
 ## 小曲
 ## 2024/10/01 --- 2026/02/27
+## 2026/08/21 修改为2进制并行画图
 ##
 #################################################
 
 import numpy                               ## 导入 numpy 包进行数组的操作
+import matplotlib                          ## 导入 matplotlib 包
+matplotlib.use('Agg')                      ## 强制使用无界面的 Agg 后端，避免 GUI 后端（如 gtk4agg）在多进程 fork 画图时死锁
 import matplotlib.pyplot    as     plt     ## 导入 matplotlib 包进行画图
 from   mpl_toolkits.mplot3d import Axes3D  ## 画 3 维图需要
 import glob
 import os                                  ## 导入 os 包进行系统操作
+import multiprocessing                     ## 导入 multiprocessing 包进行多进程并行画图
 
 import plot_binary_data
 import AMSS_NCKU_Input as input_data
@@ -19,6 +23,59 @@ import AMSS_NCKU_Input as input_data
 # plt.rcParams['text.usetex'] = True  ## 在绘图中允许使用 latex 字体
 
 
+
+####################################################################################
+
+## 该函数是在并行画图中被子进程调用的函数
+## 每个子进程负责一个二进制文件的画图任务
+
+def _plot_binary_data_worker( args ):
+
+    input_language, filename, binary_outdir, figure_outdir = args
+
+    plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir )
+
+    return filename
+
+####################################################################################
+
+## 该函数对若干二进制文件的画图任务进行多进程并行处理
+## 并行画图不改变每个文件的画图算法和输出内容
+
+def _plot_binary_data_parallel( tasks ):
+
+    ## 没有任务时直接返回
+    if ( len(tasks) == 0 ):
+        return
+
+    ## 进程数目取输入文件中设定的进程数与任务数目的较小值
+    if ( input_data.plot_binary_data_processes > 0 ):
+        nproc = min( input_data.plot_binary_data_processes, len(tasks) )
+    else:
+        ## 如果输入文件中进程数目设为 0，则自动使用所有 CPU 核数
+        nproc = min( os.cpu_count(), len(tasks) )
+
+    ## 任务数目不超过 1 个时，直接按顺序画图
+    if ( nproc <= 1 ):
+        for task in tasks:
+            _plot_binary_data_worker( task )
+        return
+
+    if ( tasks[0][0] == "Chinese" ):
+        print(                                             )
+        print( " 使用 ", nproc, " 个进程并行画图 "          )
+        print(                                             )
+    else:
+        print(                                                  )
+        print( " plotting in parallel with ", nproc, " processes " )
+        print(                                                  )
+
+    ## 利用进程池并行处理所有画图任务
+    with multiprocessing.Pool( processes=nproc ) as pool:
+        for _ in pool.imap_unordered( _plot_binary_data_worker, tasks, chunksize=1 ):
+            pass
+
+    return
 
 ####################################################################################
 
@@ -58,9 +115,9 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
     ###########################################
 
     if ( input_language == "Chinese" ):
-        print(                                   )
+        print(                                  )
         print( " 读取 AMSS-NCKU 程序的二进制数据 " )
-        print(                                   )
+        print(                                  )
     elif ( input_language == "English" ):
         print(                                               )
         print( " Reading AMSS-NCKU Binary Data From Output " )
@@ -151,6 +208,9 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
 
     ###########################################
 
+    ## 收集所有需要画图的二进制文件任务
+    tasks = []
+
     ## 如果输入文件中 plot_binary_data_level 设定为 "All-Level"，对所有网格层的二进制文件进行画图
 
     if (input_data.plot_binary_data_level == "All-Level"): 
@@ -163,9 +223,9 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
             ## 生成该层二进制数据画图的各种子文件夹目录
             plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_static[i] )
 
-            ## 画出该网格层的所有二进制文件的图像
+            ## 收集该网格层的所有二进制文件的画图任务
             for filename in file_list_static_grid[i]:     
-                plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_static[i] )
+                tasks.append( ( input_language, filename, binary_outdir, figure_outdir_static[i] ) )
 
         ## 对移动网格层的二进制数画图
         for i in range(input_data.moving_grid_level):
@@ -181,9 +241,9 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
                 os.mkdir( figure_outdir_moving2[i,k] )
                 plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_moving2[i,k] )
 
-                ## 画出该网格层的所有二进制文件的图像
+                ## 收集该网格层的所有二进制文件的画图任务
                 for filename in file_list_moving_grid[i][k]:     
-                    plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_moving2[i,k] )
+                    tasks.append( ( input_language, filename, binary_outdir, figure_outdir_moving2[i,k] ) )
 
     ###########################################
 
@@ -194,16 +254,18 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
         ## 设定的网格层在固定网格层
         if (input_data.plot_binary_data_levelnumber < input_data.static_grid_level):
 
+            i = input_data.plot_binary_data_levelnumber
+
             ## 生成该层二进制数据画图的文件夹目录
-            os.mkdir( figure_outdir_static[input_data.plot_binary_data_levelnumber] )
+            os.mkdir( figure_outdir_static[i] )
             ## 生成该层二进制数据画图的各种子文件夹目录
             plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_static[i] )
 
-            ## 画出该网格层的所有二进制文件的图像
-            for filename in file_list_static_grid[input_data.plot_binary_data_levelnumber]:     
-                plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_static[input_data.plot_binary_data_levelnumber] )
+            ## 收集该网格层的所有二进制文件的画图任务
+            for filename in file_list_static_grid[i]:     
+                tasks.append( ( input_language, filename, binary_outdir, figure_outdir_static[i] ) )
 
-        ## 设定的网格层在固定网格层
+        ## 设定的网格层在移动网格层
         else:
             
             j = input_data.plot_binary_data_levelnumber - input_data.static_grid_level
@@ -217,13 +279,14 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
                 os.mkdir( figure_outdir_moving2[j,k] )
                 plot_binary_data.generate_binary_data_plot_directionary( figure_outdir_moving2[j,k] )
 
-                ## 画出该网格层的所有二进制文件的图像
-                for filename in file_list_moving_grid[i][k]:     
-                    plot_binary_data.plot_binary_data( input_language, filename, binary_outdir, figure_outdir_moving2[j,k] )
-
-                ## 注意，python 中列表的索引为 a[i][j]，只有 numpy 数组的索引可以用 a[i,j]
+                ## 收集该网格层的所有二进制文件的画图任务
+                for filename in file_list_moving_grid[j][k]:     
+                    tasks.append( ( input_language, filename, binary_outdir, figure_outdir_moving2[j,k] ) )
 
     ###########################################
+
+    ## 对所有收集到的二进制文件画图任务进行多进程并行画图
+    _plot_binary_data_parallel( tasks )
 
     if ( input_language == "Chinese" ):
         print(                         )
@@ -247,9 +310,9 @@ def generate_binary_data_plot( input_language, binary_outdir, figure_outdir ):
 def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
 
     if ( input_language == "Chinese" ):
-        print(                           )
+        print(                        )
         print( " 正在对黑洞轨迹进行画图 " )
-        print(                           )
+        print(                        )
     elif ( input_language == "English" ):
         print(                                                   )
         print( " Plotting the black holes' trajectory (2D plot)" )
@@ -259,7 +322,7 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     file0 = os.path.join(outdir, "bssn_BH.dat")
     
     if ( input_language == "Chinese" ):
-        print( " 对应数据文件为 ",             file0 )
+        print( " 对应数据文件为 ",              file0 )
     elif ( input_language == "English" ):
         print( " Corresponding data file = ", file0 )
 
@@ -276,6 +339,9 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
     BH_Ymax = numpy.zeros(input_data.puncture_number)
     BH_Zmin = numpy.zeros(input_data.puncture_number)
     BH_Zmax = numpy.zeros(input_data.puncture_number)
+
+    # 设定曲线的颜色
+    line_color = [ 'red', 'green', 'blue', 'black', 'gray', 'yellow', 'cyan', 'pink', 'magenta' ]
     
     # --------------------------
     
@@ -292,14 +358,7 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
         BH_Xmax[i] = max( BH_x )
         BH_Ymin[i] = min( BH_y )
         BH_Ymax[i] = max( BH_y )
-        if i==0:
-            plt.plot( BH_x, BH_y, color='red',   label="BH"+str(i+1), linewidth=2 )
-        elif i==1:
-            plt.plot( BH_x, BH_y, color='green', label="BH"+str(i+1), linewidth=2 )
-        elif i==2:
-            plt.plot( BH_x, BH_y, color='blue',  label="BH"+str(i+1), linewidth=2 )
-        elif i==3:
-            plt.plot( BH_x, BH_y, color='gray',  label="BH"+str(i+1), linewidth=2 )
+        plt.plot( BH_x, BH_y, color=line_color[i], label="BH"+str(i+1), linewidth=2 )
             
     plt.xlabel( "X [M]",          fontsize=16 )
     plt.ylabel( "Y [M]",          fontsize=16 )
@@ -338,14 +397,7 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
         BH_Xmax[i] = max( BH_x )
         BH_Zmin[i] = min( BH_z )
         BH_Zmax[i] = max( BH_z )
-        if i==0:
-            plt.plot( BH_x, BH_z, color='red',   label="BH"+str(i+1), linewidth=2 )
-        elif i==1:
-            plt.plot( BH_x, BH_z, color='green', label="BH"+str(i+1), linewidth=2 )
-        elif i==2:
-            plt.plot( BH_x, BH_z, color='blue',  label="BH"+str(i+1), linewidth=2 )
-        elif i==3:
-            plt.plot( BH_x, BH_z, color='gray',  label="BH"+str(i+1), linewidth=2 )
+        plt.plot( BH_x, BH_z, color=line_color[i], label="BH"+str(i+1), linewidth=2 )
             
     plt.xlabel( "X [M]",          fontsize=16 )
     plt.ylabel( "Z [M]",          fontsize=16 )
@@ -384,14 +436,7 @@ def generate_puncture_orbit_plot( input_language, outdir, figure_outdir ):
         BH_Ymax[i] = max( BH_y )
         BH_Zmin[i] = min( BH_z )
         BH_Zmax[i] = max( BH_z )
-        if i==0:
-            plt.plot( BH_y, BH_z, color='red',   label="BH"+str(i+1), linewidth=2 )
-        elif i==1:
-            plt.plot( BH_y, BH_z, color='green', label="BH"+str(i+1), linewidth=2 )
-        elif i==2:
-            plt.plot( BH_y, BH_z, color='blue',  label="BH"+str(i+1), linewidth=2 )
-        elif i==3:
-            plt.plot( BH_y, BH_z, color='gray',  label="BH"+str(i+1), linewidth=2 )
+        plt.plot( BH_y, BH_z, color=line_color[i], label="BH"+str(i+1), linewidth=2 )
             
     plt.xlabel( "Y [M]",          fontsize=16 )
     plt.ylabel( "Z [M]",          fontsize=16 )
@@ -569,6 +614,9 @@ def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
     plt.title( " Black Hole Position R ", fontsize=18 )   # 添加标题
     
     BH_time = data[:, 0]
+
+    # 设定曲线的颜色
+    line_color = [ 'red', 'green', 'blue', 'black', 'gray', 'yellow', 'cyan', 'pink', 'magenta' ]
     
     for i in range(input_data.puncture_number):
         BH_x = data[:, 3*i+1]
@@ -578,14 +626,8 @@ def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
         # 利用 numpy 直接平方和求出距离 R
         BH_Rmin[i] = min( BH_R )
         BH_Rmax[i] = max( BH_R )
-        if i==0:
-            plt.plot( BH_time, BH_R, color='red',   label="BH"+str(i+1), linewidth=2 )
-        elif i==1:
-            plt.plot( BH_time, BH_R, color='green', label="BH"+str(i+1), linewidth=2 )
-        elif i==2:
-            plt.plot( BH_time, BH_R, color='blue',  label="BH"+str(i+1), linewidth=2 )
-        elif i==3:
-            plt.plot( BH_time, BH_R, color='gray',  label="BH"+str(i+1), linewidth=2 )
+        plt.plot( BH_time, BH_R, color=line_color[i], label="BH"+str(i+1), linewidth=2 )
+        
 
     # 设置坐标轴标签
     plt.xlabel( " $T$ [M] ",      fontsize=16 )
@@ -665,9 +707,9 @@ def generate_puncture_distence_plot( input_language, outdir, figure_outdir ):
 def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
 
     if ( input_language == "Chinese" ):
-        print(                               )
+        print(                             )
         print( " 正在对黑洞轨迹进行画 3 维图 " )
-        print(                               )
+        print(                             )
     elif ( input_language == "English" ):
         print(                                                    )
         print( " Plotting the black holes' trajectory (3D plot) " )
@@ -677,7 +719,7 @@ def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
     file0 = os.path.join(outdir, "bssn_BH.dat")
     
     if ( input_language == "Chinese" ):
-        print(" 对应数据文件为 ",              file0 )
+        print(" 对应数据文件为 ",               file0 )
     elif ( input_language == "English" ):
         print( " Corresponding data file = ", file0 )
 
@@ -696,9 +738,12 @@ def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
     fig = plt.figure( figsize=(8,8) )
  
     # 创建一个3D坐标轴
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot( 111, projection='3d' )
     # 添加标题
     ax.set_title( " Black Hole Trajectory ", fontsize=18 )
+
+    # 设定曲线的颜色
+    line_color = [ 'red', 'green', 'blue', 'black', 'gray', 'yellow', 'cyan', 'pink', 'magenta' ]
     
     for i in range(input_data.puncture_number):
         BH_x = data[:, 3*i+1]
@@ -710,14 +755,8 @@ def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
         BH_Ymax[i] = max( BH_y )
         BH_Zmin[i] = min( BH_z )
         BH_Zmax[i] = max( BH_z )
-        if i==0:
-            ax.plot( BH_x, BH_y, BH_z, color='red',   label="BH"+str(i+1), linewidth=2 )
-        elif i==1:
-            ax.plot( BH_x, BH_y, BH_z, color='green', label="BH"+str(i+1), linewidth=2 )
-        elif i==2:
-            ax.plot( BH_x, BH_y, BH_z, color='blue',  label="BH"+str(i+1), linewidth=2 )
-        elif i==3:
-            ax.plot( BH_x, BH_y, BH_z, color='gray',  label="BH"+str(i+1), linewidth=2 )
+        ax.plot( BH_x, BH_y, BH_z, color=line_color[i], label="BH"+str(i+1), linewidth=2 )
+        
 
     # 设置坐标轴标签
     ax.set_xlabel( "X [M]",          fontsize=16 )
@@ -746,9 +785,9 @@ def generate_puncture_orbit_plot3D( input_language, outdir, figure_outdir ):
     plt.close(                                                       )
     
     if ( input_language == "Chinese" ):
-        print(                            )
+        print(                          )
         print( " 对黑洞轨迹 3 维画图完成 " )
-        print(                            )
+        print(                          )
     elif ( input_language == "English" ):
         print(                                                             )
         print( " Black holes' trajectory plot has been finished (3D plot)" )
@@ -867,16 +906,16 @@ def generate_gravitational_wave_psi4_plot( input_language, outdir, figure_outdir
     
     if ( input_language == "Chinese" ):
         print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-        print(                                                        )
+        print(                                                     )
     elif ( input_language == "English" ):
         print( " The Weyl Conformal component Psi4 plot has been finished ", " detector number ", detector_number_i )
         print(                                                                                                      )
 
     if ( detector_number_i == (input_data.Detector_Number-1) ):
         if ( input_language == "Chinese" ):
-            print(                                    )
+            print(                                   )
             print( " 对 Weyl 共形变量 Psi4 的画图完成 " )
-            print(                                    )
+            print(                                   )
         elif ( input_language == "English" ):
             print(                                                                )
             print( " The Weyl conformal component Psi4 plots have been finished " )
@@ -901,11 +940,11 @@ def generate_ADMmass_plot( input_language, outdir, figure_outdir, detector_numbe
 
     if ( detector_number_i == 0 ):
         if ( input_language == "Chinese" ):
-            print(                                   )
+            print(                                 )
             print( " 对时空 ADM 质量和角动量进行画图 " )
-            print(                                   )
-            print( " 对应数据文件为 ", file0          )
-            print(                                   )
+            print(                                 )
+            print( " 对应数据文件为 ", file0         )
+            print(                                 )
         elif ( input_language == "English" ):
             print(                                                )
             print( " Plotting the ADM mass and angular momentum " )
@@ -1013,7 +1052,7 @@ def generate_ADMmass_plot( input_language, outdir, figure_outdir, detector_numbe
     if ( detector_number_i == (input_data.Detector_Number-1) ):
         if ( input_language == "Chinese" ):
             print( " 对时空 ADM 质量和角动量的画图完成 " )
-            print(                                     )
+            print(                                  )
         elif ( input_language == "English" ):
             print( " The ADM mass and augular momentum plots have been finished " )
             print(                                                                )
@@ -1035,11 +1074,11 @@ def generate_constraint_check_plot( input_language, outdir, figure_outdir, input
 
     if ( input_level_number == 0 ):
         if ( input_language == "Chinese" ):
-            print(                                )
+            print(                             )
             print( " 对哈密顿约束违反性况进行画图 " )
-            print(                                )
-            print( " 对应数据文件为 ", file0       )
-            print(                                )
+            print(                             )
+            print( " 对应数据文件为 ", file0     )
+            print(                             )
         elif ( input_language == "English" ):
             print(                                                          )
             print( " Plotting the constraint violation for each grid level" )
@@ -1125,7 +1164,7 @@ def generate_constraint_check_plot( input_language, outdir, figure_outdir, input
     if ( input_level_number == (input_data.grid_level-1) ):
         if ( input_language == "Chinese" ):
             print( " 对约束违反情况的画图完成 " )
-            print(                             )
+            print(                          )
         elif ( input_language == "English" ):
             print( " Constraint violation plot has been finished " )
             print(                                                 )
@@ -1140,20 +1179,23 @@ def generate_constraint_check_plot( input_language, outdir, figure_outdir, input
 
 # 单独使用的例子
 '''
-outdir = "./BBH_q=1"
+outdir = "./GW190521-Hierarchical/AMSS_NCKU_output/"
+figure_dir = "./GW190521-Hierarchical/figure/"
 
-generate_puncture_orbit_plot(    outdir, outdir )
-generate_puncture_orbit_plot3D(  outdir, outdir )
-generate_puncture_distence_plot( outdir, outdir )
+input_language = 'English'
+
+generate_puncture_orbit_plot(    input_language, outdir, figure_dir )
+generate_puncture_orbit_plot3D(  input_language, outdir, figure_dir )
+generate_puncture_distence_plot( input_language, outdir, figure_dir )
 
 for i in range(input_data.grid_level):
-    generate_constraint_check_plot( outdir, outdir, i )
+    generate_constraint_check_plot( input_language, outdir, figure_dir, i )
 
 for i in range(input_data.Detector_Number):
-    generate_ADMmass_plot( outdir, outdir, i )
+    generate_ADMmass_plot( input_language, outdir, figure_dir, i )
 
 for i in range(input_data.Detector_Number):
-    generate_gravitational_wave_psi4_plot( outdir, outdir, i )
+    generate_gravitational_wave_psi4_plot( input_language, outdir, figure_dir, i )
 '''
 ####################################################################################
 

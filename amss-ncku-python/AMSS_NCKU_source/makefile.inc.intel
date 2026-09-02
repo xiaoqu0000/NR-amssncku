@@ -1,0 +1,51 @@
+# Intel oneAPI + Intel MPI configuration (opt-in fast path).
+# Selected when COMPILER=intel.
+#
+# Prerequisites:
+#   - Intel oneAPI 2025+ (icx / icpx / ifx + Intel MPI)
+#   - spack-installed hwloc and numactl (or set HWLOC_PREFIX / NUMACTL_PREFIX manually)
+#
+# Example activation:
+#   source /opt/intel/oneapi/setvars.sh
+#   spack env activate <your-env>     # (or set HWLOC_PREFIX / NUMACTL_PREFIX directly)
+
+# --- 1. MPI compiler wrappers ---
+# Intel MPI wrappers using the new oneAPI compilers (icx / icpx / ifx).
+# The classic icc/icpc/ifort wrappers are not shipped in oneAPI 2025.
+CXX      = mpiicpx
+CC       = mpiicx
+f90      = mpiifx
+f77      = mpiifx
+CLINKER  = mpiicpx
+
+# --- 2. Include paths ---
+# Allow overriding the hwloc / numactl prefixes from the environment so this works
+# outside of spack too. Falls back to `spack location -i` only when spack is on PATH.
+HWLOC_PREFIX   ?= $(shell command -v spack >/dev/null 2>&1 && spack location -i hwloc 2>/dev/null)
+NUMACTL_PREFIX ?= $(shell command -v spack >/dev/null 2>&1 && spack location -i numactl 2>/dev/null)
+HWLOC_INC   = $(HWLOC_PREFIX)/include
+HWLOC_LIB   = $(HWLOC_PREFIX)/lib
+NUMACTL_INC = $(NUMACTL_PREFIX)/include
+NUMACTL_LIB = $(NUMACTL_PREFIX)/lib
+filein_CXX = -I. -I/usr/include -I$(HWLOC_INC) -I$(NUMACTL_INC)
+filein_C   = -I. -I/usr/include
+filein     = -I. -I/usr/include
+
+# --- 3. Link libraries ---
+# Intel MPI wrappers handle -lmpi automatically. The C++ linker pulls in libstdc++;
+# we still need to add Fortran runtime explicitly (-lifcore) plus hwloc/numa.
+LDLIBS   = -lm -lifcore -L$(HWLOC_LIB) -lhwloc -L$(NUMACTL_LIB) -lnuma
+
+# --- 4. Compiler flags ---
+EXTRA_CXXFLAGS ?=
+EXTRA_F90FLAGS ?=
+CXXAPPFLAGS  = --std=c++20 -qopenmp -O3 -g -Wno-deprecated -Dfortran3 -Dnewc -fPIC $(filein_CXX) $(EXTRA_CXXFLAGS)
+CFLAGS       = -qopenmp -O3 -g -fPIC -I. $(filein_C) -lm
+f90appflags  = -qopenmp -O3 -g -xHost -fpp -fp-model fast=2 -qopt-zmm-usage=high -fiopenmp -fopenmp-simd -funroll-loops $(EXTRA_F90FLAGS)
+# interp loops: keep the simple flag set — small loops do not benefit from fast=2.
+f90flags_interp = -qopenmp -O3 -g -fpp $(EXTRA_F90FLAGS)
+
+# --- 5. CUDA (only used when building ABEGPU) ---
+Cu = nvcc
+CUDA_LIB_PATH = -L/usr/lib/cuda/lib64 -I/usr/include -I/usr/lib/cuda/include
+CUDA_APP_FLAGS = -c -g -O3 --ptxas-options=-v -Dfortran3 -Dnewc

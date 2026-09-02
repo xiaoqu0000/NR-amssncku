@@ -103,11 +103,27 @@ if ( input_language == "Chinese" ):
 elif ( input_language == "English" ):
     setup.print_input_data_English( setup_data, File_directory )
 
-
+## 输出分辨率的相关信息
 ## 如果分辨率满足要求，则进行下一步计算
 print_information.print_whether_grid_is_satisfied( input_language )
 inputvalue = input()  ## 设定一个输入（回车），以便程序下一步运行
 print()
+
+
+##################################################################
+
+## 初始化并输出 puncture 相关的信息
+
+import puncture_initialize
+
+## 初始化 puncture 数据
+puncture_data = puncture_initialize.generate_puncture_input_data( input_language )
+
+## 屏幕输出 puncture 的信息
+puncture_initialize.print_puncture_information( input_language, puncture_data )
+inputvalue = input()  ## 设定一个输入（回车），以便程序下一步运行
+print() 
+
 
 ##################################################################
 
@@ -117,31 +133,33 @@ import time
 
 start_time = time.time()  # 记录程序开始时间
 
+
 ##################################################################
 
-## 自动生成 AMSS-NCKU C++ 程序的输入文件
-
-## 屏幕输出 puncture 的信息
-## setup.print_puncture_information( input_language )
-
-## 根据设定的参数生成 AMSS-NCKU 程序的输入文件   
-setup.generate_AMSSNCKU_input( input_language ) 
-
+## 设定初始时刻的 AMR 网格
 
 import numerical_grid        
 
 ## 生成一个初始时刻的AMR网格
-initial_AMR_grid_data, puncture_data = numerical_grid.generate_initial_AMR_grid( input_language )
-
-## 根据格点信息生成 cgh 的相关输入
-numerical_grid.append_AMSSNCKU_cgh_input( input_language, initial_AMR_grid_data )  
+initial_AMR_grid_data = numerical_grid.generate_initial_AMR_grid( input_language, puncture_data )
 
 ## 画出初始的格点设置
 numerical_grid.plot_initial_grid( input_language, initial_AMR_grid_data )
 
 
+##################################################################
+
+## 自动生成 AMSS-NCKU C++ 程序的输入文件
+
+## 根据设定的参数生成 AMSS-NCKU 程序的输入文件   
+setup.generate_AMSSNCKU_input( input_language )
+
+## 根据格点信息生成 cgh 的相关输入
+numerical_grid.append_AMSSNCKU_cgh_input( input_language, initial_AMR_grid_data )  
+
 ##  根据算法和参数生成 AMSS-NCKU 的宏文件
 main_program_function.generate_macrodef_file( input_language )
+
 
 ##################################################################
 
@@ -188,7 +206,7 @@ shutil.copy2(macrodef_fh_path, AMSS_NCKU_compile_path)
 
 # 编译相关程序
 
-import makefile_and_run
+import makefile_and_run_ZJU as makefile_and_run
 
 ## 先切换到目标文件夹
 os.chdir(AMSS_NCKU_compile_path)
@@ -204,12 +222,12 @@ if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 else:
     print()
     
-## 如果设置 puncture 的方式选为 Automatically-BBH，编译可执行文件 PNOrbit 
-## 如果设置 puncture 的方式选为 Manually，则跳过这一步
+## 如果设置 puncture 的方式选为 Automatically-BBH，且允许后牛顿演化，编译可执行文件 PNOrbit 
+## 如果设置 puncture 的方式选为 Manually，或 Allow_PN_Evaluation 选为 "no"，则跳过这一步
 
-if (input_data.puncture_data_set == "Automatically-BBH" ): 
+if ( input_data.puncture_data_set == "Automatically-BBH" and input_data.Allow_PN_Evaluation == "yes" ): 
     makefile_and_run.makefile_PNOrbit( input_language )
-elif (input_data.puncture_data_set == "Manually" ): 
+else: 
     print()
     
 ###########################
@@ -252,12 +270,13 @@ if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
 ###########################
 
-## 如果设置 puncture 的方式选为 Automatically-BBH，将 AMSS-NCKU 程序可执行文件 PNOrbit 拷贝到程序运行的文件夹
+## 如果设置 puncture 的方式选为 Automatically-BBH，且允许后牛顿演化
+## 将 AMSS-NCKU 程序可执行文件 PNOrbit 拷贝到程序运行的文件夹
 
 PNOrbit_file = os.path.join(AMSS_NCKU_compile_path, "PNOrbit")
 
-if ( input_data.puncture_data_set == "Automatically-BBH"  ):
-
+if ( input_data.puncture_data_set == "Automatically-BBH" and input_data.Allow_PN_Evaluation == "yes" ):
+    
     ## 如果找不到可执行文件 PNOrbit，屏幕输出报错信息
     if not os.path.exists( PNOrbit_file ):
         print_information.print_no_PNOrbit_error( input_language ) 
@@ -265,9 +284,62 @@ if ( input_data.puncture_data_set == "Automatically-BBH"  ):
     ## 复制可执行文件 PNOrbit 到程序运行目录
     shutil.copy2(PNOrbit_file, output_directory)
 
-###########################
+##################################################################
 
+## 如果设置 puncture 的方式选为 Automatically-BBH，且允许后牛顿演化，生成并运行 PNOrbit 程序
+## 用后牛顿演化计算更精确的双星轨道参数（从 Distance_initial 演化到 Distance_final）
+## 如果 Allow_PN_Evaluation 选为 "no"，则跳过 PNOrbit
 
+if ( input_data.puncture_data_set == "Automatically-BBH" and input_data.Allow_PN_Evaluation == "yes" ):
+
+    ## 屏幕输出生成 PNOrbit 输入文件
+    print_information.print_generate_PNOrbit_input( input_language )
+    
+    import generate_PNOrbit_input
+    
+    ## 生成 PNOrbit 的输入文件
+    generate_PNOrbit_input.generate_AMSSNCKU_PNOrbit_input( input_language, puncture_data )
+    print_information.print_finish_PNOrbit_input( input_language )   ## 屏幕输出 PNOrbit 的输入文件已完成
+    
+    ## 生成的 PNOrbit 输入文件名
+    AMSS_NCKU_PNOrbit_inputfile      = 'AMSS-NCKU-PNOrbit.input'
+    AMSS_NCKU_PNOrbit_inputfile_path = os.path.join( File_directory, AMSS_NCKU_PNOrbit_inputfile )
+ 
+    ## 复制并重命名文件（PNOrbit 程序读取当前目录下的 PN_Orbit.par）
+    shutil.copy2( AMSS_NCKU_PNOrbit_inputfile_path, os.path.join(output_directory, 'PN_Orbit.par') )
+    
+    ###########################
+
+    ## 运行 PNOrbit 来生成更精确的轨道参数
+    
+    print()
+    ## print( " 准备启动 AMSS-NCKU PNOrbit 程序 ，按回车继续！！！ " )
+    ## inputvalue = input()                    
+    print()
+    
+    ## 先切换到目标文件夹
+    os.chdir(output_directory)
+
+    ## 运行 PNOrbit 程序
+    makefile_and_run.run_PNOrbit( input_language )
+    
+    ###########################
+    
+    ## 改变当前工作目录到上两级目录
+    os.chdir('..')
+    os.chdir('..')
+    
+    ###########################
+
+    ## 根据 PNOrbit 的运行结果更新 puncture data（解析 PNorbit.dat 并更新位置、动量、间距）
+    ## import puncture_initialize
+    
+    puncture_data_new = puncture_initialize.update_puncture_data_by_PNOrbit( input_language, puncture_data )
+
+else:
+
+    puncture_data_new = puncture_data
+    
 ##################################################################
 
 ## 如果初值方法选为 TwoPuncture，生成 TwoPuncture 的输入文件
@@ -280,10 +352,11 @@ if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
     import generate_TwoPuncture_input
     
     ## 根据双星模型设定 TwoPuncture 需要的数据
-    ## puncture_data = generate_TwoPuncture_input.generate_puncture_input_data( input_language )
+    ## 新版已放入 puncture_initilize 中
+    ## puncture_data_new = generate_TwoPuncture_input.generate_puncture_input_data( input_language )
     
     ## 生成 TwoPuncture 的输入文件
-    generate_TwoPuncture_input.generate_AMSSNCKU_TwoPuncture_input( input_language, puncture_data )
+    generate_TwoPuncture_input.generate_AMSSNCKU_TwoPuncture_input( input_language, puncture_data_new )
     print_information.print_finish_TwoPunture_input( input_language )   ## 屏幕输出 TwoPuncture 的输入文件已完成
     
     ## 生成的 AMSS-NCKU 输入文件名
@@ -320,7 +393,7 @@ if ( input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
 
 import renew_puncture_parameter
     
-renew_puncture_parameter.append_AMSSNCKU_BSSN_input( puncture_data, File_directory, output_directory )
+renew_puncture_parameter.append_AMSSNCKU_BSSN_input( puncture_data_new, File_directory, output_directory )
 
 
 ## 生成的 AMSS-NCKU 输入文件名
@@ -432,6 +505,8 @@ elapsed_time = end_time - start_time  # 计算运行时间
 ## 屏幕输出程序运行时间
 print_information.print_time_cost( elapsed_time, input_language )
 
+
+##################################################################
 
 ## 屏幕输出程序结束
 print_information.print_program_end( input_language )

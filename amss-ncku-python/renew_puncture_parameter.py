@@ -25,7 +25,7 @@ def read_TwoPuncture_Output(Output_File_directory):
     position_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的初始位置
     momentum_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的动量
     angular_momentum_BH   = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量
-    charge_Q_BH           = numpy.zeros( input_data.puncture_number )   ## 初始化每个黑洞的电荷
+    charge_Q_BH           = numpy.zeros( input_data.puncture_number )        ## 初始化每个黑洞的电荷
     
     # 读取文件内容
     data = numpy.loadtxt( os.path.join(Output_File_directory, "puncture_parameters_new.txt") )

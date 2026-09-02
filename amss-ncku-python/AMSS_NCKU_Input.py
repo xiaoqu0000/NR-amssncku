@@ -4,16 +4,18 @@
 #################################################
 
 import numpy  
-import math
+
 #################################################
 ## 设置程序运行目录和计算资源
 ## Setting MPI processes and the output file directory
 #################################################
 
-File_directory   = "3BH_Collide"                         ## 程序运行目录             output file directory
+File_directory   = "BBH_test_GW150914"            ## 程序运行目录             output file directory
 Output_directory = "binary_output"               ## 存放二进制数据的子目录     binary data file directory
                                                  ## The file directory name should not be too long
-MPI_processes    = 8                             ## 想要调用的进程数目        number of mpi processes used in the simulation
+MPI_processes    = 4                             ## 想要调用的进程数目        number of mpi processes used in the simulation
+OMP_processes    = 4                             ## 想要调用的线程数目        number of OpenMP threads per MPI process
+cores_per_numa   = OMP_processes                 ## number of CPU cores per NUMA node (for processor binding)
 
 GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no   Use GPU or not 
                                                  ## (prefer "no" in the current version, because the GPU part may have bugs when integrated in this Python interface)
@@ -35,7 +37,7 @@ Equation_Class           = "BSSN"                  ## Evolution Equation: choose
                                                    ## 注意：GPU 计算仅支持 BSSN      GPU calculation only supports "BSSN"
                                                    ## 这里选择 BSSN-EScalar，需要在后面设定 F(R) 理论的参数
                                                    ## If "BSSN-EScalar" is chosen, it is necessary to set other parameters below
-Initial_Data_Method      = "Cao-Analytical"        ## 设置求解数值相对论初值的方法
+Initial_Data_Method      = "Ansorg-TwoPuncture"    ## 设置求解数值相对论初值的方法
                                                    ## initial data method: choose "Ansorg-TwoPuncture", "Lousto-Analytical", "Cao-Analytical", "KerrSchild-Analytical"
                                                    ## 注意：当前 BSSN-EM 的计算不支持用解析公式 Lousto-Analytical、Cao-Analytical、KerrSchild-Analytical
                                                    ##       当前 BSSN-EScalar 的计算不支持用解析公式 Lousto-Analytical、Cao-Analytical、KerrSchild-Analytical
@@ -49,9 +51,9 @@ Finite_Diffenence_Method = "6th-order"             ## 有限差分方法     fin
 #################################################
 
 Start_Evolution_Time     = 0.0                    ## 起始演化时间   start evolution time t0
-Final_Evolution_Time     = 200.0                  ## 最终演化时间   final evolution time t1
+Final_Evolution_Time     = 1000.0                 ## 最终演化时间   final evolution time t1
 Check_Time               = 100.0
-Dump_Time                = 40.0                   ## 每隔一定时间间隔储存数据   time inteval dT for dumping binary data
+Dump_Time                = 100.0                  ## 每隔一定时间间隔储存数据   time inteval dT for dumping binary data
 D2_Dump_Time             = 100.0                  ## dump the ascii data for 2d surface after dT'
 Analysis_Time            = 0.1                    ## dump the puncture position and GW psi4 after dT"
 Evolution_Step_Number    = 10000000               ## 最大迭代次数       stop the calculation after the maximal step number
@@ -67,18 +69,18 @@ Dissipation              = 0.15                   ## 耗散因子               
 basic_grid_set    = "Patch"                          ## 设定网格类型，可选 Patch 和 Shell-Patch     grid structure: choose "Patch" or "Shell-Patch"
 grid_center_set   = "Cell"                           ## 网格中心设置，可选 Cell 和 Vertex           grid center: chose "Cell" or "Vertex"
 
-grid_level        = 9                                ## 设置格点的总层数              total number of AMR grid levels
+grid_level        = 10                               ## 设置格点的总层数              total number of AMR grid levels
 static_grid_level = 6                                ## 设置静态格点的层数            number of AMR static grid levels
 moving_grid_level = grid_level - static_grid_level   ## 可移动格点的层数             number of AMR moving grid levels
 
 analysis_level    = 0
 refinement_level  = 4                                ## 从该层开始进行时间细化        time refinement start from this grid level
 
-largest_box_xyz_max = [400.0, 400.0, 400.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
+largest_box_xyz_max = [600.0, 600.0, 600.0]          ## 设置最外层格点的坐标最大值     scale of the largest box
                                                      ## not ne cess ary to be cubic for "Patch" grid s tructure
                                                      ## need to be a cubic box for "Shell-Patch" grid structure
 ## largest_box_xyz_min = - numpy.array(largest_box_xyz_max)  ## 设置最外层格点的坐标最小值
-largest_box_xyz_min = [-400.0, -400.0, -400.0]
+largest_box_xyz_min = [-600.0, -600.0, -600.0]
 
 static_grid_number = 96                              ## 设置固定格点每一层每一维数的格点数目（这里对应的 x 轴格点数目，yz 轴格点自动调整）
                                                      ## grid points of each static AMR grid (in x direction)
@@ -109,42 +111,41 @@ parameter_BH          = numpy.zeros( (puncture_number, 3) )
 dimensionless_spin_BH = numpy.zeros( (puncture_number, 3) )   
 momentum_BH           = numpy.zeros( (puncture_number, 3) )   
 
-puncture_data_set     = "Manually"                       ## 设置双星轨道坐标的方式，可选 Manually 和 Automatically-BBH
+puncture_data_set     = "Automatically-BBH"              ## 设置双星轨道坐标的方式，可选 Manually 和 Automatically-BBH
                                                          ## Method to give Puncture’s positions and momentum
                                                          ## choose "Manually" or "Automatically-BBH"
                                                          ## Prefer to choose "Manually", because "Automatically-BBH" is developing now
 
-#---------------------------------------------
+##---------------------------------------------
 
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## black hole parameter (M Q* a*)
 ## 质量  无量纲电荷  无量纲自旋
-parameter_BH[0] = [ 1.0/2.0,  0.0,  0.0 ]   
-parameter_BH[1] = [ 1.0/2.0,  0.0,  0.0 ] 
-# parameter_BH[2] = [ 0.0,  0.0,  0.0 ]   ## 多黑动手动添加
+parameter_BH[0] = [ 36.0/(36.0+29.0),  0.0,  +0.31 ]   
+parameter_BH[1] = [ 29.0/(36.0+29.0),  0.0,  -0.46 ] 
+## parameter_BH[2] = [ 0.5,  0.0,  0.0 ]   ## 多黑动手动添加
 ## 注意，如果求解数值相对论初值的方法选为 Ansorg-TwoPuncture ，第一个黑洞必须为质量较大的那个，且黑洞总质量会自动 rescale 为 M=1 （其它情况下必须手动 rescale）
 
 ## 设置每个黑洞的无量纲自旋
 ## dimensionless spin in each direction
 ## 无对称性时 ，需要手动给 3 个方向的自旋角动量
-dimensionless_spin_BH[0] = [ 0.0,  0.0,  0.0 ]   
-dimensionless_spin_BH[1] = [ 0.0,  0.0,  0.0 ]  
-# dimensionless_spin_BH[2] = [ 0.0,  0.0,  0.0 ]  ## 多黑动手动添加
+dimensionless_spin_BH[0] = [ 0.0,  0.0,  +0.31 ]   
+dimensionless_spin_BH[1] = [ 0.0,  0.0,  -0.46 ]  
+## dimensionless_spin_BH[2] = [ 0.0,  0.0,   0.0  ]  ## 多黑动手动添加
 
-#---------------------------------------------
-
+##---------------------------------------------
 ## 如果设置双星初始轨道坐标的方式选为 Automatically-BBH，只需要给定黑洞参数，偏心率，距离即可
-
-#---------------------------------------------
+##---------------------------------------------
 
 ## 这一步与初值求解中的 Ansorg-TwoPuncture 配合使用中需要注意的问题
 ## 用 Ansorg-TwoPuncture 求解初值，轨道坐标设置可以设置 Manually 和 Automatically-BBH 设置双星轨道坐标
 ## 但双星轨道坐标如果设置为 Manually 而不是 Automatically-BBH，则要细致设置 Puncture 的位置和动量取值，否则可能会使 TwoPuncture 程序无法正确读入输入而报错）
 
+## 双黑洞系统的初始间距
 ## initial orbital distance and ellipticity for BBHs system
 ## ( needed for "Automatically-BBH" case , not affect the "Manually" case )
 Allow_PN_Evaluation = "no"  ## 是否允许从更远的位置进行后牛顿演化，以提高计算精度
-Distance_initial = 100.0
+Distance_initial = 60.0
 e0               = 0.0
 Distance_final   = 10.0
 
@@ -154,23 +155,23 @@ Distance_final   = 10.0
 ##  -----0-----> y
 ##   -      +     
 
-#---------------------------------------------
-
+##---------------------------------------------
 ## 如果设置 puncture 初始轨道坐标的方式选为 Manually，还需要手动给定所有黑洞参数
 ## If puncture_data_set is chosen to be "Manually", it is necessary to set the position and momentum of each puncture manually
+##---------------------------------------------
 
 ## 设置每个黑洞的初始位置     initial position for each puncture
-position_BH[0]  = [ 0.0, +6.0, 0.0 ]  
-position_BH[1]  = [ 0.0, -6.0, 0.0 ] 
-# position_BH[2]  = [ -3.0*math.sqrt(3.0), -3.0, 0.0 ]  ## 多黑洞手动添加
+position_BH[0]  = [  0.0, +4.4615385, 0.0 ]  
+position_BH[1]  = [  0.0, -5.5384615, 0.0 ] 
+## position_BH[2]  = [  0.0, 0.0, 0.0 ]  ## 多黑洞手动添加
 
 ## 设置每个黑洞的动量信息    initial mumentum for each puncture
 ## (needed for "Manually" case, does not affect the "Automatically-BBH" case)
-momentum_BH[0]  = [ 0.0,  0.0,  0.0 ]
-momentum_BH[1]  = [ 0.0,  0.0,  0.0 ]
-# momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
+momentum_BH[0]  = [ -0.0953015, -0.00084515,  0.0 ]
+momentum_BH[1]  = [ +0.0953015, +0.00084515,  0.0 ]
+## momentum_BH[2]  = [ 0.0,  0.0,  0.0 ]  ## 多黑洞手动添加
 
-#---------------------------------------------
+##---------------------------------------------
 
 
 #################################################
@@ -180,9 +181,9 @@ momentum_BH[1]  = [ 0.0,  0.0,  0.0 ]
 
 GW_L_max        = 4                      ## 引力波最大的 L    maximal L number in gravitational wave
 GW_M_max        = 4                      ## 引力波最大的 M    maximal M number in gravitational wave
-Detector_Number = 6                     ## 探测器的数目            number of dector
+Detector_Number = 11                     ## 探测器的数目            number of dector
 Detector_Rmin   = 50.0                   ## 最近探测器的距离   nearest dector distance
-Detector_Rmax   = 100.0                  ## 最远探测器的距离   farest dector distance
+Detector_Rmax   = 150.0                  ## 最远探测器的距离   farest dector distance
 
 #################################################
 
@@ -211,6 +212,8 @@ plot_binary_data_set         = "xy-xz-yz-plot"             ## 选择 "xy-plot", 
                                                            ## 后续开发
 plot_binary_data_level       = "All-Level"                 ## 选择 "All-level", "Single-level"
 plot_binary_data_levelnumber = static_grid_level-1         ## 选择对哪个层来进行画图
+plot_binary_data_processes   = MPI_processes               ## 二进制数据并行画图使用的进程数目       number of processes used in parallel binary data plotting
+                                                           ## 如果设为 0，则自动使用所有 CPU 核数   if set to 0, all CPU cores are used automatically
 
 #################################################
 
@@ -270,3 +273,19 @@ tetrad_type  = 2                   ## tetradtype
                                    ## choose 0 1 2
                                    ## 目前的版本建议选为 2
                                    ## prefer 2
+                
+                                   ## 以下   v:r; u: phi; w: theta
+                                   ##       v^a = (x,y,z)
+                                   ## 0: orthonormal order: v,u,w
+                                   ##    v^a = (x,y,z)   
+                                   ##    m = (phi - i theta)/sqrt(2) 
+                                   ##    following Frans, Eq.(8) of  PRD 75, 124018(2007)
+                                   ## 1: orthonormal order: w,u,v
+                                   ##    m = (theta + i phi)/sqrt(2) 
+                                   ##    following Sperhake, Eq.(3.2) of  PRD 85, 124062(2012)    
+                                   ## 2: orthonormal order: v,u,w
+                                   ##    v_a = (x,y,z)
+                                   ##    m = (phi - i theta)/sqrt(2) 
+                                   ##    following Frans, Eq.(8) of  PRD 75, 124018(2007)
+                                    
+################################################# 

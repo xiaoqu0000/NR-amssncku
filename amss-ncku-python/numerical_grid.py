@@ -27,13 +27,14 @@ import puncture_initialize                 ## 该文件包含 Puncture 的设定
 
 #########################################################################
 
-def generate_initial_AMR_grid( input_language ):
+def generate_initial_AMR_grid( input_language, puncture_data_input ):
 
     #################################################
     
     ## 导入 puncture 的信息
     
-    puncture_data_input = puncture_initialize.generate_puncture_input_data( input_language )
+    ## 为了更好的结构化，将这一步变为函数的输入
+    ## puncture_data_input = puncture_initialize.generate_puncture_input_data( input_language )
     
     puncture = puncture_data_input.position_BH
 
@@ -42,9 +43,9 @@ def generate_initial_AMR_grid( input_language ):
     ## 输出网格的信息
 
     if ( input_language == "Chinese" ):
-        print(                  )   
+        print(                )   
         print( " 输出网格信息 " )
-        print(                  )
+        print(                )
     elif ( input_language == "English" ):   
         print(                                     )   
         print( " Wirte Down The Grid Information " )
@@ -54,7 +55,7 @@ def generate_initial_AMR_grid( input_language ):
         print( " 总网格层数   = ",   input_data.grid_level        )      ## 输出网格的总层数
         print( " 固定网格层数 = ",   input_data.static_grid_level )      ## 输出静态网格的层数
         print( " 可移动网格层数 = ", input_data.moving_grid_level )      ## 输出可移动网格的层数
-        print(                                                   )
+        print(                                                  )
     elif ( input_language == "English" ):     
         print( " Number of Total Grid Level = ",          input_data.grid_level        )      ## 输出网格的总层数
         print( " Number of Static Grid Level = ",         input_data.static_grid_level )      ## 输出静态网格的层数
@@ -64,9 +65,9 @@ def generate_initial_AMR_grid( input_language ):
 
 
     if ( input_language == "Chinese" ):
-        print(                     )
+        print(                   )
         print( " 正在设定计算网格 " )
-        print(                     )
+        print(                   )
     elif ( input_language == "English" ):
         print(                                         )
         print( " Setting the demanded numerical grid " )
@@ -201,9 +202,9 @@ def generate_initial_AMR_grid( input_language ):
     ## print( " Grid_Y_Max[0] = ", Grid_Y_Max[0] )
 
     if ( input_language == "Chinese" ):
-        print(                                                         )
+        print(                                                   )
         print( " 正在调整固定网格格点的位置，使得坐标原点位于固定网格上 " )
-        print(                                                         )
+        print(                                                   )
     elif ( input_language == "English" ):
         print(                                                                                                   )
         print( " adjusting the static gird points, making the original point (0,0,0) to the static gird points " )
@@ -318,9 +319,9 @@ def generate_initial_AMR_grid( input_language ):
 
     else:
         if ( input_language == "Chinese" ):
-            print(                                                       )
+            print(                                )
             print( " 固定网格：网格类型设置错误 ！！ " )
-            print(                                                       )
+            print(                                )
         elif ( input_language == "English" ):
             print(                                                       )
             print( " Static Grid Error: Grid Type is Undifined !!!!!!! " )
@@ -331,9 +332,9 @@ def generate_initial_AMR_grid( input_language ):
     ## 设置可移动网格的格点坐标坐标  
 
     if ( input_language == "Chinese" ):
-        print(                                                                            )
+        print(                                                                     )
         print( " 正在调整移动网格中心的位置，以便同时与 Puncture 位置以及上一层粗网格相匹配 " )
-        print(                                                                            )
+        print(                                                                     )
     elif ( input_language == "English" ):
         print(                                                                                                            )
         print( " adjusting the moving gird points, ensuring the alliance of moving grids points and static grids points " )
@@ -471,18 +472,18 @@ def generate_initial_AMR_grid( input_language ):
         
     else:
         if ( input_language == "Chinese" ):
-            print(                                     )
+            print(                                  )
             print( " 可移动网格：网格类型设置错误 ！！ " )
-            print(                                     )
+            print(                                  )
         elif ( input_language == "English" ):
             print(                                                       )
             print( " Moving Grid Error: Grid Type is Undifined !!!!!!! " )
             print(                                                       )
 
     if ( input_language == "Chinese" ):
-        print(                            )
+        print(                          )
         print( " 移动网格中心位置调整完毕 " )
-        print(                            )
+        print(                          )
     elif ( input_language == "English" ):
         print(                                                         )
         print( " adjustment of moving grid points has been completed " )
@@ -527,6 +528,8 @@ def generate_initial_AMR_grid( input_language ):
             self.static_grid_number_z = static_grid_number_z
 
     
+    ## 函数的新版返回不再需要这个 class
+    '''
     class Puncture_Output_Class:
         def __init__( self, BBH_M1,                BBH_M2,          \
                             distance_d0,           ellipticity_e0,  \
@@ -542,10 +545,11 @@ def generate_initial_AMR_grid( input_language ):
             self.position_BH           = position_BH
             self.momentum_BH           = momentum_BH
             self.angular_momentum_BH   = angular_momentum_BH
-         
+    '''
             
     #################################################
     
+    '''
     BBH_M1                = puncture_data_input.BBH_M1
     BBH_M2                = puncture_data_input.BBH_M2
     distance_d0           = puncture_data_input.distance_d0
@@ -562,6 +566,7 @@ def generate_initial_AMR_grid( input_language ):
                                                   dimensionless_mass_BH, charge_Q_BH,    \
                                                   position_BH,           momentum_BH,    \
                                                   angular_momentum_BH )
+    '''
     
     ## 以下为测试，检查是否创建正确的 class 实例
     '''
@@ -598,7 +603,11 @@ def generate_initial_AMR_grid( input_language ):
     
     ## 函数结束
     
-    return initial_AMR_grid_data, puncture_data_output
+    ## 旧版返回
+    ## return initial_AMR_grid_data, puncture_data_output
+    
+    ## 新版返回不需要 puncture_data
+    return initial_AMR_grid_data
 
 #########################################################################
 
@@ -612,9 +621,9 @@ def plot_initial_grid( input_language, initial_AMR_grid_data ):
 
     ## 屏幕输出：开始画出初始网格
     if ( input_language == "Chinese" ):
-        print(                           )
+        print(                        )
         print( " 正在画出初始格点的图像 " ) 
-        print(                           )
+        print(                        )
     elif ( input_language == "English" ):
         print(                                                      )
         print( " Schematically plot the numerical grid structure. " ) 
@@ -834,10 +843,10 @@ def append_AMSSNCKU_cgh_input( input_language, initial_AMR_grid_data ):
     
     ## 屏幕输出： cgh 的信息已写入 AMSS-NCKU 输入文件
     if ( input_language == "Chinese" ):
-        print(                                                                 )
-        print( " 完成 AMSS-NCKU 程序的输入文件 "                                 )    
+        print(                                                               )
+        print( " 完成 AMSS-NCKU 程序的输入文件 "                                )    
         print( " 但是 AMSS-NCKU ABE 中 TwoPuncture 相关的输入要后几步运行后追加 "  )
-        print(                                                                 )
+        print(                                                               )
     elif ( input_language == "English" ): 
         print(                                                                                 )
         print( " The input parfile for AMSS-NCKU C++ executable file ABE has been generated. " )    

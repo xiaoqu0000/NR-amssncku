@@ -41,10 +41,10 @@ def generate_macrodef_h():
         print( "#define SommerType 0",  file=file1 )
         print(                          file=file1 )
     else:
-        print( " 索莫菲边界条件设定错误！！",  file=file1 )
-        print(                                file=file1 )
-        print( "# 索莫菲边界条件设定 SommerType 错误！！"  )
-        print(                                           )
+        print( " 索莫菲边界条件设定错误！！"                         )
+        print(                                                   )
+        print( "# 索莫菲边界条件设定 SommerType 错误！！", file=file1 )
+        print(                                        file=file1 )
 
     # 定义与无穷远积分相关的宏变量 GaussInt
     # for Using Gauss-Legendre quadrature in theta direction
@@ -71,10 +71,10 @@ def generate_macrodef_h():
         print( "#define ABEtype 2", file=file1 )
         print(                      file=file1 )
     else:
-        print( " 方程类型 Equation_Class 设置错误！！！"                )
-        print(                                                        )
+        print( " 方程类型 Equation_Class 设置错误！！！"               )
+        print(                                                     )
         print( "# 方程类型 #define ABEtype 设置错误！！！", file=file1 )
-        print(                                             file=file1 )
+        print(                                          file=file1 )
 
     # 定义宏变量 With_AHF
     # using Apparent Horizon Finder
@@ -159,9 +159,9 @@ def generate_macrodef_h():
         print(                             file=file1 )
     else:
         print( " CPU/GPU计算类型设置错误！！！"                               )
-        print(                                                               )
+        print(                                                            )
         print( "# CPU/GPU计算类型 #define USE_GPU 设置错误！！！", file=file1 )
-        print(                                                    file=file1 )
+        print(                                                 file=file1 )
 
     # 定义宏变量 CHECKDETAIL
     # use checkpoint for every process
@@ -367,10 +367,10 @@ def generate_macrodef_fh():
         print( "#define Vertex", file=file1 )
         print(                   file=file1 )
     else:
-        print( " 网格中心类型 Grid_Center_Set 设置错误！！"                            )
-        print(                                                                       )
+        print( " 网格中心类型 Grid_Center_Set 设置错误！！"                           )
+        print(                                                                    )
         print( "# 网格中心类型 #define Cell 与 #define Vertex 设置错误！", file=file1 )
-        print(                                                            file=file1 )
+        print(                                                         file=file1 )
 
     # 定义宏变量 ghost_width
     # 2nd order: 2
@@ -391,10 +391,10 @@ def generate_macrodef_fh():
         print( "#define ghost_width 5", file=file1 )
         print(                          file=file1 )
     else:
-        print( " 差分方法 Finite_Diffenence_Method 设置错误！！！"            )
-        print(                                                              )
-        print( "# 差分方法 #define ghost_width 设置错误！！！",   file=file1 )
-        print(                                                   file=file1 )
+        print( " 差分方法 Finite_Diffenence_Method 设置错误！！！"         )
+        print(                                                         )
+        print( "# 差分方法 #define ghost_width 设置错误！！！", file=file1 )
+        print(                                              file=file1 )
 
     # 是否定义 shell patch 网格
     # use shell or not
@@ -405,10 +405,10 @@ def generate_macrodef_fh():
     elif ( input_data.basic_grid_set == "Patch" ): 
         print(                      file=file1 )
     else:
-        print( " 格点类型 basic_grid_set 设置错误！！！"                  )
-        print(                                                          )
+        print( " 格点类型 basic_grid_set 设置错误！！！"                 )
+        print(                                                       )
         print( "# 格点类型 #define WithShell 设置错误！！！", file=file1 )
-        print(                                               file=file1 )
+        print(                                            file=file1 )
 
     # 定义宏变量 CPBC
     # use constraint preserving boundary condition or not
@@ -458,9 +458,9 @@ def generate_macrodef_fh():
         print(                     file=file1 )
     else:
         print( " 规范设定错误！！",                    )
-        print(                                        )
+        print(                                      )
         print( "# 规范 GAUGE 设定错误！！", file=file1 )
-        print(                             file=file1 )
+        print(                           file=file1 )
 
     # 定义宏变量 CPBC_ghost_width
     # buffer points for CPBC boundary

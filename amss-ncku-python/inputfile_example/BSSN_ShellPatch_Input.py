@@ -15,11 +15,14 @@ import numpy   ## 导入 numpy 包
 
 File_directory   = "BBH_q=1_test_shellpatch"    ## 程序运行目录
 Output_directory = "output_file"                 ## 存放二进制数据的子目录
-MPI_processes    = 16                            ## 想要调用的进程数目
+MPI_processes    = 16                            ## 想要调用的进程数目        number of mpi processes used in the simulation
+OMP_processes    = 4                             ## 想要调用的线程数目        number of OpenMP threads per MPI process
 
-GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no
-CPU_Part         = 0.5
-GPU_Part         = 0.5
+cores_per_numa   = OMP_processes                 ## number of CPU cores per NUMA node (for processor binding)
+GPU_Calculation  = "no"                          ## 是否开启 GPU 计算，可选 yes 或 no   Use GPU or not 
+                                                 ## (prefer "no" in the current version, because the GPU part may have bugs when integrated in this Python interface)
+CPU_Part         = 1.0
+GPU_Part         = 0.0
 
 #################################################
 
@@ -106,20 +109,21 @@ momentum_BH           = numpy.zeros( (puncture_number, 3) )   ## 初始化每个
 
 puncture_data_set     = "Manually"                            ## 设置双星轨道坐标的方式，可选 Manually 和 Automatically-BBH
 
-#---------------------------------------------
-
+##---------------------------------------------
 ## 如果设置双星初始轨道坐标的方式选为 Automatically-BBH，只需要给定黑洞参数，偏心率，距离即可
+##---------------------------------------------
 
 ## 这一步与初值求解中的 Ansorg-TwoPuncture 配合使用中需要注意的问题
 ## 用 Ansorg-TwoPuncture 求解初值，轨道坐标设置可以设置 Manually 和 Automatically-BBH 设置双星轨道坐标
 ## 但双星轨道坐标如果设置为 Manually 而不是 Automatically-BBH，则要细致设置 Puncture 的位置和动量取值，否则可能会使 TwoPuncture 程序无法正确读入输入而报错）
 
+## 双黑洞系统的初始间距
 ## initial orbital distance and ellipticity for BBHs system
 ## ( needed for "Automatically-BBH" case , not affect the "Manually" case )
-Allow_PN_Evaluation = "no"  ## 是否允许从更远的位置进行后牛顿演化，以提高计算精度
-Distance_initial = 100.0
+Allow_PN_Evaluation = "no"  ## 是否允许从更远的位置进行后牛顿演化，来设定初值
+Distance_initial = 60.0
 e0               = 0.0
-Distance_final   = 10.0
+Distance_final   = 11.0
 
 ## 设置每个黑洞的参数 (M Q* a*)  
 ## 质量  无量纲电荷  无量纲自旋
@@ -138,9 +142,9 @@ dimensionless_spin_BH[1] = [ 0.0,  0.0, -0.0 ]
 ##  -----0-----> y
 ##   -      +     
 
-#---------------------------------------------
-
+##---------------------------------------------
 ## 如果设置 puncture 初始轨道坐标的方式选为 Manually，还需要手动给定所有黑洞参数
+##---------------------------------------------
 
 ## 设置每个黑洞的初始位置
 position_BH[0]  = [  0.0,  +5.5,  0.0 ]  
@@ -179,7 +183,6 @@ AHF_Dump_Time  = 20.0
 #################################################
 
 
-
 #################################################
 
 ## 设置二进制画图相关信息
@@ -189,10 +192,14 @@ plot_binary_data_set         = "xy-xz-yz-plot"             ## 选择 "xy-plot", 
                                                            ## 选择 "Linear", "Logarithmic"
                                                            ## 后续开发
 plot_binary_data_level       = "All-Level"                 ## 选择 "All-level", "Single-level"
-plot_binary_data_levelnumber = static_grid_level-1         ## 选择对哪个层来进行画图
+plot_binary_data_levelnumber = static_grid_level - 1       ## 选择对哪个层来进行画图
+plot_binary_data_processes   = OMP_processes               ## 二进制数据并行画图使用的进程数目
+                                                           ## number of processes used in parallel binary data plotting
+                                                           ## 如果设为 0，则自动使用所有 CPU 核数
+                                                           ## if set to 0, all CPU cores are used automatically
+
 
 #################################################
-
 
 
 #################################################

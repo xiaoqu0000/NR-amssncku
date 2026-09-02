@@ -2,7 +2,7 @@
 #ifndef MICRODEF_H
 #define MICRODEF_H
 
-#include "microdef.fh"
+#include "macrodef.fh"
 
 // application parameters
 

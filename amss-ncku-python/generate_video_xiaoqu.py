@@ -36,9 +36,9 @@ def generate_binary_data_video( input_language, figure_outdir, video_outdir ):
         print( " 开始对 AMSS-NCKU 程序输出的二进制数据制作动画 " )
         print(                                             )
     elif ( input_language == "English" ):
-        print(                                                              )
+        print(                                                               )
         print( " Beginning the AMSS-NCKU Binary Data Plotting From Figures " )
-        print(                                                              )
+        print(                                                               )
 
     ###########################################
 
@@ -153,7 +153,7 @@ def generate_binary_data_video( input_language, figure_outdir, video_outdir ):
     if ( input_language == "Chinese" ):
         print(                          )
         print( " 二进制数据制作动画已完成 " )
-        print(                         )
+        print(                          )
     elif ( input_language == "English" ):
         print(                                              )
         print( " Video for Binary Data Has been Generated " )

@@ -4,6 +4,7 @@
 ## 该文件定义程序的介绍
 ## 小曲
 ## 2025/02/07
+## 2026/08/27 修改
 ##
 ##################################################################
 
@@ -84,10 +85,10 @@ def print_program_introduction_English():
 def print_begin_program( input_language ):
 
     if ( input_language == "Chinese" ):
-        print(                                                                                  )
-        print( " 计算即将开始，请确认在 AMSS_NCKU_Input.py 中设置了正确的参数，按回车继续！！！  " )
+        print(                                                                            )
+        print( " 计算即将开始，请确认在 AMSS_NCKU_Input.py 中设置了正确的参数，按回车继续！！！  "  )
         print( " 如果输入参数没有设置好，Ctrl+C 退出，调整 AMSS_NCKU_Input.py 中的输入参数！！！ " )
-        print(                                                                                  )
+        print(                                                                            )
     elif ( input_language == "English" ):
         print(                                                                                                       )
         print( " Simulation will be started, please confirm you have set the correct parameters in the script file " )

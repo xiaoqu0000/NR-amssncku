@@ -26,6 +26,8 @@ Currently, AMSS - NCKU can successfully handle binary black hole systems and mul
 
 2024年，我们为AMSS-NCKU开发了Python操作接口，方便用户使用和程序后续开发
 
+2026年，我们升级何优化了AMSS-NCKU的内层C/C++代码，优化了CPU并行计算效率
+
 #### The Development of AMSS-NCKU
 
 In 2008, the AMSS-NCKU code was successfully developed, enabling the numerical simulation for binary black hole and multiple black hole systems via the BSSN equations.
@@ -35,6 +37,8 @@ In 2013, AMSS-NCKU achieved the numerical simulation for black hole systems via 
 In 2015, AMSS-NCKU implemented hybrid CPU and GPU computing for the BSSN equations, improving the computational efficiency.
 
 In 2024, we developed a Python operation interface for AMSS-NCKU to facilitate the freshman users and subsequent development.
+
+In 2026, we upgraded and optimized the C/C++ code of AMSS‑NCKU to improve the efficiency of CPU parallel computing.
 
 #### AMSS-NCKU 的开发团队
 
@@ -56,7 +60,9 @@ In 2024, we developed a Python operation interface for AMSS-NCKU to facilitate t
 
 林俊玉（曾在读学生）
 
-左毅（学生）
+左毅（学生，中国科学院）
+
+黄钰、刘天洋、洪奕迅、徐晨、胡笠桁（学生，浙江大学）
 
 #### Authors of AMSS-NCKU
 
@@ -78,7 +84,9 @@ Yu, Jui-Ping (Former student)
 
 Lin, Chun-Yu (Former student)
 
-Zuo, Yi (Student)
+Zuo, Yi (Student, Chinese Academy of Sciences)
+
+Huang, Yu; Liu, Tianyang; Hong, Yixun; Xu, Chen; Hu, Liheng (students, Zhejiang University)
 
 
 #### 运行 AMSS-NCKU 所需要的依赖包
@@ -224,6 +232,10 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2026年4月 更新：增加Jupyter notebook支持
 
+2026年9月 更新：AMSS-NCKU 的C程序内核启用浙江大学的CPU优化版本，使用MPI+OpenMP混合并行计算，相较原来的纯MPI并行计算最高可获得4倍加速比，并提供Jupyter notebook支持
+
+2026年9月 更新：更新并Debug了Automatically-BBH的分支，使得双星的准圆轨道的后牛顿计算更加准确（用户不再需要手动输入初始动量，即可获得相对准确的双黑洞模拟）
+
 #### Update records
 
 September 2025   First commit
@@ -236,6 +248,12 @@ February 2026    Update: Added English and Chinese language support.
 
 April 2026       Update: Added Jupyter notebook support.
 
+September 2026   Update: The C/C++ code of AMSS‑NCKU has been upgraded to a CPU‑optimized version developed by students from Zhejiang University. The new C/C++ code employs hybrid MPI+OpenMP parallel computing, which yields a maximum speedup of 4 times over the original pure MPI parallel code. We also offer the Jupyter notebook support for the upgraded code.
+
+September 2026   Update: Updated and debugged the Automatically-BBH branch, improving the accuracy of post-Newtonian calculations for quasi-circular orbits of binary black holes (It is no longer needed to manually input initial momentum to obtain accurate binary black hole simulations).
+
+
+
 #### 重要提示
 
 由于测试有限，程序难免会有小bug存在
@@ -246,9 +264,11 @@ April 2026       Update: Added Jupyter notebook support.
 
 请根据自身计算机设置计算资源（输入文件中设定MPI进程数目）
 
-当前版本下双星准圆轨道轨道后牛顿计算的轨道动量初始值误差较大，导致自旋角动量较大的双星系统有时候不够圆（无自旋的情况稍好一些）。用户可在输入文件中选择Manually来自己设置更精确的双星动量初值。
+当前版本下双星准圆轨道后牛顿计算的轨道动量初始值误差较大，导致自旋角动量较大的双星系统有时候不够圆（无自旋的情况稍好一些）。用户可在输入文件中选择Manually来自己设置更精确的双星动量初值。
 
-稍后一段时间会发布新的版本提高准圆轨道初始动量的准确度。
+2026年9月，新的版本已经部分提高了双星准圆轨道下的初始动量的准确度。
+
+由于内部的 C/C++ 代码发生很大变化，makefile.inc中的设定相对原来版本也有变化（用户编译时特别注意）
 
 #### Tips
 
@@ -259,6 +279,10 @@ The computing time required for an actual evolution of a binary black hole syste
 If it can successfully carry out a simulation without errors, then adjust the final evolutionary time (about 1000M) in the input script file AMSS_NCKU_Input.py to start an actual simulation. This can reduce unnecessary waste of computing resources.
 
 Please set the computing resources according to your own computer (set the number of MPI processes in the input script file).
+
+The 2026-09 version has improved the accuracy of the initial momentum for binary systems in quasi‑circular orbits. 
+
+As the underlying C/C++ code has undergone major revisions in Sep. 2026, the configuration in makefile.inc differs from that of the earlier version (users should pay special attention when compiling).
 
 #### 声明
 

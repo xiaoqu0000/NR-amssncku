@@ -98,10 +98,10 @@ def compute_frequency_spectrum(time, signal_f, apply_window=True, zero_pad_facto
     ## return frequency_omega, frequency_spectrum
     return frequency, frequency_omega, frequency_spectrum
 
-    ## 窗类型	特点	                          适用场景
-    ## Hann	主瓣宽，旁瓣衰减快       黑洞准周期振荡(QPO)
+    ## 窗类型	特点	         适用场景
+    ## Hann	主瓣宽，旁瓣衰减快    黑洞准周期振荡(QPO)
     ## Tukey	可调平台区	     引力波啁啾信号
-    ## Blackman	旁瓣抑制最优	     高动态范围数据
+    ## Blackman	旁瓣抑制最优	  高动态范围数据
 
 ####################################################################################
 
@@ -268,11 +268,11 @@ def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_o
 
     if ( detector_number_i == 0 ):
         if ( input_language == "Chinese" ):
-            print(                           )
+            print(                          )
             print( " 对引力波强度 h 进行画图 " )
-            print(                           )
+            print(                          )
             print( " 对应数据文件为 ", file0  )
-            print(                           )
+            print(                          )
         elif ( input_language == "English" ):
             print(                                                       )
             print( " Ploting the gravitational wave strain amplitude h " )
@@ -281,7 +281,7 @@ def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_o
             print(                                                       )
 
     if ( input_language == "Chinese" ):
-        print(                                                         )
+        print(                                                      )
         print( " 对第 ", detector_number_i, " 个探测器半径数据进行画图 " )
     elif ( input_language == "English" ):
         print(                                                                        )
@@ -487,8 +487,8 @@ def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_o
     tortoise_R = Detector_Distance_R + 2.0 * total_mass * math.log( Detector_Distance_R / (2.0*total_mass) - 1.0)
     
     ## 对于多个 puncture 的情形，乌龟坐标的含义变得模糊，这里直接设置为探测器半径
-    if ( input_data.puncture_number > 2 ):
-        tortoise_R = Detector_Distance_R
+    ## if ( input_data.puncture_number > 2 ):
+    ##     tortoise_R = Detector_Distance_R
 
     ## Psi4 信号的瞬时频率设置截断
     ## 误差较大，已放弃
@@ -607,10 +607,15 @@ def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_o
               color='black',  label="l=2 m=2 h+",                  linewidth=2 )
     plt.plot( time_grid_h_cross_l2m2_new, GW_h_cross_l2m2, \
               color='gray',   label="l=2 m=2 hx",  linestyle='--', linewidth=2 )
+    ## 修改前，已经废弃
+    '''
     if ( input_data.puncture_number > 2 ):
         plt.xlabel( "T - R [M]",  fontsize=16     )
     else:
         plt.xlabel( "T - R* [M]", fontsize=16     )
+    '''
+    ## 修改后，统一使用乌龟坐标
+    plt.xlabel( "T - R* [M]", fontsize=16         )
     plt.ylabel( r"R*h",           fontsize=16     )
     plt.xlim( 0.0, max(time_grid_h_plus_l2m0_new) )
     plt.legend( loc='upper right'                 )
@@ -620,7 +625,7 @@ def generate_gravitational_wave_amplitude_plot( input_language, outdir, figure_o
 
     if ( input_language == "Chinese" ):
         print( " 第 ", detector_number_i, " 个探测器半径数据画图完成 " )
-        print(                                                        )
+        print(                                                    )
     elif ( input_language == "English" ):
         print( " The gravitational wave plot for detector no.", detector_number_i," has been finished " )
         print(                                                                                          )

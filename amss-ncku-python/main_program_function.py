@@ -1,5 +1,11 @@
 
-
+##################################################################
+##
+## 这个文件设定了 AMSS-NCKU Python 主程序的一些特殊功能
+## 小曲
+## 2026/02/15
+##
+##################################################################
 
 import sys
 import os
@@ -24,9 +30,9 @@ def setting_language():
         
             ## 如果选择汉语，可以跳出循环
             if ( input_language == "Chinese" ):
-                print(                                         )
+                print(                                       )
                 print( " 选择的屏幕输出语言为 ", input_language )         
-                print(                                         )
+                print(                                       )
                 break  # 输入合法，跳出循环
             ## 如果选择英语，可以跳出循环
             elif ( input_language == "English" ):
@@ -65,13 +71,13 @@ def continue_or_stop( File_directory, input_language ):
     if os.path.exists(File_directory):
     
         if ( input_language == "Chinese" ):
-            print(                                                                                                )
-            print( " 设定的输出目录存在，是否同意覆盖当前目录？ "                                                    )
-            print( " 如果同意覆当前目录，请输入'continue'继续计算 "                                                 )
+            print(                                                                                         )
+            print( " 设定的输出目录存在，是否同意覆盖当前目录？ "                                                 )
+            print( " 如果同意覆当前目录，请输入'continue'继续计算 "                                              )
             print( " 如果不同意覆当前目录，请输入'stop'退出计算，并在输入文件 AMSS_NCKU_Input.py 中重新设置输出目录 "  )
-            print(                                                                                                )
+            print(                                                                                         )
         elif ( input_language == "English" ):    
-            print(                                                                                                )
+            print(                                                                                                          )
             print( " Output dictionary has been existed !!!  "                                                              )
             print(                                                                                                          )
             print( " If you want to overwrite the existing file directory, please input 'continue' in the terminal !! "     ) 
@@ -88,9 +94,9 @@ def continue_or_stop( File_directory, input_language ):
                 ## 如果同意覆盖当前目录文件目录，则退出计算，同时去除当前文件目录
                 if ( inputvalue == "continue" ):
                     if ( input_language == "Chinese" ):
-                        print(              )
+                        print(             )
                         print( " 继续计算 " )
-                        print(              )
+                        print(             )
                     elif ( input_language == "English" ):
                         print(                                  )
                         print( " Continue the calculation !!! " )
@@ -99,9 +105,9 @@ def continue_or_stop( File_directory, input_language ):
                 ## 如果不同意覆盖当前目录文件目录，则退出计算，同时保留当前文件目录 
                 elif ( inputvalue == "stop" ):
                     if ( input_language == "Chinese" ):
-                        print(              )
+                        print(             )
                         print( " 退出计算 " )
-                        print(              )
+                        print(             )
                     elif ( input_language == "English" ):
                         print(                                 )
                         print( " Stop the calculation !!! "    )
@@ -111,9 +117,9 @@ def continue_or_stop( File_directory, input_language ):
                 ## 如果用户没有按照要求输入，则要求用户重新输入 
                 else:
                     if ( input_language == "Chinese" ):
-                        print(                                            )
+                        print(                                          )
                         print( " 请输入你的选择: 'continue' 或 'stop' !! " )
-                        print(                                            )
+                        print(                                          )
                     elif ( input_language == "English" ):
                         print(                                                    )
                         print( " Please input your choice !!! "                   )
@@ -144,9 +150,9 @@ def continue_or_stop( File_directory, input_language ):
 def generate_macrodef_file( input_language ):
 
     if ( input_language == "Chinese" ):
-        print(                                         ) 
+        print(                                       ) 
         print( " 根据算法和参数生成 AMSS-NCKU 的宏文件 " ) 
-        print(                                         ) 
+        print(                                       ) 
     elif ( input_language == "English" ): 
         print(                                                                               )     
         print( " Automatically generating the macro file for AMSS-NCKU C++ executable file " ) 
@@ -156,14 +162,14 @@ def generate_macrodef_file( input_language ):
     generate_macrodef.generate_macrodef_h()
     
     if ( input_language == "Chinese" ):
-        print( " AMSS-NCKU 程序的宏文件 macrodef.h 已生成 "                     )  
+        print( " AMSS-NCKU 程序的宏文件 macrodef.h 已生成 " )  
     elif ( input_language == "English" ):  
         print( " The macro file for AMSS-NCKU macrodef.h has been generated." )
      
     generate_macrodef.generate_macrodef_fh()
     
     if ( input_language == "Chinese" ):
-        print( " AMSS-NCKU 程序的宏文件 macrodef.fh 已生成 "                     )  
+        print( " AMSS-NCKU 程序的宏文件 macrodef.fh 已生成 " )  
     elif ( input_language == "English" ):
         print( " The macro file for AMSS-NCKU macrodef.fh has been generated." )
         

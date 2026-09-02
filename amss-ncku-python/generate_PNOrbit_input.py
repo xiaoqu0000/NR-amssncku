@@ -1,10 +1,10 @@
 
 ##################################################################
 ##
-## 该文件设置 AMSS-NCKU 程序的 TwoPuncture 的输入文件
+## 该文件生成 AMSS-NCKU 程序后牛顿轨道模块 PNOrbit 的输入文件
 ## 小曲
 ## 2024/11/27
-## 2026/02/10 修改
+## 2026/08/27 修改
 ##
 ##################################################################
 
@@ -16,19 +16,32 @@ import math
 
 ##################################################################
 
-
-
+## 单位约定（与 PN_orbit.C 一致）：G = c = 1，总质量 M = m1 + m2 = 1。
+## 在此几何单位制下，角动量与质量的平方同量纲（[S] = M^2）。
 
 ##################################################################
 
-## 该函数用于生成 AMSS-NCKU-TwoPuncture 程序的输入文件
-
+## 该函数用于生成 PNOrbit（后牛顿轨道演化程序）的输入文件
+##
+## 参数说明：
+##   puncture_data  : 由 puncture_initialize.py 构建的双黑洞初始参数对象，包含以下
+##   BBH_M1, BBH_M2         : 两个黑洞的质量（m1 + m2 = 1）
+##   position_BH[i]         : 黑洞 i 的初始位置（大质量黑洞在 +y 侧）
+##   momentum_BH[i]         : 黑洞 i 的初始动量
+##   angular_momentum_BH[i] : 黑洞 i 的自旋角动量 —— 物理自旋 S_a = chi_a * m_a^2
+##   distance_d0            : 双星初始坐标间距
+##
 ##################################################################
     
 def generate_AMSSNCKU_PNOrbit_input( input_language, puncture_data ): 
 
+    ## 生成输入文件 AMSS-NCKU-PNOrbit.input
+    ## （AMSS_NCKU_Program.py 随后把它复制并重命名为 PN_Orbit.par）
     file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU-PNOrbit.input"), "w") 
 
+    ## 以下被注释的 ABE:: 键是旧版直接生成 TwoPuncture (ABE) 输入的写法，
+    ## 现已由 PNOrbit 后牛顿演化流程取代：演化得到的轨道参数最终仍会
+    ## 经 generate_TwoPuncture_input.py 写入 ABE:: 键。整块保留备查。
     '''
     print( "#  -----0-----> y",                                         file=file1 )
     print( "#   -      +      use Brugmann's convention",               file=file1 )
@@ -58,21 +71,28 @@ def generate_AMSSNCKU_PNOrbit_input( input_language, puncture_data ):
     print( "ABE::Newtonmaxit =  50",                                    file=file1 )
     '''
 
-    print( "PN::mp = ",        M1,                    file=file1 )  
-    print( "PN::mm = ",        M2,                    file=file1 )
-    print( "PN::S_plusx   = ", S1x,                   file=file1 )
-    print( "PN::S_plusy   = ", S1y,                   file=file1 )
-    print( "PN::S_plusz   = ", S1z,                   file=file1 )
-    print( "PN::S_minusx  = ", S2x,                   file=file1 )
-    print( "PN::S_minusy  = ", S2y,                   file=file1 )
-    print( "PN::S_minusz  = ", S2z,                   file=file1 )
-    print( "PN::symmetric mass ratio = 0.25",         file=file1 )
-    print( "PN::initial coordinate separation = 50",  file=file1 )
-    print( "PN::dT = 0.1",                            file=file1 )
-    print( "PN::wanted r = 10",                       file=file1 )
-    print( "PN::chis = 0.789231",                     file=file1 )
-    print( "PN::chia = -0.0138462",                   file=file1 )
-    print( "PN::dumptime = 0.5",                      file=file1 )
+    ## 对称质量比 nu = m1*m2/M^2
+    symmetric_mass_ratio = puncture_data.BBH_M1 * puncture_data.BBH_M2 / ( (puncture_data.BBH_M1 + puncture_data.BBH_M2)**2 )
+
+    print( "PN::mp = ",                            puncture_data.BBH_M1,                   file=file1 )  
+    print( "PN::mm = ",                            puncture_data.BBH_M2,                   file=file1 )
+    print( "PN::symmetric mass ratio =",           symmetric_mass_ratio,                   file=file1 )
+  
+    print( "PN::S_plusx   = ",                     puncture_data.angular_momentum_BH[0,0] / ( puncture_data.BBH_M1**2 ), file=file1 )
+    print( "PN::S_plusy   = ",                     puncture_data.angular_momentum_BH[0,1] / ( puncture_data.BBH_M1**2 ), file=file1 )
+    print( "PN::S_plusz   = ",                     puncture_data.angular_momentum_BH[0,2] / ( puncture_data.BBH_M1**2 ), file=file1 )
+    print( "PN::S_minusx  = ",                     puncture_data.angular_momentum_BH[1,0] / ( puncture_data.BBH_M2**2 ), file=file1 )
+    print( "PN::S_minusy  = ",                     puncture_data.angular_momentum_BH[1,1] / ( puncture_data.BBH_M2**2 ), file=file1 )
+    print( "PN::S_minusz  = ",                     puncture_data.angular_momentum_BH[1,2] / ( puncture_data.BBH_M2**2 ), file=file1 )
+
+    ## angular_momentum_BH 是"物理自旋"（有量纲量），不是无量纲自旋：
+    ## 而 PN_Orbit_Spin 版 C 程序的参数文件按文献惯例读取"无量纲自旋" chi_a
+
+    print( "PN::initial coordinate separation =" , input_data.Distance_initial, file=file1 )
+    print( "PN::wanted r = ",                      input_data.Distance_final,   file=file1 )
+    print( "PN::dT = 0.05",                                                     file=file1 )
+    print( "PN::dumptime = 5.0",                                                file=file1 )
+    print( "PN::totaltime = 10000000.0",                                        file=file1 )
     
     file1.close()
 
@@ -81,3 +101,4 @@ def generate_AMSSNCKU_PNOrbit_input( input_language, puncture_data ):
 ##################################################################
     
     
+

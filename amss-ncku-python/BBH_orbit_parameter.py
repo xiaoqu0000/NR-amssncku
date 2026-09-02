@@ -14,7 +14,6 @@
 import AMSS_NCKU_Input as input_data
 import math
 import os
-import sympy
 import numpy      
 import derivative_xiaoqu    ## 数值求导
 
@@ -40,16 +39,16 @@ import derivative_xiaoqu    ## 数值求导
 def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
 
     if ( input_language == "Chinese" ):
-        print(                           )
-        print( " 计算出双星轨道的特征量 " )
-        print(                           ) 
+        print(                        )
+        print( " 计算出双星轨道的物理量 " )
+        print(                        ) 
     elif ( input_language == "English" ): 
-        print(                                                                     )   
-        print( " Calculating the characteristic quantities of binary star orbits " )
-        print(                                                                     )
+        print(                                                               )   
+        print( " Calculating the physical quantities of binary star orbits " )
+        print(                                                               )
 
     if ( input_language == "Chinese" ):
-        print( f" 已输入双星的质量为：       M1 = {M1}  M2 = {M2} "                    )
+        print( f" 已输入双星的质量为：       M1 = {M1}  M2 = {M2} "                )
         print( f" 已输入双星的无量纲自旋为： S1 = {S1}  S2 = {S2} "                 )
         print( f" 已输入双星轨道半长轴和偏心率为： a0 = D0/2 = {D0/2.0}  e0 = {e0} " )
     elif ( input_language == "English" ):    
@@ -58,9 +57,9 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
         print( f" The semi major axis and eccentricity of the binary orbit are: a0 = D0/2 = {D0/2.0}  e0 = {e0} " )
         
     if ( input_language == "Chinese" ):
-        print(                 )      
+        print(                )      
         print( " 下面开始计算 " )
-        print(                 )
+        print(                )
     elif ( input_language == "English" ): 
         print(                           )      
         print( " begin the calculation " )
@@ -122,14 +121,14 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     R20 = D0 * M1 / M_total
 
     if ( input_language == "Chinese" ):
-        print(                        )
+        print(                       )
         print( " 求出双星轨道坐标参数 " )
-        print(                        )
+        print(                       )
         print( " 因为坐标轴可以任意选，不妨设 t = 0 时刻 y 轴方向正好与轨道半长轴重合，双星共同沿着 z 方向转动 " )
-        print( " 此时坐标 y 关联径向坐标 R，坐标 x 关联角向坐标 phi，z 坐标在 t = 0 为零 "                    )
-        print( " 同样，t = 0 时，动量 Py 关联径向坐标 Pr，动量 Px 关联角向动量 P_phi，动量 Pz 为零 "           )
+        print( " 此时坐标 y 关联径向坐标 R，坐标 x 关联角向坐标 phi，z 坐标在 t = 0 为零 "                  )
+        print( " 同样，t = 0 时，动量 Py 关联径向坐标 Pr，动量 Px 关联角向动量 P_phi，动量 Pz 为零 "        )
         ## print( " 请注意，这并不意味着 z 坐标在演化时间很久后永远仍然为零，极端情况下（比如自旋角动量方向不在 z 轴方向）轨道可能偏离 xy 平面 " ) 
-        print(                                                                                          )
+        print(                                                                                     )
     elif ( input_language == "English" ):
         print(                                                        )
         print( " Calculate the orbital coordinates of binary stars  " )
@@ -149,7 +148,7 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
 
     if ( input_language == "Chinese" ):
         print( f" 双星在 t=0 时刻的坐标为：Y1 = {position1}  Y2 = {position2}" )
-        print(                                                               )
+        print(                                                              )
     elif ( input_language == "English" ):
         print( f" The coordinates of the binary star at t=0: Y1 = {position1}  Y2 = {position2}" )
         print(                                                                                   )
@@ -162,7 +161,7 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     epsilon = (m1 + m2) / R 
     if ( input_language == "Chinese" ):
         print( " 后牛顿展开参数 epsilon =  M/r = ", epsilon )
-        print(                                             )
+        print(                                            )
     elif ( input_language == "English" ):
         print( " Post-Newton expansion parameter epsilon = M/r = ", epsilon )
         print(                                                              )
@@ -183,40 +182,40 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
 
     Omega_correction_1PN  = - 0.5 * epsilon * ( ( 3.0*(m_q**2) + 5.0*m_q + 3.0 ) / (1.0+m_q)**2 ) 
     Omega_correction_15PN = - 0.25 * ( epsilon**(1.5) )                               \
-                              * (   (3.0 + 4.0*m_q) * m_q * S2[2] / ( (1.0+m_q)**2 )  \
-                                  + (3.0*m_q + 4.0)       * S1[2] / ( (1.0+m_q)**2 )        \
+                              * (   (3.0 + 4.0*m_q) * m_q * S1[2] / ( (1.0+m_q)**2 )  \
+                                  + (3.0*m_q + 4.0)       * S2[2] / ( (1.0+m_q)**2 )        \
                                 )
     Omega_correction_2PN  = epsilon**2 \
                             * (   (1.0/16.0) * ( 24.0*(m_q**4) + 103.0*(m_q**3) + 164.0*(m_q**2) + 103.0*m_q + 24.0 ) \
                                    / ( (1.0+m_q)**4 )                                 \
-                                - 1.5  * (m_q**2) * (S2[0]**2) / ( (1.0+m_q)**2 )     \
-                                + 0.75 * (m_q**2) * (S2[1]**2) / ( (1.0+m_q)**2 )     \
-                                + 0.75 * (m_q**2) * (S2[2]**2) / ( (1.0+m_q)**2 )     \
-                                - 3.0  * m_q * S1[0] * S2[0] / ( (1.0+m_q)**2 )       \
-                                + 1.5  * m_q * S1[1] * S2[1] / ( (1.0+m_q)**2 )       \
-                                + 1.5  * m_q * S1[2] * S2[2] / ( (1.0+m_q)**2 )       \
-                                - 1.5  * (S1[0]**2) / ( (1.0+m_q)**2 )                \
-                                + 0.75 * (S1[1]**2) / ( (1.0+m_q)**2 )                \
-                                + 0.75 * (S1[2]**2) / ( (1.0+m_q)**2 )
+                                - 1.5  * (m_q**2) * (S1[0]**2) / ( (1.0+m_q)**2 )     \
+                                + 0.75 * (m_q**2) * (S1[1]**2) / ( (1.0+m_q)**2 )     \
+                                + 0.75 * (m_q**2) * (S1[2]**2) / ( (1.0+m_q)**2 )     \
+                                - 3.0  * m_q * S2[0] * S1[0] / ( (1.0+m_q)**2 )       \
+                                + 1.5  * m_q * S2[1] * S1[1] / ( (1.0+m_q)**2 )       \
+                                + 1.5  * m_q * S2[2] * S1[2] / ( (1.0+m_q)**2 )       \
+                                - 1.5  * (S2[0]**2) / ( (1.0+m_q)**2 )                \
+                                + 0.75 * (S2[1]**2) / ( (1.0+m_q)**2 )                \
+                                + 0.75 * (S2[2]**2) / ( (1.0+m_q)**2 )
                               )
     Omega_correction_25PN = (3.0/16.0) * (epsilon**(2.5))   \
-                            * (   S2[2] * m_q * ( 16.0*(m_q**3) + 30.0*(m_q**2) + 34.0*m_q + 13.0 ) / ( (1.0+m_q)**4 )  \
-                                + S1[2]       * ( 13.0*(m_q**3) + 34.0*(m_q**2) + 30.0*m_q + 16.0 ) / ( (1.0+m_q)**2 )  \
+                            * (   S1[2] * m_q * ( 16.0*(m_q**3) + 30.0*(m_q**2) + 34.0*m_q + 13.0 ) / ( (1.0+m_q)**4 )  \
+                                + S2[2]       * ( 13.0*(m_q**3) + 34.0*(m_q**2) + 30.0*m_q + 16.0 ) / ( (1.0+m_q)**2 )  \
                               )
     Omega_correction_3PN  = epsilon**3 \
                             * (   (167.0/128.0) * (math.pi**2) * m_q / ( (1.0+m_q)**2 )           \
                                 - (   120.0*(m_q**6) + 2744.0*(m_q**5) + 10049.0*(m_q**4)         \
                                     + 14820.0*(m_q**3) + 10049.0*(m_q**2) + 2744.0*m_q + 120.0    \
                                    ) / ( 96.0 * ((1.0+m_q)**6) )                                  \
-                                + (1.0/16.0) * (m_q**2) * (S2[0]**2) * ( 76.0*(m_q**2) + 180.0*m_q + 155.0 )   / ( (1.0+m_q)**4 ) \
-                                - (1.0/8.0)  * (m_q**2) * (S2[1]**2) * ( 43.0*(m_q**2) + 85.0*m_q  + 55.0 )    / ( (1.0+m_q)**4 ) \
-                                - (1.0/32.0) * (m_q**2) * (S2[2]**2) * ( 2.0*m_q + 5.0 ) * ( 14.0*m_q + 27.0 ) / ( (1.0+m_q)**4 ) \
-                                + (1.0/16.0)            * (S1[0]**2) * ( 155.0*(m_q**2) + 180.0*m_q + 76.0 )   / ( (1.0+m_q)**4 ) \
-                                - (1.0/8.0)             * (S1[1]**2) * ( 55.0*(m_q**2)  + 85.0*m_q  + 43.0 )   / ( (1.0+m_q)**4 ) \
-                                - (1.0/32.0)            * (S1[2]**2) * ( 27.0*m_q + 14.0 ) * ( 5.0*m_q + 2.0 ) / ( (1.0+m_q)**4 ) \
-                                + (1.0/8.0)  * m_q * S1[0] * S2[0] * ( 120.0*(m_q**2) + 187.0*m_q + 120.0 ) / ( (1.0+m_q)**4 )    \
-                                - 0.25       * m_q * S1[1] * S2[1] * ( 54.0*(m_q**2) + 95.0*m_q   + 54.0 )  / ( (1.0+m_q)**4 )    \
-                                - (1.0/16.0) * m_q * S1[2] * S2[2] * ( 96.0*(m_q**2) + 127.0*m_q  + 96.0 )  / ( (1.0+m_q)**4 )    \
+                                + (1.0/16.0) * (m_q**2) * (S1[0]**2) * ( 76.0*(m_q**2) + 180.0*m_q + 155.0 )   / ( (1.0+m_q)**4 ) \
+                                - (1.0/8.0)  * (m_q**2) * (S1[1]**2) * ( 43.0*(m_q**2) + 85.0*m_q  + 55.0 )    / ( (1.0+m_q)**4 ) \
+                                - (1.0/32.0) * (m_q**2) * (S1[2]**2) * ( 2.0*m_q + 5.0 ) * ( 14.0*m_q + 27.0 ) / ( (1.0+m_q)**4 ) \
+                                + (1.0/16.0)            * (S2[0]**2) * ( 155.0*(m_q**2) + 180.0*m_q + 76.0 )   / ( (1.0+m_q)**4 ) \
+                                - (1.0/8.0)             * (S2[1]**2) * ( 55.0*(m_q**2)  + 85.0*m_q  + 43.0 )   / ( (1.0+m_q)**4 ) \
+                                - (1.0/32.0)            * (S2[2]**2) * ( 27.0*m_q + 14.0 ) * ( 5.0*m_q + 2.0 ) / ( (1.0+m_q)**4 ) \
+                                + (1.0/8.0)  * m_q * S2[0] * S1[0] * ( 120.0*(m_q**2) + 187.0*m_q + 120.0 ) / ( (1.0+m_q)**4 )    \
+                                - 0.25       * m_q * S2[1] * S1[1] * ( 54.0*(m_q**2) + 95.0*m_q   + 54.0 )  / ( (1.0+m_q)**4 )    \
+                                - (1.0/16.0) * m_q * S2[2] * S1[2] * ( 96.0*(m_q**2) + 127.0*m_q  + 96.0 )  / ( (1.0+m_q)**4 )    \
                               )
 
     Omega_1PN  = Omega_0PN * ( 1.0 + Omega_correction_1PN )
@@ -233,23 +232,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                              )
 
     if ( input_language == "Chinese" ):
-        print(                                                    )
+        print(                                                 )
         print( " 0   阶后牛顿近似下双星旋转的角速度 = ", Omega_0PN  )
         print( " 1   阶后牛顿近似下双星旋转的角速度 = ", Omega_1PN  )
         print( " 1.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_15PN )
         print( " 2   阶后牛顿近似下双星旋转的角速度 = ", Omega_2PN  )
         print( " 2.5 阶后牛顿近似下双星旋转的角速度 = ", Omega_25PN )
         print( " 3   阶后牛顿近似下双星旋转的角速度 = ", Omega_3PN  )
-        print(                                                    )
+        print(                                                 )
     elif ( input_language == "English" ):
-        print(                                                                                                      )
+        print(                                                                     )
         print( " angular velocity of binary stars system at 0   PN = ", Omega_0PN  ) 
         print( " angular velocity of binary stars system at 1   PN = ", Omega_1PN  )
         print( " angular velocity of binary stars system at 1.5 PN = ", Omega_15PN )
         print( " angular velocity of binary stars system at 2   PN = ", Omega_2PN  )
         print( " angular velocity of binary stars system at 2.5 PN = ", Omega_25PN )
         print( " angular velocity of binary stars system at 3   PN = ", Omega_3PN  )
-        print(                                                                                                      )
+        print(                                                                     )
 
     ########################################
 
@@ -259,40 +258,40 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
 
     Pt_correction_1PN  = 2.0 * epsilon
     Pt_correction_15PN = epsilon**1.5 \
-                         * ( - 0.75 * (3.0 + 4.0*m_q) * m_q * S2[2] / ( (1.0+m_q)**2 ) \
-                             - 0.75 * (3.0*m_q + 4.0)       * S1[2] / ( (1.0+m_q)**2 )       \
+                         * ( - 0.75 * (3.0 + 4.0*m_q) * m_q * S1[2] / ( (1.0+m_q)**2 ) \
+                             - 0.75 * (3.0*m_q + 4.0)       * S2[2] / ( (1.0+m_q)**2 )       \
                            )
     Pt_correction_2PN  = epsilon**2.0 \
                          * (  (1.0/16.0) * ( 42.0*(m_q**2) + 41.0*m_q + 42.0 ) / ( (1.0+m_q)**2 )   \
-                             - 1.5  * (m_q**2) * (S2[0]**2) / ( (1.0+m_q)**2 )                      \
-                             + 0.75 * (m_q**2) * (S2[1]**2) / ( (1.0+m_q)**2 )                      \
-                             + 0.75 * (m_q**2) * (S2[2]**2) / ( (1.0+m_q)**2 )                      \
-                             - 3.0  * m_q * S1[0] * S2[0] / ( (1.0+m_q)**2 )                        \
-                             + 1.5  * m_q * S1[1] * S2[1] / ( (1.0+m_q)**2 )                        \
-                             + 1.5  * m_q * S1[2] * S2[2] / ( (1.0+m_q)**2 )                        \
-                             - 1.5  * (S1[0]**2) / ( (1.0+m_q)**2 )                                 \
-                             + 0.75 * (S1[1]**2) / ( (1.0+m_q)**2 )                                 \
-                             + 0.75 * (S1[2]**2) / ( (1.0+m_q)**2 )                                 \
+                             - 1.5  * (m_q**2) * (S1[0]**2) / ( (1.0+m_q)**2 )                      \
+                             + 0.75 * (m_q**2) * (S1[1]**2) / ( (1.0+m_q)**2 )                      \
+                             + 0.75 * (m_q**2) * (S1[2]**2) / ( (1.0+m_q)**2 )                      \
+                             - 3.0  * m_q * S2[0] * S1[0] / ( (1.0+m_q)**2 )                        \
+                             + 1.5  * m_q * S2[1] * S1[1] / ( (1.0+m_q)**2 )                        \
+                             + 1.5  * m_q * S2[2] * S1[2] / ( (1.0+m_q)**2 )                        \
+                             - 1.5  * (S2[0]**2) / ( (1.0+m_q)**2 )                                 \
+                             + 0.75 * (S2[1]**2) / ( (1.0+m_q)**2 )                                 \
+                             + 0.75 * (S2[2]**2) / ( (1.0+m_q)**2 )                                 \
                            )
     Pt_correction_25PN = epsilon**2.5 \
                          * ( - (1.0/16.0) * ( 72.0*(m_q**3) + 116.0*(m_q**2) + 60.0*m_q + 13.0 ) \
-                                          * m_q * S2[2] / ( (1.0+m_q)**4 )                       \
+                                          * m_q * S1[2] / ( (1.0+m_q)**4 )                       \
                              - (1.0/16.0) * ( 13.0*(m_q**3) + 60.0*(m_q**2) + 116.0*m_q + 72.0 ) \
-                                          * S1[2] / ( (1.0+m_q)**4 )                             \
+                                          * S2[2] / ( (1.0+m_q)**4 )                             \
                            )
     Pt_correction_3PN  = epsilon**3.0 \
                          * (   (163.0/128.0) * (math.pi**2) * m_q / ( (1.0+m_q)**2 )                                   \
                              + (1.0/32.0) * ( 120.0*(m_q**4) - 659.0*(m_q**3) - 1532.0*(m_q**2) - 659.0*m_q + 120.0 )  \
                                 / ( (1.0+m_q)**4 )                                                                     \
-                             - (1.0/16.0) * (S2[0]**2) * (m_q**2) * ( 80.0*(m_q**2)             - 59.0 ) / ( (1.0+m_q)**4 ) \
-                             - 0.5        * (S2[1]**2) * (m_q**2) * (        m_q**2  + 10.0*m_q + 8.0  ) / ( (1.0+m_q)**4 ) \
-                             + (1.0/32.0) * (S2[2]**2) * (m_q**2) * ( 128.0*(m_q**2) + 56.0*m_q - 27.0 ) / ( (1.0+m_q)**4 ) \
-                             - (1.0/16.0) * (S1[0]**2)            * ( 80.0 - 59.0*(m_q**2) )             / ( (1.0+m_q)**4 ) \
-                             - 0.5        * (S1[1]**2)            * ( 8.0*(m_q**2) + 10.0*m_q + 1.0 )    / ( (1.0+m_q)**4 ) \
-                             + (1.0/32.0) * (S1[2]**2)            * ( 128.0 + 56.0*m_q - 27.0*(m_q**2) ) / ( (1.0+m_q)**4 ) \
-                             + (1.0/8.0)  * S1[0] * S2[0] * m_q   * ( 12.0*(m_q**2) + 35.0*m_q + 12.0 )  / ( (1.0+m_q)**4 ) \
-                             - 0.25       * S1[1] * S2[1] * m_q   * ( 27.0*(m_q**2) + 58.0*m_q + 27.0 )  / ( (1.0+m_q)**4 ) \
-                             + (1.0/32.0) * S1[2] * S2[2] * m_q   * ( 60.0*(m_q**2) + 13.0*m_q + 60.0 )  / ( (1.0+m_q)**4 ) \
+                             - (1.0/16.0) * (S1[0]**2) * (m_q**2) * ( 80.0*(m_q**2)             - 59.0 ) / ( (1.0+m_q)**4 ) \
+                             - 0.5        * (S1[1]**2) * (m_q**2) * (        m_q**2  + 10.0*m_q + 8.0  ) / ( (1.0+m_q)**4 ) \
+                             + (1.0/32.0) * (S1[2]**2) * (m_q**2) * ( 128.0*(m_q**2) + 56.0*m_q - 27.0 ) / ( (1.0+m_q)**4 ) \
+                             - (1.0/16.0) * (S2[0]**2)            * ( 80.0 - 59.0*(m_q**2) )             / ( (1.0+m_q)**4 ) \
+                             - 0.5        * (S2[1]**2)            * ( 8.0*(m_q**2) + 10.0*m_q + 1.0 )    / ( (1.0+m_q)**4 ) \
+                             + (1.0/32.0) * (S2[2]**2)            * ( 128.0 + 56.0*m_q - 27.0*(m_q**2) ) / ( (1.0+m_q)**4 ) \
+                             + (1.0/8.0)  * S2[0] * S1[0] * m_q   * ( 12.0*(m_q**2) + 35.0*m_q + 12.0 )  / ( (1.0+m_q)**4 ) \
+                             - 0.25       * S2[1] * S1[1] * m_q   * ( 27.0*(m_q**2) + 58.0*m_q + 27.0 )  / ( (1.0+m_q)**4 ) \
+                             + (1.0/32.0) * S2[2] * S1[2] * m_q   * ( 60.0*(m_q**2) + 13.0*m_q + 60.0 )  / ( (1.0+m_q)**4 ) \
                            )
 
     Pt_1PN  = Pt_0PN * ( 1.0 + Pt_correction_1PN )
@@ -309,23 +308,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                        )
 
     if ( input_language == "Chinese" ):
-        print(                                                   )
+        print(                                               )
         print( " 0   阶后牛顿近似下双星旋转的角向动量 = ", Pt_0PN  )
         print( " 1   阶后牛顿近似下双星旋转的角向动量 = ", Pt_1PN  )
         print( " 1.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_15PN )
         print( " 2   阶后牛顿近似下双星旋转的角向动量 = ", Pt_2PN  )
         print( " 2.5 阶后牛顿近似下双星旋转的角向动量 = ", Pt_25PN )
         print( " 3   阶后牛顿近似下双星旋转的角向动量 = ", Pt_3PN  )
-        print(                                                   )
+        print(                                                )
     elif ( input_language == "English" ):
-        print(                                                                                                     )
+        print(                                                                     )
         print( " tangential momentum of binary stars system at 0   PN = ", Pt_0PN  )
         print( " tangential momentum of binary stars system at 1   PN = ", Pt_1PN  )
         print( " tangential momentum of binary stars system at 1.5 PN = ", Pt_15PN )
         print( " tangential momentum of binary stars system at 2   PN = ", Pt_2PN  )
         print( " tangential momentum of binary stars system at 2.5 PN = ", Pt_25PN )
         print( " tangential momentum of binary stars system at 3   PN = ", Pt_3PN  )
-        print(                                                                                                     )
+        print(                                                                     )
 
     ########################################
 
@@ -349,40 +348,40 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
         adm_correction_1PN  =  (1.0/8.0) * ( epsilon0**2 )                                   \
                                 * m_q * ( 7.0*(m_q**2) + 13.0*m_q + 7.0 ) / ( (1.0+m_q)**4 ) 
         adm_correction_15PN = - 0.25 * ( epsilon0**2.5 )                                     \
-                                * (   m_q**2 * ( 3.0 + 4.0*m_q ) * S2[2] / ( (1.0+m_q)**4 )  \
-                                    + m_q    * ( 3.0*m_q + 4.0 ) * S1[2] / ( (1.0+m_q)**4 )  \
+                                * (   m_q**2 * ( 3.0 + 4.0*m_q ) * S1[2] / ( (1.0+m_q)**4 )  \
+                                    + m_q    * ( 3.0*m_q + 4.0 ) * S2[2] / ( (1.0+m_q)**4 )  \
                                   )
         adm_correction_2PN  = epsilon0**3  \
                               * (   (1.0/16.0) * m_q * ( 9.0*m_q**4 + 16.0*(m_q**3) + 13.0*(m_q**2) + 16.0*m_q + 9.0 ) \
                                      / ( (1.0+m_q)**6 )                                                                \
-                                  - 0.5  * (S2[0]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                  + 0.25 * (S2[1]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                  + 0.25 * (S2[2]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                  - 1.0  * S1[0] * S2[0] * (m_q**2) / ( (1.0+m_q)**4 )   \
-                                  + 0.5  * S1[1] * S2[1] * (m_q**2) / ( (1.0+m_q)**4 )   \
-                                  + 0.5  * S1[2] * S2[2] * (m_q**2) / ( (1.0+m_q)**4 )   \
-                                  - 0.5  * (S1[0]**2) * m_q / ( (1.0+m_q)**4 )           \
-                                  + 0.25 * (S1[1]**2) * m_q / ( (1.0+m_q)**4 )           \
-                                  + 0.25 * (S1[2]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                  - 0.5  * (S1[0]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                  + 0.25 * (S1[1]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                  + 0.25 * (S1[2]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                  - 1.0  * S2[0] * S1[0] * (m_q**2) / ( (1.0+m_q)**4 )   \
+                                  + 0.5  * S2[1] * S1[1] * (m_q**2) / ( (1.0+m_q)**4 )   \
+                                  + 0.5  * S2[2] * S1[2] * (m_q**2) / ( (1.0+m_q)**4 )   \
+                                  - 0.5  * (S2[0]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                  + 0.25 * (S2[1]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                  + 0.25 * (S2[2]**2) * m_q / ( (1.0+m_q)**4 )           \
                                 )
         adm_correction_25PN = - (1.0/16.0) * epsilon0**3.5  \
-                                * (   S2[2] * (m_q**2) * ( 32.0*(m_q**3) + 42.0*(m_q**2) + 14.0*m_q +1.0 ) / ( (1.0+m_q)**6 )  \
-                                    + S1[2] * m_q      * ( m_q**3 + 14.0*(m_q**2) + 42.0*m_q + 32.0 )      / ( (1.0+m_q)**6 )  \
+                                * (   S1[2] * (m_q**2) * ( 32.0*(m_q**3) + 42.0*(m_q**2) + 14.0*m_q +1.0 ) / ( (1.0+m_q)**6 )  \
+                                    + S2[2] * m_q      * ( m_q**3 + 14.0*(m_q**2) + 42.0*m_q + 32.0 )      / ( (1.0+m_q)**6 )  \
                                   )
         adm_correction_3PN  = epsilon0**4  \
                               * (   (81.0/128.0) * (math.pi**2) * (m_q**2) / ( (1.0+m_q)**4 )    \
                                   + (     537.0*(m_q**6) - 3497.0*(m_q**5) - 18707.0*(m_q**4)    \
                                       - 29361.0*(m_q**3) - 18707.0*(m_q**2) - 3497.0*m_q + 537.0 \
                                     ) * (m_q/384.0) / ( (1.0+m_q)**8 )                           \
-                                  - (1.0/16.0) * (S2[0]**2)    * (m_q**3) * ( 52.0*(m_q**2) + 12.0*m_q - 25.0 ) / ( (1.0+m_q)**6 )  \
-                                  + (1.0/8.0)  * (S2[1]**2)    * (m_q**3) * (       m_q**2  - 17.0*m_q - 15.0 ) / ( (1.0+m_q)**6 )  \
-                                  + (1.0/16.0) * (S2[2]**2)    * (m_q**3) * ( 50.0*(m_q**2) + 38.0*m_q + 3.0  ) / ( (1.0+m_q)**6 )  \
-                                  + (1.0/16.0) * (S1[0]**2)    * m_q      * ( 25.0*(m_q**2) - 12.0*m_q - 52.0 ) / ( (1.0+m_q)**6 )  \
-                                  - (1.0/8.0)  * (S1[1]**2)    * m_q      * ( 15.0*(m_q**2) + 17.0*m_q -  1.0 ) / ( (1.0+m_q)**6 )  \
-                                  + (1.0/16.0) * (S1[2]**2)    * m_q      * (  3.0*(m_q**2) + 38.0*m_q + 50.0 ) / ( (1.0+m_q)**6 )  \
-                                  + (9.0/8.0)  * S1[0] * S2[0] * (m_q**3)                                       / ( (1.0+m_q)**6 )  \
-                                  - (3.0/4.0)  * S1[1] * S2[1] * (m_q**2) * (  4.0*(m_q**2) +  9.0*m_q + 4.0)   / ( (1.0+m_q)**6 )  \
-                                  + (3.0/8.0)  * S1[2] * S2[2] * (m_q**2) * ( 10.0*(m_q**2) + 21.0*m_q + 10.0 ) / ( (1.0+m_q)**6 )  \
+                                  - (1.0/16.0) * (S1[0]**2)    * (m_q**3) * ( 52.0*(m_q**2) + 12.0*m_q - 25.0 ) / ( (1.0+m_q)**6 )  \
+                                  + (1.0/8.0)  * (S1[1]**2)    * (m_q**3) * (       m_q**2  - 17.0*m_q - 15.0 ) / ( (1.0+m_q)**6 )  \
+                                  + (1.0/16.0) * (S1[2]**2)    * (m_q**3) * ( 50.0*(m_q**2) + 38.0*m_q + 3.0  ) / ( (1.0+m_q)**6 )  \
+                                  + (1.0/16.0) * (S2[0]**2)    * m_q      * ( 25.0*(m_q**2) - 12.0*m_q - 52.0 ) / ( (1.0+m_q)**6 )  \
+                                  - (1.0/8.0)  * (S2[1]**2)    * m_q      * ( 15.0*(m_q**2) + 17.0*m_q -  1.0 ) / ( (1.0+m_q)**6 )  \
+                                  + (1.0/16.0) * (S2[2]**2)    * m_q      * (  3.0*(m_q**2) + 38.0*m_q + 50.0 ) / ( (1.0+m_q)**6 )  \
+                                  + (9.0/8.0)  * S2[0] * S1[0] * (m_q**3)                                       / ( (1.0+m_q)**6 )  \
+                                  - (3.0/4.0)  * S2[1] * S1[1] * (m_q**2) * (  4.0*(m_q**2) +  9.0*m_q + 4.0)   / ( (1.0+m_q)**6 )  \
+                                  + (3.0/8.0)  * S2[2] * S1[2] * (m_q**2) * ( 10.0*(m_q**2) + 21.0*m_q + 10.0 ) / ( (1.0+m_q)**6 )  \
                                 )
 
         ADM_0PN  = mass * ( 1.0 + adm_correction_0PN )
@@ -509,41 +508,41 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                                 * (1.0/8.0) * m_q * ( 7.0*(m_q**2) + 13.0*m_q + 7.0 ) / ( (1.0+m_q)**4 ) 
         dADM_correction_15PN = ( - 2.5 * (epsilon0**3.5) / mass )                            \
                                 * ( - 0.25 )                                                 \
-                                * (   m_q**2 * ( 3.0 + 4.0*m_q ) * S2[2] / ( (1.0+m_q)**4 )  \
-                                    + m_q    * ( 3.0*m_q + 4.0 ) * S1[2] / ( (1.0+m_q)**4 )  \
+                                * (   m_q**2 * ( 3.0 + 4.0*m_q ) * S1[2] / ( (1.0+m_q)**4 )  \
+                                    + m_q    * ( 3.0*m_q + 4.0 ) * S2[2] / ( (1.0+m_q)**4 )  \
                                   )
         dADM_correction_2PN  = ( - 3.0 * (epsilon0**4) / mass )   \
                                 * (   (1.0/16.0) * m_q * ( 9.0*(m_q**4) + 16.0*(m_q**3) + 13.0*(m_q**2) + 16.0*m_q + 9.0 ) \
                                       / ( (1.0+m_q)**6 )                                                                   \
-                                    - 0.5  * (S2[0]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                    + 0.25 * (S2[1]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                    + 0.25 * (S2[2]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
-                                    - 1.0  *  S1[0] * S2[0] * (m_q**2) / ( (1.0+m_q)**4 )  \
-                                    + 0.5  *  S1[1] * S2[1] * (m_q**2) / ( (1.0+m_q)**4 )  \
-                                    + 0.5  *  S1[2] * S2[2] * (m_q**2) / ( (1.0+m_q)**4 )  \
-                                    - 0.5  * (S1[0]**2) * m_q / ( (1.0+m_q)**4 )           \
-                                    + 0.25 * (S1[1]**2) * m_q / ( (1.0+m_q)**4 )           \
-                                    + 0.25 * (S1[2]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                    - 0.5  * (S1[0]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                    + 0.25 * (S1[1]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                    + 0.25 * (S1[2]**2) * (m_q**3) / ( (1.0+m_q)**4 )      \
+                                    - 1.0  *  S2[0] * S1[0] * (m_q**2) / ( (1.0+m_q)**4 )  \
+                                    + 0.5  *  S2[1] * S1[1] * (m_q**2) / ( (1.0+m_q)**4 )  \
+                                    + 0.5  *  S2[2] * S1[2] * (m_q**2) / ( (1.0+m_q)**4 )  \
+                                    - 0.5  * (S2[0]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                    + 0.25 * (S2[1]**2) * m_q / ( (1.0+m_q)**4 )           \
+                                    + 0.25 * (S2[2]**2) * m_q / ( (1.0+m_q)**4 )           \
                                   )
         dADM_correction_25PN = ( - 3.5 * (epsilon0**4.5) / mass )  \
                                 * ( - 1.0/16.0 )                   \
-                                * (   S2[2] * (m_q**2) * ( 32.0*(m_q**3) + 42.0*(m_q**2) + 14.0*m_q + 1.0  ) / ( (1.0+m_q)**6 )  \
-                                    + S1[2] * m_q      * (       m_q**3  + 14.0*(m_q**2) + 42.0*m_q + 32.0 ) / ( (1.0+m_q)**6 )  \
+                                * (   S1[2] * (m_q**2) * ( 32.0*(m_q**3) + 42.0*(m_q**2) + 14.0*m_q + 1.0  ) / ( (1.0+m_q)**6 )  \
+                                    + S2[2] * m_q      * (       m_q**3  + 14.0*(m_q**2) + 42.0*m_q + 32.0 ) / ( (1.0+m_q)**6 )  \
                                   )
         dADM_correction_3PN  = ( - 4.0 * (epsilon0**5) / mass )   \
                                 * (   (81.0/128.0) * (math.pi**2) * (m_q**2) / ( (1.0+m_q)**4 )    \
                                     + (   537.0*(m_q**6) - 3497.0*(m_q**5) - 18707.0*(m_q**4)      \
                                         - 29361.0*(m_q**3) - 18707.0*(m_q**2) - 3497.0*m_q + 537.0 \
                                       ) * (m_q/384.0) / ( (1.0+m_q)**8 )                           \
-                                    - (1.0/16.0) * (S2[0]**2)    * (m_q**3) * ( 52.0*(m_q**2) + 12.0*m_q - 25.0 ) / ( (1.0+m_q)**6 )  \
-                                    + (1.0/8.0)  * (S2[1]**2)    * (m_q**3) * (       m_q**2  - 17.0*m_q - 15.0 ) / ( (1.0+m_q)**6 )  \
-                                    + (1.0/16.0) * (S2[2]**2)    * (m_q**3) * ( 50.0*(m_q**2) + 38.0*m_q + 3.0  ) / ( (1.0+m_q)**6 )  \
-                                    + (1.0/16.0) * (S1[0]**2)    * m_q      * ( 25.0*(m_q**2) - 12.0*m_q - 52.0 ) / ( (1.0+m_q)**6 )  \
-                                    - (1.0/8.0)  * (S1[1]**2)    * m_q      * ( 15.0*(m_q**2) + 17.0*m_q -  1.0 ) / ( (1.0+m_q)**6 )  \
-                                    + (1.0/16.0) * (S1[2]**2)    * m_q      * (  3.0*(m_q**2) + 38.0*m_q + 50.0 ) / ( (1.0+m_q)**6 )  \
-                                    + (9.0/8.0)  * S1[0] * S2[0] * (m_q**3)                                       / ( (1.0+m_q)**6 )  \
-                                    - (3.0/4.0)  * S1[1] * S2[1] * (m_q**2) * (  4.0*(m_q**2) +  9.0*m_q + 4.0)   / ( (1.0+m_q)**6 )  \
-                                    + (3.0/8.0)  * S1[2] * S2[2] * (m_q**2) * ( 10.0*(m_q**2) + 21.0*m_q + 10.0 ) / ( (1.0+m_q)**6 )  \
+                                    - (1.0/16.0) * (S1[0]**2)    * (m_q**3) * ( 52.0*(m_q**2) + 12.0*m_q - 25.0 ) / ( (1.0+m_q)**6 )  \
+                                    + (1.0/8.0)  * (S1[1]**2)    * (m_q**3) * (       m_q**2  - 17.0*m_q - 15.0 ) / ( (1.0+m_q)**6 )  \
+                                    + (1.0/16.0) * (S1[2]**2)    * (m_q**3) * ( 50.0*(m_q**2) + 38.0*m_q + 3.0  ) / ( (1.0+m_q)**6 )  \
+                                    + (1.0/16.0) * (S2[0]**2)    * m_q      * ( 25.0*(m_q**2) - 12.0*m_q - 52.0 ) / ( (1.0+m_q)**6 )  \
+                                    - (1.0/8.0)  * (S2[1]**2)    * m_q      * ( 15.0*(m_q**2) + 17.0*m_q -  1.0 ) / ( (1.0+m_q)**6 )  \
+                                    + (1.0/16.0) * (S2[2]**2)    * m_q      * (  3.0*(m_q**2) + 38.0*m_q + 50.0 ) / ( (1.0+m_q)**6 )  \
+                                    + (9.0/8.0)  * S2[0] * S1[0] * (m_q**3)                                       / ( (1.0+m_q)**6 )  \
+                                    - (3.0/4.0)  * S2[1] * S1[1] * (m_q**2) * (  4.0*(m_q**2) +  9.0*m_q + 4.0)   / ( (1.0+m_q)**6 )  \
+                                    + (3.0/8.0)  * S2[2] * S1[2] * (m_q**2) * ( 10.0*(m_q**2) + 21.0*m_q + 10.0 ) / ( (1.0+m_q)**6 )  \
                                   )
 
         dADM_dr_0PN  = mass * (   dADM_correction_0PN )
@@ -570,23 +569,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     ADM_Mass_0PN,  ADM_Mass_1PN, ADM_Mass_15PN, ADM_Mass_2PN, ADM_Mass_25PN, ADM_Mass_3PN  = M_ADM(R)
 
     if ( input_language == "Chinese" ):
-        print(                                                           )
+        print(                                                          )
         print( " 0   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_0PN  )
         print( " 1   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_1PN  )
         print( " 1.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_15PN )
         print( " 2   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_2PN  )
         print( " 2.5 阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_25PN )
         print( " 3   阶后牛顿近似下的 ADM 质量 ADM Mass = ", ADM_Mass_3PN  )
-        print(                                                           )
+        print(                                                          )
     elif ( input_language == "English" ):
-        print(                                                                                                )
+        print(                                                                )
         print( " ADM Mass of binary stars system at 0   PN = ", ADM_Mass_0PN  )
         print( " ADM Mass of binary stars system at 1   PN = ", ADM_Mass_1PN  )
         print( " ADM Mass of binary stars system at 1.5 PN = ", ADM_Mass_15PN )
         print( " ADM Mass of binary stars system at 2   PN = ", ADM_Mass_2PN  )
         print( " ADM Mass of binary stars system at 2.5 PN = ", ADM_Mass_25PN )
         print( " ADM Mass of binary stars system at 3   PN = ", ADM_Mass_3PN  )
-        print(                                                                                                )
+        print(                                                                )
 
     Omega = Omega_3PN
     ADM_Mass_another_0PN,  ADM_Mass_another_1PN,  ADM_Mass_another_15PN, \
@@ -594,23 +593,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     = M_ADM_another(Omega)
 
     if ( input_language == "Chinese" ):
-        print(                                                                                         )
+        print(                                                                                      )
         print( " 0   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_0PN  )
         print( " 1   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_1PN  )
         print( " 1.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_15PN )
         print( " 2   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_2PN  )
         print( " 2.5 阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_25PN )
         print( " 3   阶后牛顿近似下的 ADM 质量（用 Omega 展开式计算） ADM Mass = ", ADM_Mass_another_3PN  )
-        print(                                                                                         )
+        print(                                                                                      )
     elif ( input_language == "English" ):
-        print(                                                                                                                                               )
+        print(                                                                                                               )
         print( " ADM Mass of binary stars system at 0   PN (calculated using the Omega expansion) = ", ADM_Mass_another_0PN  )
         print( " ADM Mass of binary stars system at 1   PN (calculated using the Omega expansion) = ", ADM_Mass_another_1PN  )
         print( " ADM Mass of binary stars system at 1.5 PN (calculated using the Omega expansion) = ", ADM_Mass_another_15PN )
         print( " ADM Mass of binary stars system at 2   PN (calculated using the Omega expansion) = ", ADM_Mass_another_2PN  )
         print( " ADM Mass of binary stars system at 2.5 PN (calculated using the Omega expansion) = ", ADM_Mass_another_25PN )
         print( " ADM Mass of binary stars system at 3   PN (calculated using the Omega expansion) = ", ADM_Mass_another_3PN  )
-        print(                                                                                                                                               )
+        print(                                                                                                               )
 
     ############################
 
@@ -638,13 +637,13 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     '''
     dHdr_0PN, dHdr_1PN, dHdr_15PN, dHdr_2PN, dHdr_25PN, dHdr_3PN = dH_dr(R)
 
-    print(                                            )
+    print(                                          )
     print( " 0   阶后牛顿近似下的 dH/dr = ", dHdr_0PN  )
     print( " 1   阶后牛顿近似下的 dH/dr = ", dHdr_1PN  )
     print( " 1.5 阶后牛顿近似下的 dH/dr = ", dHdr_15PN )
     print( " 2   阶后牛顿近似下的 dH/dr = ", dHdr_2PN  )
     print( " 2.5 阶后牛顿近似下的 dH/dr = ", dHdr_25PN )
-    print(                                            )
+    print(                                          )
     '''
 
     ############################
@@ -656,23 +655,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     dHdr_0PN, dHdr_1PN, dHdr_15PN, dHdr_2PN, dHdr_25PN, dHdr_3PN = dADM_dr(R)
 
     if ( input_language == "Chinese" ):
-        print(                                            )
+        print(                                          )
         print( " 0   阶后牛顿近似下的 dH/dr = ", dHdr_0PN  )
         print( " 1   阶后牛顿近似下的 dH/dr = ", dHdr_1PN  )
         print( " 1.5 阶后牛顿近似下的 dH/dr = ", dHdr_15PN )
         print( " 2   阶后牛顿近似下的 dH/dr = ", dHdr_2PN  )
         print( " 2.5 阶后牛顿近似下的 dH/dr = ", dHdr_25PN )
         print( " 3   阶后牛顿近似下的 dH/dr = ", dHdr_3PN  )
-        print(                                            )
+        print(                                          )
     elif ( input_language == "English" ):
-        print(                                                                                         )
+        print(                                                         )
         print( " dH/dr of binary stars system at 0   PN = ", dHdr_0PN  )
         print( " dH/dr of binary stars system at 1   PN = ", dHdr_1PN  )
         print( " dH/dr of binary stars system at 1.5 PN = ", dHdr_15PN )
         print( " dH/dr of binary stars system at 2   PN = ", dHdr_2PN  )
         print( " dH/dr of binary stars system at 2.5 PN = ", dHdr_25PN )
         print( " dH/dr of binary stars system at 3   PN = ", dHdr_3PN  )
-        print(                                                                                         )
+        print(                                                         )
         
     ########################################
 
@@ -817,23 +816,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                                  )
     
     if ( input_language == "Chinese" ):
-        print(                                                  )
+        print(                                                )
         print( " 0   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_0PN  )
         print( " 1   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_1PN  )
         print( " 1.5 阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_15PN )
         print( " 2   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_2PN  )
         print( " 2.5 阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_25PN )
         print( " 3   阶后牛顿近似下的 dE_GW/dt = ", dEGW_dt_3PN  )
-        print(                                                 )
+        print(                                                )
     elif ( input_language == "English" ):
-        print(                                                                                               )
+        print(                                                               )
         print( " dE_GW/dt of binary stars system at 0   PN = ", dEGW_dt_0PN  )
         print( " dE_GW/dt of binary stars system at 1   PN = ", dEGW_dt_1PN  )
         print( " dE_GW/dt of binary stars system at 1.5 PN = ", dEGW_dt_15PN )
         print( " dE_GW/dt of binary stars system at 2   PN = ", dEGW_dt_2PN  )
         print( " dE_GW/dt of binary stars system at 2.5 PN = ", dEGW_dt_25PN )
-        print( " dE_GW/dt of binary stars system at 3   PN = ", dEGW_dt_1PN  )
-        print(                                                                                               )
+        print( " dE_GW/dt of binary stars system at 3   PN = ", dEGW_dt_3PN  )
+        print(                                                               )
 
     ## 根据表达式 dr/dt = (dE_GW/dt) / (dH_circular/dr)
     ##           M_adm = M + H_circular               
@@ -847,23 +846,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     drdt_3PN  = dEGW_dt_3PN  / dHdr_3PN
 
     if ( input_language == "Chinese" ):
-        print(                                                               )
+        print(                                                             )
         print( " 0   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_0PN  )
         print( " 1   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_1PN  )
         print( " 1.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_15PN )
         print( " 2   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_2PN  )
         print( " 2.5 阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_25PN )
         print( " 3   阶后牛顿近似下双星旋转的径向速度 Vr = dr/dt = ", drdt_3PN  )
-        print(                                                               )
+        print(                                                             )
     elif ( input_language == "English" ):
-        print(                                                                                                              )
+        print(                                                                              )
         print( " radial velocity of binary stars system Vr = dr/dt at 0   PN = ", drdt_0PN  )
         print( " radial velocity of binary stars system Vr = dr/dt at 1   PN = ", drdt_1PN  )
         print( " radial velocity of binary stars system Vr = dr/dt at 1.5 PN = ", drdt_15PN )
         print( " radial velocity of binary stars system Vr = dr/dt at 2   PN = ", drdt_2PN  )
         print( " radial velocity of binary stars system Vr = dr/dt at 2.5 PN = ", drdt_25PN )
         print( " radial velocity of binary stars system Vr = dr/dt at 3   PN = ", drdt_3PN  )
-        print(                                                                                                              )
+        print(                                                                              )
 
     '''
     ## 旧的公式
@@ -903,23 +902,23 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                                * ( 47.0*(m_q**4) + 229.0*(m_q**3) + 363.0*(m_q**2) + 229.0*m_q + 47.0 ) \
                                / ( m_q * ( (1.0+m_q)**2 ) ) 
     factor_correction_25PN = + 0.25 * (epsilon**2.5)                                                    \
-                               * (   ( 12.0*(m_q**2) + 11.0*m_q + 4.0  ) * S2[2] / (1.0 + m_q)          \
-                                   + (  4.0*(m_q**2) + 11.0*m_q + 12.0 ) * S1[2] / ( (1.0 + m_q)*m_q )  \
+                               * (   ( 12.0*(m_q**2) + 11.0*m_q + 4.0  ) * S1[2] / (1.0 + m_q)          \
+                                   + (  4.0*(m_q**2) + 11.0*m_q + 12.0 ) * S2[2] / ( (1.0 + m_q)*m_q )  \
                                  )
     factor_correction_3PN  = epsilon**3 \
                              * ( - (1.0/16.0) * ( (math.pi)**2 ) \
                                  - (1.0/48.0) * ( 363.0*(m_q**6) + 2608.0*(m_q**5) + 7324.0*(m_q**4)          \
                                                   + 10161.0*(m_q**3) + 7324.0*(m_q**2) + 2608.0*m_q + 363.0   \
                                                 ) / ( m_q * ( (1.0+m_q)**4 ) )                                \
-                                 + 0.25 * (S2[0]**2) * m_q * ( 18.0*(m_q**2) + 6.0*m_q +  5.0 ) / ( (1.0+m_q)**2 )           \
-                                 - 0.75 * (S2[1]**2) * m_q * (  3.0*(m_q**2) +     m_q +  1.0 ) / ( (1.0+m_q)**2 )           \
-                                 - 0.75 * (S2[2]**2) * m_q * (  3.0*(m_q**2) +     m_q +  1.0 ) / ( (1.0+m_q)**2 )           \
-                                 + 0.25 * (S1[0]**2)       * (  5.0*(m_q**2) + 6.0*m_q + 18.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
-                                 - 0.75 * (S1[1]**2)       * (       m_q**2  +     m_q +  3.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
-                                 - 0.75 * (S1[2]**2)       * (       m_q**2  +     m_q +  3.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
-                                 +         S1[0] * S2[0]   * (  3.0*(m_q**2) -     m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
-                                 - 0.5  *  S1[1] * S2[1]   * (  3.0*(m_q**2) - 2.0*m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
-                                 - 0.5  *  S1[2] * S2[2]   * (  3.0*(m_q**2) - 2.0*m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
+                                 + 0.25 * (S1[0]**2) * m_q * ( 18.0*(m_q**2) + 6.0*m_q +  5.0 ) / ( (1.0+m_q)**2 )           \
+                                 - 0.75 * (S1[1]**2) * m_q * (  3.0*(m_q**2) +     m_q +  1.0 ) / ( (1.0+m_q)**2 )           \
+                                 - 0.75 * (S1[2]**2) * m_q * (  3.0*(m_q**2) +     m_q +  1.0 ) / ( (1.0+m_q)**2 )           \
+                                 + 0.25 * (S2[0]**2)       * (  5.0*(m_q**2) + 6.0*m_q + 18.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
+                                 - 0.75 * (S2[1]**2)       * (       m_q**2  +     m_q +  3.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
+                                 - 0.75 * (S2[2]**2)       * (       m_q**2  +     m_q +  3.0 ) / ( m_q * ( (1.0+m_q)**2 ) ) \
+                                 +         S2[0] * S1[0]   * (  3.0*(m_q**2) -     m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
+                                 - 0.5  *  S2[1] * S1[1]   * (  3.0*(m_q**2) - 2.0*m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
+                                 - 0.5  *  S2[2] * S1[2]   * (  3.0*(m_q**2) - 2.0*m_q +  3.0 ) / ( (1.0+m_q)**2 )           \
                                )
 
     factor_1PN  = factor_0PN + factor_correction_1PN  
@@ -932,15 +931,15 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
                              + factor_correction_2PN + factor_correction_25PN  \
                              + factor_correction_3PN
 
-    Numerator = drdt  - (epsilon**3.5) * ( - 0.25 * S1[0] * S1[1] * m_q      * (      m_q + 6.0  ) / ( (1.0+m_q)**4 ) \
-                                           - 0.25 * S1[0] * S2[1] * (m_q**2) * (  6.0*m_q + 13.0 ) / ( (1.0+m_q)**4 ) \
-                                           - 0.25 * S2[0] * S1[1] * m_q      * ( 13.0*m_q + 6.0  ) / ( (1.0+m_q)**4 ) \
-                                           - 0.25 * S2[0] * S2[1] * (m_q**2) * (  6.0*m_q + 1.0  ) / ( (1.0+m_q)**4 ) \
+    Numerator = drdt  - (epsilon**3.5) * ( - 0.25 * S2[0] * S2[1] * m_q      * (      m_q + 6.0  ) / ( (1.0+m_q)**4 ) \
+                                           - 0.25 * S2[0] * S1[1] * (m_q**2) * (  6.0*m_q + 13.0 ) / ( (1.0+m_q)**4 ) \
+                                           - 0.25 * S1[0] * S2[1] * m_q      * ( 13.0*m_q + 6.0  ) / ( (1.0+m_q)**4 ) \
+                                           - 0.25 * S1[0] * S1[1] * (m_q**2) * (  6.0*m_q + 1.0  ) / ( (1.0+m_q)**4 ) \
                                          )
 
     if ( input_language == "Chinese" ):
-        print(                                                         )
-        print( " dr/dt = ", drdt                                       )
+        print(                                                      )
+        print( " dr/dt = ", drdt                                    )
         print( " 3   阶后牛顿近似下Pr 计算中的分子   = ",   Numerator   )
         print( " 0   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_0PN  )
         print( " 1   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_1PN  )
@@ -948,7 +947,7 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
         print( " 2   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_2PN  )
         print( " 2.5 阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_25PN )
         print( " 3   阶后牛顿近似下 Pr 计算中的相除因子 = ", factor_3PN  )
-        print(                                                         )
+        print(                                                      )
     elif ( input_language == "English" ):
         print(                                                              )
         print( " dr/dt = ", drdt                                            )
@@ -969,14 +968,14 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     Pr_3PN  = Numerator / factor_3PN
 
     if ( input_language == "Chinese" ):
-        print(                                                     )
+        print(                                                   )
         print( " 0   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_0PN  )
         print( " 1   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_1PN  )
         print( " 1.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_15PN )
         print( " 2   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_2PN  )
         print( " 2.5 阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_25PN )
         print( " 3   阶后牛顿近似下双星旋转的径向动量 Pr = ", Pr_3PN  )
-        print(                                                     )
+        print(                                                   )
     elif ( input_language == "English" ):
         print(                                                                 )
         print( " radial momentum of binary stars system at 0   PN = ", Pr_0PN  )
@@ -1005,26 +1004,26 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     momentum2[0] =   abs(Pt_3PN)  
 
     if ( input_language == "Chinese" ):
-        print(                                          )
+        print(                                         )
         print(  " 双星径向动量大小 |Pr| = ", abs(Pr_3PN) )
         print(  " 双星切向动量大小 |Pt| = ", abs(Pt_3PN) )
-        print(                                          )
+        print(                                        )
         print(  " 双星在 t=0 时刻的动量为："              )
-        print( f" P1 = {momentum1}  P2 = {momentum2}"   )
-        print(                                          )
+        print( f" P1 = {momentum1}  P2 = {momentum2}" )
+        print(                                        )
     elif ( input_language == "English" ):
-        print(                                          )
-        print(  " radial momentum of binary stars system |Pr| = ", abs(Pr_3PN) )
+        print(                                                                     )
+        print(  " radial momentum of binary stars system |Pr| = ", abs(Pr_3PN)     )
         print(  " tangential momentum of binary stars system |Pt| = ", abs(Pt_3PN) )
-        print(                                              )
-        print(  " momentum of binary stars system at t=0: " )
-        print( f" P1 = {momentum1}  P2 = {momentum2}"       )
-        print(                                              )
+        print(                                                                     )
+        print(  " momentum of binary stars system at t=0: "                        )
+        print( f" P1 = {momentum1}  P2 = {momentum2}"                              )
+        print(                                                                     )
 
     if ( input_language == "Chinese" ):
-        print(                            )
+        print(                          )
         print( " 双星系统轨道动量设置完毕 " )
-        print(                            )
+        print(                          )
     elif ( input_language == "English" ):
         print(                                                                  )
         print( " orbital momentum of the binary star system has been finished " )
@@ -1038,27 +1037,27 @@ def generate_BBH_orbit_parameters( input_language, M1, M2, S1, S2, D0, e0 ):
     file1 = open( os.path.join(input_data.File_directory, "BBH_parameter.output"), "w")
 
     if ( input_language == "Chinese" ):
-        print(                                           file=file1 )
+        print(                                         file=file1 )
         print( " 双星系统轨道参数 ",                      file=file1 )
-        print(                                           file=file1 )
-        print( f" 双星质量：     M1 = {M1}  M2 = {M2} ",    file=file1 )
+        print(                                         file=file1 )
+        print( f" 双星质量：     M1 = {M1}  M2 = {M2} ", file=file1 )
         print( " 无量纲质量比为： Q  = M1/M2 = ", m_q,    file=file1 )
         print( f" 双星无量纲自旋：S1 = {S1}  S2 = {S2} ", file=file1 )
-        print(                                           file=file1 )
-        print( " 双星在 t=0 时刻的坐标为：",               file=file1 )
-        print( " X1 = ", position1[0],                   file=file1 ) 
-        print( " Y1 = ", position1[1],                   file=file1 )
-        print( " X2 = ", position2[0],                   file=file1 ) 
-        print( " Y2 = ", position2[1],                   file=file1 )
-        print(                                           file=file1 )
-        print( " 双星在 t=0 时刻的动量为：",               file=file1 )
-        print( " Pr  = ", Pr_3PN,                        file=file1 ) 
-        print( " Pt  = ", Pt_3PN,                        file=file1 )
-        print( " PX1 = - |Pt| = ", momentum1[0],         file=file1 )
-        print( " PY1 = - |Pr| = ", momentum1[1],         file=file1 ) 
-        print( " PX2 = + |Pt| = ", momentum2[0],         file=file1 )
-        print( " PX2 = + |Pr| = ", momentum2[1],         file=file1 ) 
-        print(                                           file=file1 )
+        print(                                         file=file1 )
+        print( " 双星在 t=0 时刻的坐标为：",              file=file1 )
+        print( " X1 = ", position1[0],                 file=file1 ) 
+        print( " Y1 = ", position1[1],                 file=file1 )
+        print( " X2 = ", position2[0],                 file=file1 ) 
+        print( " Y2 = ", position2[1],                 file=file1 )
+        print(                                         file=file1 )
+        print( " 双星在 t=0 时刻的动量为：",              file=file1 )
+        print( " Pr  = ", Pr_3PN,                      file=file1 ) 
+        print( " Pt  = ", Pt_3PN,                      file=file1 )
+        print( " PX1 = - |Pt| = ", momentum1[0],       file=file1 )
+        print( " PY1 = - |Pr| = ", momentum1[1],       file=file1 ) 
+        print( " PX2 = + |Pt| = ", momentum2[0],       file=file1 )
+        print( " PX2 = + |Pr| = ", momentum2[1],       file=file1 ) 
+        print(                                         file=file1 )
     elif ( input_language == "English" ):
         print(                                                                         file=file1 )
         print( " orbital parameters of binary star system ",                           file=file1 )
