@@ -26,7 +26,7 @@ Currently, AMSS - NCKU can successfully handle binary black hole systems and mul
 
 2024年，我们为AMSS-NCKU开发了Python操作接口，方便用户使用和程序后续开发
 
-2026年，我们升级何优化了AMSS-NCKU的内层C/C++代码，优化了CPU并行计算效率
+2026年，我们升级和优化了AMSS-NCKU的内层C/C++代码，优化了CPU并行计算效率
 
 #### The Development of AMSS-NCKU
 
