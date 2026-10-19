@@ -1,0 +1,57 @@
+CUDA_DIR ?=
+MPI_DIR ?=
+MKL_DIR ?=
+CUDA_COMPUTE_CAPABILITY ?= 80
+
+ifeq ($(strip $(CUDA_DIR)),)
+$(error CUDA_DIR is not set. Source Spack and export CUDA_DIR=$$(spack location -i cuda@13.0.2), or pass CUDA_DIR=... to make)
+endif
+
+CUDA_TARGET_DIR = $(CUDA_DIR)/targets/x86_64-linux
+CUDA_INCLUDE_DIR = $(if $(wildcard $(CUDA_TARGET_DIR)/include),$(CUDA_TARGET_DIR)/include,$(CUDA_DIR)/include)
+CUDA_LIB_DIR = $(if $(wildcard $(CUDA_TARGET_DIR)/lib),$(CUDA_TARGET_DIR)/lib,$(CUDA_DIR)/lib64)
+MPI_INCLUDE_FLAG = $(if $(strip $(MPI_DIR)),-I$(MPI_DIR)/include,)
+
+# Optional Intel MKL Pardiso for TwoPunctureABE's bicgstab preconditioner.
+MKL_INCLUDE_FLAG =
+MKL_LDFLAGS      =
+ifneq ($(strip $(MKL_DIR)),)
+  MKL_HEADER_DIR = $(or $(wildcard $(MKL_DIR)/mkl/latest/include),$(MKL_DIR)/include)
+  MKL_LIB_DIR    = $(or $(wildcard $(MKL_DIR)/mkl/latest/lib/intel64),$(wildcard $(MKL_DIR)/mkl/latest/lib),$(MKL_DIR)/lib)
+  MKL_INCLUDE_FLAG = -I$(MKL_HEADER_DIR) -DHAVE_MKL_PARDISO
+  MKL_LDFLAGS      = -L$(MKL_LIB_DIR) -Wl,-rpath,$(MKL_LIB_DIR) -lmkl_rt
+endif
+
+filein  =
+LDLIBS  = -lifcoremt -L$(CUDA_LIB_DIR) -lcudart $(MKL_LDFLAGS)
+
+ARCHFLAGS ?= -march=znver5
+
+f90appflags  = -O3 -fpp -qopenmp $(ARCHFLAGS)
+
+# DEFAULT: Intel MPI
+f90          = mpiifx
+f77          = mpiifx
+CXX          = mpiicpx
+CC           = mpiicc
+CLINKER      = mpiicpx
+EXTRA_CXXFLAGS =
+EXTRA_CUFLAGS  =
+
+# CUDA-aware MPI
+ifeq ($(USE_CUDA_MPI), 1)
+MPI_DIR      = /home/jjsnam/hpcx/ompi4
+f90          = mpif90
+f77          = mpif77
+CXX          = mpicxx
+CC           = mpicc
+CLINKER      = mpicxx
+EXTRA_CXXFLAGS = -DMPI_CUDA_AWARE=1
+EXTRA_CUFLAGS  = -DMPI_CUDA_AWARE=1
+endif
+
+CXXAPPFLAGS  = -O3 -qopenmp $(ARCHFLAGS) -Wno-deprecated -Dfortran3 -Dnewc -I$(CUDA_INCLUDE_DIR) $(MPI_INCLUDE_FLAG) $(MKL_INCLUDE_FLAG) $(EXTRA_CXXFLAGS)
+
+Cu = $(CUDA_DIR)/bin/nvcc
+CUDA_LIB_PATH = -L$(CUDA_LIB_DIR) -I$(CUDA_INCLUDE_DIR) $(MPI_INCLUDE_FLAG)
+CUDA_APP_FLAGS = -g -Xptxas -O3 --ptxas-options=-v -Dfortran3 -Dnewc -arch=sm_$(CUDA_COMPUTE_CAPABILITY) -I$(CUDA_INCLUDE_DIR) $(MPI_INCLUDE_FLAG) $(EXTRA_CUFLAGS)

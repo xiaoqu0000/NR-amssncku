@@ -1,0 +1,127 @@
+
+##################################################################
+##
+## 该文件根据 TwoPuncture 的输出结果来设置 Puncture 数据 | This file sets the Puncture data according to the output of TwoPuncture
+## 小曲 | Xiao Qu
+## 2024/12/04
+## 2026/02/10 修改 | Modified 2026/02/10
+##
+##################################################################
+
+import AMSS_NCKU_Input as input_data
+import numpy
+import os
+
+##################################################################
+
+
+
+##################################################################
+
+def read_TwoPuncture_Output(Output_File_directory):
+
+    dimensionless_mass_BH = numpy.zeros( input_data.puncture_number )
+    bare_mass_BH          = numpy.zeros( input_data.puncture_number )        ## 初始化每个黑洞的质量 | Initialize the mass of each black hole
+    position_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的初始位置 | Initialize the initial position of each black hole
+    momentum_BH           = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的动量 | Initialize the momentum of each black hole
+    angular_momentum_BH   = numpy.zeros( (input_data.puncture_number, 3) )   ## 初始化每个黑洞的自旋角动量 | Initialize the spin angular momentum of each black hole
+    charge_Q_BH           = numpy.zeros( input_data.puncture_number )        ## 初始化每个黑洞的电荷 | Initialize the charge of each black hole
+    
+    # 读取文件内容 | Read the file contents
+    data = numpy.loadtxt( os.path.join(Output_File_directory, "puncture_parameters_new.txt") )
+    # 确保数据被解析为一维数组 | Ensure that the data is parsed as a one-dimensional array
+    data = data.reshape(-1)
+    ## print(" 读取到的 TwoPuncture 数据为 ") | The read-in TwoPuncture data
+    ## print(data)
+    
+    for i in range(input_data.puncture_number):
+        
+        ## 从 Two Puncture 的输出中读取前两个黑洞的参数 | Read the parameters of the first two black holes from the Two Puncture output
+        ## 后面黑洞的参数从输入文件读取 | The parameters of the remaining black holes are read from the input file
+        if i<2:
+            bare_mass_BH[i]          = data[12*i]
+            dimensionless_mass_BH[i] = data[12*i+1]
+            position_BH[i]           = [ data[12*i+3], data[12*i+4],  data[12*i+5]  ]
+            momentum_BH[i]           = [ data[12*i+6], data[12*i+7],  data[12*i+8]  ]
+            angular_momentum_BH[i]   = [ data[12*i+9], data[12*i+10], data[12*i+11] ]
+        else:
+            dimensionless_mass_BH[i] = input_data.parameter_BH[i,0]
+            bare_mass_BH[i]          = input_data.parameter_BH[i,0]
+            position_BH[i]           = input_data.position_BH[i]
+            momentum_BH[i]           = input_data.momentum_BH[i]
+            ## 根据对称性读入角动量 | Read in the angular momentum according to the symmetry
+            if ( input_data.Symmetry == "equatorial-symmetry" ):
+                angular_momentum_BH[i] = [ 0.0, 0.0, (input_data.parameter_BH[i,0]**2) * input_data.parameter_BH[i,2] ]
+            elif ( input_data.Symmetry == "no-symmetry" ):
+                angular_momentum_BH[i] = (dimensionless_mass_BH[i]**2) * input_data.dimensionless_spin_BH[i]
+                
+    ## 设定 puncture 的电荷 | Set the charge of each puncture
+    for i in range(input_data.puncture_number):
+        charge_Q_BH[i] = dimensionless_mass_BH[i] * input_data.parameter_BH[i,1]
+    
+    return bare_mass_BH, dimensionless_mass_BH, charge_Q_BH, position_BH, momentum_BH, angular_momentum_BH
+    
+##################################################################
+
+
+##################################################################
+
+## 将以上格点信息追加写入到 AMSS-NCKU-TwoPuncture 程序的输入文件 | Append the above grid-point information to the input file of the AMSS-NCKU-TwoPuncture program
+
+def append_AMSSNCKU_BSSN_input( puncture_data, File_directory, TwoPuncture_File_directory ): 
+
+    ##########################################################
+    
+    ## 读入 puncture 数据 | Read in the puncture data
+
+    ##  如果用 Ansorg-TwoPuncture 求解数值相对论初值，则从 TwoPuncture 的计算结果中读取裸质量、位置、角动量等参数 | If Ansorg-TwoPuncture is used to solve the numerical-relativity initial data, read the bare masses, positions, angular momenta, and other parameters from the TwoPuncture results
+    if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
+        
+        bare_mass_BH, dimensionless_mass_BH, charge_Q_BH, position_BH, momentum_BH, angular_momentum_BH = read_TwoPuncture_Output(TwoPuncture_File_directory)
+        mass_BH = bare_mass_BH
+    
+    ## 如果用其它方式求解数值相对论初值，则从 puncture 设置中直接读入参数 | If another method is used to solve the numerical-relativity initial data, read the parameters directly from the puncture settings    
+    else:
+        mass_BH     = puncture_data.dimensionless_mass_BH
+        position_BH = puncture_data.position_BH
+        momentum_BH = puncture_data.momentum_BH
+        charge_Q_BH = puncture_data.charge_Q_BH
+        angular_momentum_BH = puncture_data.angular_momentum_BH
+        
+    ##########################################################
+
+    file1 = open( os.path.join(input_data.File_directory, "AMSS-NCKU.input"), "a")   ## "a" 表示追加输出 | "a" means append output
+
+    ## 输出 BSSN 的相关设定 | Output the relevant BSSN settings
+    
+    print(                                                                           file=file1 )
+    print( "BSSN::chitiny  = 1e-5",                                                  file=file1 ) 
+    print( "BSSN::time refinement start from level = ", input_data.refinement_level, file=file1 )
+    print( "BSSN::BH_num   =  ",                        input_data.puncture_number,  file=file1 )
+    
+    for i in range(input_data.puncture_number):
+    
+        if (input_data.Initial_Data_Method == "Ansorg-TwoPuncture" ):
+            print( f"BSSN::Mass[{i}]  = { bare_mass_BH[i] } ",      file=file1 )
+        else:
+            print( f"BSSN::Mass[{i}]  = { mass_BH[i] } ",           file=file1 )
+            
+        print( f"BSSN::Qchar[{i}] = { charge_Q_BH[i] } ",           file=file1 )
+        print( f"BSSN::Porgx[{i}] = { position_BH[i,0] } ",         file=file1 )
+        print( f"BSSN::Porgy[{i}] = { position_BH[i,1] } ",         file=file1 )
+        print( f"BSSN::Porgz[{i}] = { position_BH[i,2] } ",         file=file1 )
+        print( f"BSSN::Pmomx[{i}] = { momentum_BH[i,0] } ",         file=file1 )
+        print( f"BSSN::Pmomy[{i}] = { momentum_BH[i,1] } ",         file=file1 )
+        print( f"BSSN::Pmomz[{i}] = { momentum_BH[i,2] } ",         file=file1 )
+        print( f"BSSN::Spinx[{i}] = { angular_momentum_BH[i,0] } ", file=file1 )
+        print( f"BSSN::Spiny[{i}] = { angular_momentum_BH[i,1] } ", file=file1 )
+        print( f"BSSN::Spinz[{i}] = { angular_momentum_BH[i,2] } ", file=file1 )
+            
+    print(                                                          file=file1 )
+    
+    file1.close()
+
+    return
+    
+#################################################
+

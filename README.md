@@ -12,11 +12,11 @@ AMSS-NCKU使用有限差分方法，通过自适应网格细化技术，来实�
 
 #### What can AMSS-NCKU do
 
-AMSS - NCKU is a numerical relativity program developed in China, which is used to numerically solve Einstein's equations and calculate the change of the gravitational field over time. 
+AMSS-NCKU is a numerical relativity program developed in China, which is used to numerically solve Einstein's equations and calculate the change of the gravitational field over time. 
 
-AMSS - NCKU uses the finite difference method and the adaptive mesh refinement technique to achieve the numerical solution of Einstein's equations. 
+AMSS-NCKU uses the finite difference method and the adaptive mesh refinement technique to achieve the numerical solution of Einstein's equations. 
 
-Currently, AMSS - NCKU can successfully handle binary black hole systems and multiple black hole systems, calculate the time evolution of these systems, and solve the gravitational waves released during these processes.
+Currently, AMSS-NCKU can successfully handle binary black hole systems and multiple black hole systems, calculate the time evolution of these systems, and solve the gravitational waves released during these processes.
 
 For more information about AMSS‑NCKU, one can also refer to https://nr-amss-ncku.cn/
 
@@ -33,6 +33,8 @@ For more information about AMSS‑NCKU, one can also refer to https://nr-amss-nc
 
 2026年，我们升级和优化了AMSS-NCKU的内层C/C++代码，优化了CPU并行计算效率
 
+2026年 我们完全重构了程序的GPU部分，对程序的大部分功能做了GPU移植，大幅提高了计算效率
+
 #### The Development of AMSS-NCKU
 
 In 2008, the AMSS-NCKU code was successfully developed, enabling the numerical simulation for binary black hole and multiple black hole systems via the BSSN equations.
@@ -41,9 +43,11 @@ In 2013, AMSS-NCKU achieved the numerical simulation for black hole systems via 
 
 In 2015, AMSS-NCKU implemented hybrid CPU and GPU computing for the BSSN equations, improving the computational efficiency.
 
-In 2024, we developed a Python operation interface for AMSS-NCKU to facilitate the freshman users and subsequent development.
+In 2024, we developed a Python operation interface for AMSS-NCKU to facilitate the use of the program and its subsequent development.
 
 In 2026, we upgraded and optimized the C/C++ code of AMSS‑NCKU to improve the efficiency of CPU parallel computing.
+
+In 2026, we completely rebuilt the GPU part of AMSS-NCKU, porting most of the program's functionality to the GPU and greatly improving the computational efficiency.
 
 #### AMSS-NCKU 的开发团队
 
@@ -55,19 +59,23 @@ In 2026, we upgraded and optimized the C/C++ code of AMSS‑NCKU to improve the 
 
 都志辉（清华大学）
 
-季力伟（罗彻斯特理工学院）
+季力伟（北京师范大学 罗彻斯特理工学院）
 
 赵志超（中国农业大学）
 
 乔琛凯（重庆理工大学）
 
-余瑞彬（曾在读学生）
+余瑞彬（曾在读学生，成功大学）
 
-林俊玉（曾在读学生）
+林俊玉（曾在读学生，成功大学）
+
+黄钰、刘天洋、洪奕迅、徐晨、胡笠桁（学生，浙江大学）
+
+陈嘉懿（学生，齐鲁工业大学）
 
 左毅（学生，中国科学院）
 
-黄钰、刘天洋、洪奕迅、徐晨、胡笠桁（学生，浙江大学）
+郑依（学生，重庆理工大学）
 
 #### Authors of AMSS-NCKU
 
@@ -85,18 +93,22 @@ Zhao, Zhichao (China Agricultural University)
 
 Qiao, Chenkai (Chongqing University of Technology)
 
-Yu, Jui-Ping (Former student)
+Yu, Jui-Ping (Former student, National Cheng Kung University)
 
-Lin, Chun-Yu (Former student)
+Lin, Chun-Yu (Former student, National Cheng Kung University)
+
+Huang, Yu; Liu, Tianyang; Hong, Yixun; Xu, Chen; Hu, Liheng (students, Zhejiang University)
+
+Chen, Jiayi (student, Qilu University of Technology)
 
 Zuo, Yi (Student, Chinese Academy of Sciences)
 
-Huang, Yu; Liu, Tianyang; Hong, Yixun; Xu, Chen; Hu, Liheng (students, Zhejiang University)
+Zheng, Yi (student, Chongqing University of Technology)
 
 
 #### 运行 AMSS-NCKU 所需要的依赖包
 
-这里以 Ubuntu22.04 系统为例进行介绍
+这里以 Ubuntu22.04/Ubuntu24.04 系统为例进行介绍
 
 1.  安装需要的 C++/Fortran/Cuda 编译器
 
@@ -140,9 +152,9 @@ Huang, Yu; Liu, Tianyang; Hong, Yixun; Xu, Chen; Hu, Liheng (students, Zhejiang 
 
     >> sudo apt-get install python-opencv
 
-#### Install the required packages and software that are prequisite to AMSS-NCKU code
+#### Install the required packages and software that are prerequisite to AMSS-NCKU code
 
-Here, we take the Ubuntu 22.04 system as an example
+Here, we take the Ubuntu 22.04/24.04 systems as an example
 
 1.  Install the C++, Fortran, and Cuda compilers.
 
@@ -192,7 +204,7 @@ Here, we take the Ubuntu 22.04 system as an example
 
     修改 AMSS_NCKU_source 目录下的 makefile.inc 文件，根据所用计算机来进行设置  
 
-    Ununtu22.04系统已经设置完成，不用修改
+    Ubuntu22.04/Ubuntu24.04系统已经设置完成，不用修改
 
 1.  进入AMSS-NCKU代码文件夹，修改输入 
 
@@ -200,7 +212,10 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2.  启动AMSS-NCKU  
 
-    控制台运行 python AMSS_NCKU_Program.py 或 python3 AMSS_NCKU_Program.py
+    A| python启动（含有交互式操作） python AMSS_NCKU_Program.py 或 python3 AMSS_NCKU_Program.py
+    
+    B| python启动（无交互式操作） python AMSS_NCKU_Program_batch.py 或 python3 AMSS_NCKU_Program_batch.py
+    C| Jupyter notebook 启动（含有交互式操作） jupyter notebook 
 
 #### How to use AMSS-NCKU
 
@@ -208,7 +223,7 @@ Here, we take the Ubuntu 22.04 system as an example
 
     Modify the makefile.inc file in the AMSS_NCKU_source directory and change the settings according to your computer.
 
-    The settings for the Ubuntu 22.04 system do not need to be modified.
+    The settings for the Ubuntu 22.04/24.04 systems do not need to be modified.
 
 1.  Enter the AMSS-NCKU Python code folder and modify the input.
 
@@ -216,13 +231,13 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2.  Initialize and start the AMSS-NCKU simulation
 
-    Run the following command in the bash terminal. 
-    
-    $ python AMSS_NCKU_Program.py 
-    
-    or 
-    
-    $ python3 AMSS_NCKU_Program.py 
+    Run the AMSS-NCKU program in one of the following ways.
+
+    A| Launch with Python (interactive): python AMSS_NCKU_Program.py or python3 AMSS_NCKU_Program.py
+
+    B| Launch with Python (non-interactive batch mode): python AMSS_NCKU_Program_batch.py or python3 AMSS_NCKU_Program_batch.py
+
+    C| Launch with Jupyter notebook (interactive): jupyter notebook
 
 
 #### 更新记录
@@ -241,6 +256,8 @@ Here, we take the Ubuntu 22.04 system as an example
 
 2026年9月 更新：更新并Debug了Automatically-BBH的分支，使得双星的准圆轨道的后牛顿计算更加准确（用户不再需要手动输入初始动量，即可获得相对准确的双黑洞模拟）
 
+2026年10月 更新：更新了程序的CPU计算功能（包含GPU-flash和GPU-pro两个分支）
+
 #### Update records
 
 September 2025   First commit
@@ -256,6 +273,8 @@ April 2026       Update: Added Jupyter notebook support.
 September 2026   Update: The C/C++ code of AMSS‑NCKU has been upgraded to a CPU‑optimized version developed by students from Zhejiang University. The new C/C++ code employs hybrid MPI+OpenMP parallel computing, which yields a maximum speedup of 4 times over the original pure MPI parallel code. We also offer the Jupyter notebook support for the upgraded code.
 
 September 2026   Update: Updated and debugged the Automatically-BBH branch, improving the accuracy of post-Newtonian calculations for quasi-circular orbits of binary black holes (It is no longer needed to manually input initial momentum to obtain accurate binary black hole simulations).
+
+October 2026     Update: Updated the CPU computing functionality of the program (including the two branches: GPU-flash and GPU-pro).
 
 
 
@@ -285,7 +304,9 @@ If it can successfully carry out a simulation without errors, then adjust the fi
 
 Please set the computing resources according to your own computer (set the number of MPI processes in the input script file).
 
-The 2026-09 version has improved the accuracy of the initial momentum for binary systems in quasi‑circular orbits. 
+With the current version, the post-Newtonian calculation of quasi-circular binary orbits gives initial orbital momenta with relatively large errors, so binary systems with large spin angular momenta sometimes end up with insufficiently circular orbits (non-spinning cases are somewhat better). Users can choose "Manually" in the input file to set more accurate initial momenta of the binary by themselves.
+
+The 2026-09 version has improved the accuracy of the initial momentum for binary systems in quasi‑circular orbits.
 
 As the underlying C/C++ code has undergone major revisions in Sep. 2026, the configuration in makefile.inc differs from that of the earlier version (users should pay special attention when compiling).
 
